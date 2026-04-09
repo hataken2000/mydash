@@ -747,6 +747,8 @@ body {
   .sort-select { display: none; }
   .add-text { display: none; }
 }
+body.hide-server .server-feature { display: none !important; }
+body.hide-server .launch-btn { display: none !important; }
 
 /* ── Clock Widget ────────────────────────── */
 .clock-widget {
@@ -832,7 +834,7 @@ body {
         <span style="font-size:12px;color:var(--text-muted);flex:1;cursor:pointer" onclick="openAlarmModal()">アラーム管理</span>
         <span class="count-badge" id="cnt-alarm" style="cursor:pointer" onclick="openAlarmModal()">0</span>
       </div>
-      <div class="sidebar-item" id="widget-btn" onclick="openWidget()" style="padding:6px 8px;border-radius:8px;justify-content:center;gap:6px;margin-top:4px">
+      <div class="sidebar-item server-feature" id="widget-btn" onclick="openWidget()" style="padding:6px 8px;border-radius:8px;justify-content:center;gap:6px;margin-top:4px">
         <span style="font-size:13px" id="widget-btn-icon">📌</span>
         <span style="font-size:12px;color:var(--text-muted)" id="widget-btn-label">ウィジェット</span>
       </div>
@@ -907,7 +909,7 @@ body {
     <div class="modal-body" style="gap:20px">
 
       <!-- サーバー -->
-      <div>
+      <div class="server-feature">
         <div class="settings-section-title">🖥 ローカルサーバー</div>
         <div class="settings-section-body">
           <div id="server-status" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted)">
@@ -926,8 +928,8 @@ body {
             📥 JSONインポート
             <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
           </label>
-          <button class="io-btn" onclick="closeSettingsModal();openCalImportModal()" style="border-color:rgba(128,203,196,0.35);color:var(--set)">📅 カレンダーインポート</button>
-          <button class="io-btn" onclick="closeSettingsModal();openDockImportModal()" style="border-color:rgba(129,199,132,0.35);color:var(--tool)">🖥 Dockインポート</button>
+          <button class="io-btn server-feature" onclick="closeSettingsModal();openCalImportModal()" style="border-color:rgba(128,203,196,0.35);color:var(--set)">📅 カレンダーインポート</button>
+          <button class="io-btn server-feature" onclick="closeSettingsModal();openDockImportModal()" style="border-color:rgba(129,199,132,0.35);color:var(--tool)">🖥 Dockインポート</button>
         </div>
       </div>
 
@@ -997,11 +999,15 @@ body {
 
         <div class="settings-section-title">🔧 動作</div>
         <div class="settings-section-body">
+          <label class="io-btn" style="cursor:pointer;justify-content:space-between" title="アプリ起動・Dock・ウィジェットなどPC専用機能の表示を切り替える">
+            🖥️ PC機能を表示
+            <input type="checkbox" id="server-features-toggle" onchange="toggleServerFeatures(this)" style="accent-color:var(--accent);width:auto;cursor:pointer">
+          </label>
           <label class="io-btn" style="cursor:pointer;justify-content:space-between" title="編集ダイアログを外クリックで閉じる前に確認する">
             🔒 編集中の確認
             <input type="checkbox" id="confirm-close-toggle" onchange="toggleConfirmOnClose(this)" style="accent-color:var(--accent);width:auto;cursor:pointer">
           </label>
-          <label class="io-btn" style="cursor:pointer;justify-content:space-between" title="アラーム発火時にセットを自動起動する">
+          <label class="io-btn server-feature" style="cursor:pointer;justify-content:space-between" title="アラーム発火時にセットを自動起動する">
             🚀 セット自動起動（アラーム）
             <input type="checkbox" id="alarm-auto-launch-toggle" onchange="toggleAlarmAutoLaunch(this)" style="accent-color:var(--accent);width:auto;cursor:pointer">
           </label>
@@ -1317,6 +1323,7 @@ function load() {
   if (db.settings.alarmAutoLaunch === undefined) db.settings.alarmAutoLaunch = true;
   if (db.settings.alarmOffsetMin === undefined) db.settings.alarmOffsetMin = 0;
   if (db.settings.alarmMuted === undefined) db.settings.alarmMuted = false;
+  if (db.settings.showServerFeatures === undefined) db.settings.showServerFeatures = (SERVER_BASE !== null);
   if (!db.settings.priorityIcons) db.settings.priorityIcons = { low:'▂', medium:'▄', high:'█' };
   if (!db.settings.view) db.settings.view = 'grid';
   if (!db.settings.sort) db.settings.sort = 'manual';
@@ -3180,6 +3187,17 @@ function openSettingsModal() {
   document.getElementById('github-token-input').value = token;
   document.getElementById('github-gist-id').value = gistId;
   document.getElementById('gist-status').textContent = '';
+  document.getElementById('server-features-toggle').checked = db.settings.showServerFeatures;
+}
+
+function applyServerFeatureVisibility() {
+  document.body.classList.toggle('hide-server', !db.settings.showServerFeatures);
+}
+
+function toggleServerFeatures(el) {
+  db.settings.showServerFeatures = el.checked;
+  save();
+  applyServerFeatureVisibility();
 }
 function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
 
@@ -3965,6 +3983,7 @@ applyPriorityIcons();
 document.getElementById('sort-select').value = db.settings.sort || 'manual';
 setView(db.settings.view || 'grid');
 repairBrokenRefs();
+applyServerFeatureVisibility();
 pingServer();
 // 30秒ごとにサーバー状態を確認
 setInterval(pingServer, 30000);
