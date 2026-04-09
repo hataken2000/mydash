@@ -2668,8 +2668,9 @@ const SHORTCUT_BASE = 'https://hataken2000.github.io/mydash/mydash.html';
 
 function shortcutUrl(item) {
   // IDベース：Gist同期済みのデータから検索するため内容埋め込み不要
+  // ハッシュ(#)を使う → サーバーに送られないためGitHub Pagesリダイレクトで消えない
   if (['bookmark','tool','memo','task','other','set'].includes(item.type)) {
-    return `${SHORTCUT_BASE}?exec=item&id=${encodeURIComponent(item.id)}`;
+    return `${SHORTCUT_BASE}#exec=item&id=${encodeURIComponent(item.id)}`;
   }
   return null;
 }
@@ -2689,7 +2690,8 @@ function copyShortcutUrl(id) {
 }
 
 function handleShortcutExec() {
-  const p = new URLSearchParams(location.search);
+  // ハッシュ(#)から読む（クエリパラメータはリダイレクトで消えるため）
+  const p = new URLSearchParams(location.hash.slice(1));
   const exec = p.get('exec');
   if (!exec) return;
 
