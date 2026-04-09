@@ -1,0 +1,3994 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyDash</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<style>
+:root {
+  --bg: #0f1117;
+  --sidebar-bg: #1a1d27;
+  --card-bg: #1e2130;
+  --card-hover: #252840;
+  --border: #2d3250;
+  --text: #e8eaf6;
+  --text-muted: #8b90aa;
+  --accent: #00afcc;
+  --accent-hover: #00c9eb;
+  --bookmark: #4fc3f7;
+  --tool: #81c784;
+  --task: #ffb74d;
+  --memo: #f48fb1;
+  --other: #ce93d8;
+  --danger: #ef5350;
+  --success: #66bb6a;
+  --set: #80cbc4;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+body.light {
+  --bg: #f0f4f8;
+  --sidebar-bg: #ffffff;
+  --card-bg: #ffffff;
+  --card-hover: #e8edf5;
+  --border: #dde2f0;
+  --text: #1a1d27;
+  --text-muted: #6b7280;
+}
+body.light .set-card { background: rgba(128,203,196,0.10) !important; border-color: rgba(128,203,196,0.4) !important; }
+body.light .set-card:hover { background: rgba(128,203,196,0.18) !important; }
+body.light .memo-card { background: rgba(244,143,177,0.10) !important; border-color: rgba(196,154,78,0.3) !important; }
+body.light .memo-card:hover { background: rgba(244,143,177,0.18) !important; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-size: 14px;
+}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Sidebar ──────────────────────────────── */
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar-logo {
+  padding: 18px 20px 16px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.help-btn {
+  margin-left: auto;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: none;
+  color: var(--muted);
+  font-size: 12px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+  flex-shrink: 0; font-family: inherit;
+  text-decoration: none;
+}
+.help-btn:hover { border-color: var(--accent); color: var(--accent); }
+.sidebar-section {
+  padding: 14px 20px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  transition: all 0.12s;
+  user-select: none;
+  white-space: nowrap;
+}
+.sidebar-item:hover { background: rgba(124,131,253,0.07); color: var(--text); }
+.sidebar-item.active { background: rgba(124,131,253,0.14); color: var(--accent); font-weight: 600; }
+.sidebar-item .si-icon { width: 18px; text-align: center; font-size: 15px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
+.cat-dot { display:inline-block; width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.cat-dot-unset { background:transparent !important; border:2px solid var(--text-muted); }
+.si-label { overflow: hidden; text-overflow: ellipsis; flex: 1; }
+.cat-rename-btn { display:none; background:none; border:none; cursor:pointer; font-size:11px; padding:0 2px; color:var(--text-muted); flex-shrink:0; line-height:1; }
+.sidebar-item:hover .cat-rename-btn { display:inline; }
+.count-badge {
+  margin-left: auto;
+  background: var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  min-width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.sidebar-item.active .count-badge { background: rgba(124,131,253,0.28); color: var(--accent); }
+.due-alert-badge { background: rgba(239,83,80,0.18); color: var(--danger); font-size: 11px; padding: 1px 7px; border-radius: 10px; min-width: 22px; text-align: center; flex-shrink: 0; font-weight: 700; }
+.sidebar-item.drop-target { background: rgba(124,131,253,0.22) !important; color: var(--accent) !important; border-left: 2px solid var(--accent); }
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.io-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.12s;
+  text-align: center;
+  font-family: inherit;
+}
+.io-btn:hover { border-color: var(--accent); color: var(--text); }
+.settings-section-title { font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px; }
+.settings-section-body { display:flex;flex-direction:column;gap:8px; }
+.list-card.drag-insert-before  { box-shadow: inset 0  3px 0 var(--accent) !important; }
+.list-card.drag-insert-after   { box-shadow: inset 0 -3px 0 var(--accent) !important; }
+.grid-card.drag-insert-before,
+.icon-card.drag-insert-before  { box-shadow: inset  3px 0 0 var(--accent) !important; }
+.grid-card.drag-insert-after,
+.icon-card.drag-insert-after   { box-shadow: inset -3px 0 0 var(--accent) !important; }
+.dragging { opacity: 0.4; }
+
+/* ── Main ─────────────────────────────────── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; container-type: inline-size; }
+
+/* ── List narrow mode ─────────────────────── */
+@container (max-width: 450px) {
+  .list-desc { display: none; }
+  .type-badge { display: none; }
+  .due-badge { display: none; }
+  .list-date { display: none; }
+  .list-cat { display: none; }
+}
+
+/* ── Toolbar ──────────────────────────────── */
+.toolbar {
+  padding: 13px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--sidebar-bg);
+  flex-shrink: 0;
+}
+.toolbar-title {
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 80px;
+  white-space: nowrap;
+}
+.input-mode-wrap { display: flex; align-items: center; gap: 6px; flex: 1; max-width: 300px; }
+.input-mode-btn {
+  width: 30px; height: 30px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--card-bg);
+  color: var(--text-muted); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.12s; font-family: inherit;
+}
+.input-mode-btn:hover { border-color: var(--accent); color: var(--accent); }
+.input-mode-btn.mode-memo { border-color: var(--memo); color: var(--memo); background: rgba(244,143,177,0.08); }
+.input-mode-btn.mode-task { border-color: var(--task); color: var(--task); background: rgba(255,183,77,0.08); }
+.search-wrap { flex: 1; position: relative; }
+.search-wrap input {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  color: var(--text);
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.12s;
+  font-family: inherit;
+}
+.search-wrap input:focus { border-color: var(--accent); }
+.search-wrap input::placeholder { color: var(--text-muted); }
+.sort-select {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 7px 10px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.view-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  width: 34px; height: 34px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+}
+.view-btn:hover { border-color: var(--accent); color: var(--text); }
+.view-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+.add-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  padding: 7px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex; align-items: center; gap: 5px;
+  transition: background 0.12s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.add-btn:hover { background: var(--accent-hover); }
+
+/* ── Content ──────────────────────────────── */
+.content { flex: 1; overflow-y: auto; padding: 20px; }
+
+/* Grid */
+.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+.grid-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 14px 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  cursor: pointer;
+  transition: all 0.14s;
+  position: relative; text-align: center;
+  user-select: none;
+}
+.grid-card.selected, .list-card.selected, .icon-card.selected {
+  border-color: var(--set); background: rgba(38,198,218,0.08);
+}
+.grid-card:hover {
+  border-color: var(--accent);
+  background: var(--card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+}
+.card-icon {
+  width: 54px; height: 54px;
+  border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  overflow: hidden; flex-shrink: 0;
+}
+.card-icon img { width: 100%; height: 100%; object-fit: contain; }
+.card-title {
+  font-size: 12.5px; font-weight: 600; color: var(--text);
+  word-break: break-word; line-height: 1.35; width: 100%;
+}
+.card-date { font-size: 10.5px; color: var(--text-muted); }
+.card-actions {
+  position: absolute; top: 7px; right: 7px;
+  display: none; gap: 4px;
+}
+.grid-card:hover .card-actions { display: flex; }
+
+/* List */
+.list-view { display: flex; flex-direction: column; gap: 5px; }
+.list-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+  overflow: hidden;
+  position: relative;
+}
+.item-hidden { opacity: 0.4; border-style: dashed !important; }
+.list-card:hover { border-color: var(--accent); background: var(--card-hover); }
+.list-icon {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; flex-shrink: 0; overflow: hidden;
+}
+.list-icon img { width: 100%; height: 100%; object-fit: contain; }
+.list-info { flex: 1; min-width: 0; }
+.list-title { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list-desc { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.list-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.list-date { font-size: 11.5px; color: var(--text-muted); }
+.list-actions { position: absolute; top: 6px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.12s; z-index: 2; }
+.list-card:hover .list-actions { opacity: 1; }
+
+/* Action buttons */
+.action-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  width: 26px; height: 26px;
+  cursor: pointer; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+}
+.action-btn:hover { border-color: var(--accent); color: var(--accent); }
+.action-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+/* Type / Status badges */
+.type-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: 10px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+.status-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: 10px;
+  font-weight: 700; white-space: nowrap;
+}
+.type-bookmark { color: var(--bookmark); background: rgba(79,195,247,0.14); }
+.type-tool     { color: var(--tool);     background: rgba(129,199,132,0.14); }
+.type-task     { color: var(--task);     background: rgba(255,183,77,0.14); }
+.type-memo     { color: var(--memo);     background: rgba(244,143,177,0.14); }
+.type-other    { color: var(--other);    background: rgba(206,147,216,0.14); }
+.type-set      { color: var(--set);      background: rgba(128,203,196,0.14); }
+.icon-bg-bookmark { background: rgba(79,195,247,0.10); }
+.icon-bg-tool     { background: rgba(129,199,132,0.10); }
+.icon-bg-task     { background: rgba(255,183,77,0.10); }
+.icon-bg-memo     { background: rgba(244,143,177,0.10); }
+.icon-bg-other    { background: rgba(206,147,216,0.10); }
+.icon-bg-set      { background: rgba(128,203,196,0.10); }
+.status-todo  { background: rgba(139,144,170,0.18); color: var(--text-muted); }
+.status-doing { background: rgba(255,183,77,0.18);  color: var(--task); }
+.status-done  { background: rgba(102,187,106,0.18); color: var(--success); }
+.priority-high   { color: var(--danger); font-size: 13px; }
+.priority-medium { color: var(--task);   font-size: 13px; }
+.priority-low    { color: #66bb6a; font-size: 13px; }
+
+/* Empty */
+.empty-state { text-align: center; padding: 80px 20px; color: var(--text-muted); }
+.empty-state .ei { font-size: 60px; margin-bottom: 14px; }
+.empty-state h3 { font-size: 17px; margin-bottom: 6px; color: var(--text); }
+
+/* ── Modal ────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.72);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  padding: 20px;
+}
+.modal {
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%; max-width: 520px;
+  max-height: 92vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+}
+.modal-header {
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.modal-title { font-size: 17px; font-weight: 700; }
+.modal-close {
+  background: none; border: none; color: var(--text-muted);
+  cursor: pointer; font-size: 18px;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; transition: all 0.12s;
+}
+.modal-close:hover { background: var(--card-bg); color: var(--text); }
+.modal-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; min-height: 0; overflow-y: auto; }
+.modal-footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px; justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+/* Form */
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.form-input, .form-select, .form-textarea {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 11px;
+  color: var(--text);
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.12s;
+  font-family: inherit;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+.form-textarea { resize: vertical; min-height: 74px; }
+.form-select { cursor: pointer; }
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+
+/* Type selector */
+.type-selector { display: flex; gap: 6px; flex-wrap: wrap; }
+.type-option {
+  flex: 1; min-width: 72px;
+  padding: 8px 6px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer; text-align: center;
+  font-size: 11.5px; font-weight: 600;
+  transition: all 0.12s;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: var(--text-muted);
+  user-select: none;
+}
+.type-option:hover { border-color: var(--accent); color: var(--text); }
+.type-option.selected { background: rgba(124,131,253,0.14); border-color: var(--accent); color: var(--text); }
+.type-option .to-icon { font-size: 18px; }
+
+/* Icon row */
+.icon-row { display: flex; align-items: center; gap: 12px; }
+.icon-preview {
+  width: 52px; height: 52px; border-radius: 12px;
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 27px; flex-shrink: 0; overflow: hidden;
+  background: var(--card-bg);
+}
+.icon-preview img { width: 100%; height: 100%; object-fit: contain; }
+.icon-inputs { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.pi-preview { width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;overflow:hidden;background:var(--card-bg); }
+.pi-preview img { width:100%;height:100%;object-fit:contain; }
+.icon-hint { font-size: 11px; color: var(--text-muted); }
+
+/* Tags */
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.tag {
+  background: var(--border); color: var(--text-muted);
+  border-radius: 20px; padding: 2px 10px; font-size: 12px;
+  display: flex; align-items: center; gap: 4px;
+}
+.tag-remove { cursor: pointer; font-size: 14px; line-height: 1; }
+.tag-remove:hover { color: var(--danger); }
+
+/* Buttons */
+.btn-primary {
+  background: var(--accent); border: none; border-radius: var(--radius-sm);
+  color: white; padding: 8px 20px; cursor: pointer;
+  font-size: 13.5px; font-weight: 700;
+  transition: background 0.12s; font-family: inherit;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text); padding: 8px 20px; cursor: pointer;
+  font-size: 13.5px; transition: all 0.12s; font-family: inherit;
+}
+.btn-secondary:hover { border-color: var(--accent); }
+.btn-danger {
+  background: transparent; border: 1px solid var(--danger); border-radius: var(--radius-sm);
+  color: var(--danger); padding: 8px 20px; cursor: pointer;
+  font-size: 13.5px; transition: all 0.12s; font-family: inherit;
+  margin-right: auto;
+}
+.btn-danger:hover { background: rgba(239,83,80,0.1); }
+
+/* Context menu */
+.ctx-menu {
+  position: fixed;
+  background: var(--sidebar-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 4px 0;
+  z-index: 1500; min-width: 150px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.45);
+}
+.ctx-item {
+  padding: 8px 16px; font-size: 13px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text); transition: background 0.1s;
+}
+.ctx-item:hover { background: var(--card-hover); }
+.ctx-item.danger { color: var(--danger); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 18px;
+  font-size: 13.5px; color: var(--text);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 2000;
+  animation: fadeUp 0.18s ease;
+}
+@keyframes fadeUp {
+  from { transform: translateY(14px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* Star button */
+.star-btn {
+  position: absolute; top: 7px; left: 8px;
+  font-size: 15px; cursor: pointer;
+  opacity: 0; transition: opacity 0.12s;
+  line-height: 1; z-index: 1;
+  background: none; border: none; padding: 2px;
+}
+.grid-card:hover .star-btn { opacity: 0.5; }
+.grid-card:hover .star-btn.starred,
+.star-btn.starred { opacity: 1; }
+.list-star-btn {
+  position: absolute; top: 6px; left: 8px; z-index: 2;
+  font-size: 15px; cursor: pointer;
+  transition: opacity 0.12s;
+  background: none; border: none; padding: 0 2px;
+}
+.list-card:not(:hover) .list-star-btn:not(.starred) { opacity: 0; }
+.list-card:hover .list-star-btn:not(.starred) { opacity: 0.6; }
+.list-star-btn.starred { opacity: 1; }
+.select-mode .list-star-btn { display: none; }
+.select-mode .star-btn { display: none; }
+
+/* Keyboard hint */
+.kb-hint {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 10px; color: var(--text-muted);
+  background: var(--border); border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ── Task card status backgrounds ───────────── */
+.task-todo-card  { background: rgba(139,144,170,0.10); border-color: rgba(139,144,170,0.22); }
+.task-doing-card { background: rgba(255,183,77,0.07);  border-color: rgba(255,183,77,0.25); }
+.task-done-card  { background: rgba(102,187,106,0.07); border-color: rgba(102,187,106,0.22); }
+.task-todo-card:hover  { background: rgba(139,144,170,0.18) !important; }
+.task-doing-card:hover { background: rgba(255,183,77,0.15)  !important; }
+.task-done-card:hover  { background: rgba(102,187,106,0.15) !important; }
+
+/* ── Set card ────────────────────────────────── */
+.set-card { background: #161e1e; border-color: rgba(128,203,196,0.3); }
+.set-card:hover { background: #1c2828 !important; border-color: rgba(128,203,196,0.5) !important; }
+.set-preview { font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.5; }
+.launch-btn {
+  background: var(--set); border: none; border-radius: var(--radius-sm);
+  color: #0f1117; padding: 5px 14px; cursor: pointer;
+  font-size: 12.5px; font-weight: 700; transition: opacity 0.12s;
+  font-family: inherit; white-space: nowrap; flex-shrink: 0;
+}
+.launch-btn:hover { opacity: 0.8; }
+/* ── Set modal item list ──────────────────────── */
+.set-item-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--card-bg);
+  font-size: 12.5px; transition: border-color 0.12s;
+}
+.set-item-row:has(input:checked) { border-color: rgba(128,203,196,0.4); }
+.set-item-row input[type=checkbox] { accent-color: var(--set); cursor: pointer; flex-shrink: 0; }
+/* ── Memo card warm background ───────────────── */
+.memo-card { background: #201e18; border-color: rgba(196,154,78,0.3); }
+.memo-card:hover { background: #272319 !important; border-color: rgba(244,143,177,0.5) !important; }
+
+/* ── Due date badge ──────────────────────────── */
+.due-badge {
+  font-size: 11px; display: inline-flex; align-items: center; gap: 3px;
+}
+.due-badge.overdue { color: var(--danger); }
+.due-badge.normal  { color: var(--text-muted); }
+
+/* ── Icon-only view ──────────────────────────── */
+.icon-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 10px;
+}
+.icon-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; aspect-ratio: 1;
+  transition: all 0.14s; position: relative;
+}
+.icon-card:hover {
+  border-color: var(--accent); background: var(--card-hover);
+  transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+}
+.icon-card .card-icon { width: 64px; height: 64px; border-radius: 16px; font-size: 36px; }
+
+/* ── Status clickable ──────────────────────────── */
+.status-clickable { cursor: pointer; transition: all 0.12s; }
+.status-clickable:hover {
+  outline: 1.5px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+.status-clickable::after { content: ' ↻'; font-size: 9px; opacity: 0.6; }
+
+/* ── Memo expand ─────────────────────────────── */
+.memo-body {
+  font-size: 12px; color: var(--text-muted); margin-top: 3px;
+  width: 100%; text-align: left; word-break: break-word; white-space: normal;
+}
+.memo-body a { color: var(--accent); text-decoration: none; }
+.memo-body a:hover { text-decoration: underline; }
+.memo-body code { background: var(--border); padding: 1px 4px; border-radius: 3px; font-size: 11px; }
+.memo-body strong { color: var(--text); }
+.memo-body em { font-style: italic; }
+.memo-body.collapsed {
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden; white-space: normal;
+}
+.grid-card .memo-body.collapsed {
+  -webkit-line-clamp: 3;
+}
+.memo-toggle {
+  font-size: 11px; color: var(--accent); cursor: pointer;
+  background: none; border: none; padding: 2px 0; font-family: inherit;
+}
+.memo-toggle:hover { text-decoration: underline; }
+
+/* ── Tag dropdown & filter chips ──────────────── */
+.tag-dropdown {
+  position: fixed; z-index: 300;
+  background: var(--sidebar-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+  min-width: 140px; max-height: 200px; overflow-y: auto;
+}
+.tag-dropdown-item {
+  padding: 7px 13px; font-size: 13px; cursor: pointer; color: var(--text);
+}
+.tag-dropdown-item:hover { background: var(--card-hover); color: var(--accent); }
+.filter-tags-row {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 8px 20px; border-bottom: 1px solid var(--border);
+  background: var(--sidebar-bg);
+}
+.filter-tag {
+  display: flex; align-items: center; gap: 3px;
+  background: rgba(124,131,253,0.18); color: var(--accent);
+  border-radius: 10px; padding: 2px 8px; font-size: 11.5px;
+}
+.filter-tag-remove { cursor: pointer; font-size: 13px; line-height: 1; }
+.filter-tag-remove:hover { color: var(--danger); }
+
+.task-filter-row {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  padding: 7px 20px; border-bottom: 1px solid var(--border);
+  background: var(--sidebar-bg);
+}
+.task-filter-chip {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 3px 10px; font-size: 11.5px;
+  color: var(--text-muted); cursor: pointer; font-family: inherit;
+  transition: all 0.12s;
+}
+.task-filter-chip:hover { border-color: var(--accent); color: var(--text); }
+.task-filter-chip.active { background: rgba(124,131,253,0.18); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+/* ── Status button group (modal) ─────────────── */
+.status-btn-group { display: flex; gap: 6px; }
+.status-btn {
+  flex: 1; padding: 9px 4px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer; font-size: 12.5px;
+  font-weight: 600; background: var(--card-bg); color: var(--text-muted);
+  transition: all 0.12s; font-family: inherit;
+}
+.status-btn:hover { border-color: var(--accent); color: var(--text); }
+.status-btn.active.s-todo  { border-color: var(--text-muted); color: var(--text-muted); background: rgba(139,144,170,0.18); }
+.status-btn.active.s-doing { border-color: var(--task); color: var(--task); background: rgba(255,183,77,0.18); }
+.status-btn.active.s-done  { border-color: var(--success); color: var(--success); background: rgba(102,187,106,0.18); }
+
+/* ── Responsive: Sidebar ─────────────────────── */
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 90;
+}
+.sidebar-overlay.open { display: block; }
+.hamburger-btn {
+  display: none; background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  width: 34px; height: 34px; cursor: pointer; font-size: 18px;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  transition: all 0.12s;
+}
+.hamburger-btn:hover { border-color: var(--accent); }
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed; left: -240px; top: 0; bottom: 0;
+    z-index: 100; transition: left 0.22s ease;
+  }
+  .sidebar.open { left: 0; }
+  .hamburger-btn { display: flex; }
+  .toolbar-title { display: none; }
+}
+
+@media (max-width: 520px) {
+  .sort-select { display: none; }
+  .add-text { display: none; }
+}
+
+/* ── Clock Widget ────────────────────────── */
+.clock-widget {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+.clock-time {
+  font-size: 24px; font-weight: 800;
+  color: var(--accent); letter-spacing: 2px;
+  font-variant-numeric: tabular-nums; line-height: 1.2;
+}
+.clock-date { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+/* ── Alarm Popup ─────────────────────────── */
+.alarm-popup-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+  z-index: 2500; display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.alarm-popup {
+  background: var(--sidebar-bg); border: 1px solid rgba(128,203,196,0.55);
+  border-radius: 16px; padding: 28px 32px;
+  max-width: 380px; width: 90%;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.65); text-align: center;
+  animation: fadeUp 0.22s ease;
+}
+.alarm-popup-icon { font-size: 42px; margin-bottom: 10px; }
+.alarm-popup-name { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 5px; }
+.alarm-popup-time { font-size: 12px; color: var(--text-muted); margin-bottom: 22px; }
+.alarm-popup-btns { display: flex; gap: 10px; justify-content: center; }
+
+/* ── Alarm Modal List ────────────────────── */
+.alarm-list { display: flex; flex-direction: column; gap: 6px; }
+.alarm-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; background: var(--card-bg);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;
+}
+.alarm-row-info { flex: 1; min-width: 0; }
+.alarm-row-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alarm-row-sched { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.alarm-toggle { position: relative; width: 38px; height: 21px; flex-shrink: 0; }
+.alarm-toggle input { opacity: 0; width: 0; height: 0; }
+.alarm-toggle-slider {
+  position: absolute; inset: 0; background: var(--border);
+  border-radius: 11px; cursor: pointer; transition: background 0.2s;
+}
+.alarm-toggle-slider::before {
+  content: ''; position: absolute;
+  width: 15px; height: 15px; top: 3px; left: 3px;
+  background: white; border-radius: 50%; transition: transform 0.2s;
+}
+.alarm-toggle input:checked + .alarm-toggle-slider { background: var(--set); }
+.alarm-toggle input:checked + .alarm-toggle-slider::before { transform: translateX(17px); }
+
+/* ── Day Picker ──────────────────────────── */
+.day-picker { display: flex; gap: 5px; flex-wrap: wrap; }
+.day-btn {
+  width: 36px; height: 36px; border: 1.5px solid var(--border);
+  border-radius: 50%; cursor: pointer; font-size: 12px; font-weight: 600;
+  background: var(--card-bg); color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s; font-family: inherit;
+}
+.day-btn:hover { border-color: var(--set); color: var(--text); }
+.day-btn.selected { background: rgba(128,203,196,0.2); border-color: var(--set); color: var(--set); }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">⚡ MyDash<a href="manual.html" target="_blank" class="help-btn" title="マニュアルを開く">?</a></div>
+
+  <div class="clock-widget">
+    <div class="clock-time" id="clock-time">--:--:--</div>
+    <div class="clock-date" id="clock-date">----年--月--日（-）</div>
+    <div style="margin-top:8px">
+      <div class="sidebar-item" style="padding:6px 8px;border-radius:8px;justify-content:center;gap:6px">
+        <button class="input-mode-btn" id="alarm-mute-btn" onclick="toggleAlarmMute()" title="アラームON/OFF（集中モード）" style="width:22px;height:22px;font-size:13px;flex-shrink:0">🔔</button>
+        <span style="font-size:12px;color:var(--text-muted);flex:1;cursor:pointer" onclick="openAlarmModal()">アラーム管理</span>
+        <span class="count-badge" id="cnt-alarm" style="cursor:pointer" onclick="openAlarmModal()">0</span>
+      </div>
+      <div class="sidebar-item" id="widget-btn" onclick="openWidget()" style="padding:6px 8px;border-radius:8px;justify-content:center;gap:6px;margin-top:4px">
+        <span style="font-size:13px" id="widget-btn-icon">📌</span>
+        <span style="font-size:12px;color:var(--text-muted)" id="widget-btn-label">ウィジェット</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">すべて</div>
+  <div class="sidebar-item active" data-filter="all" onclick="setFilter('all')">
+    <span class="si-icon">🗂️</span><span class="si-label">すべて</span>
+    <span class="count-badge" id="cnt-all">0</span>
+  </div>
+  <div class="sidebar-item" data-filter="starred" onclick="setFilter('starred')">
+    <span class="si-icon">⭐</span><span class="si-label">お気に入り</span>
+    <span class="count-badge" id="cnt-starred">0</span>
+  </div>
+
+  <div class="sidebar-section">種類</div>
+  <div class="sidebar-item" data-filter="bookmark" onclick="setFilter('bookmark')">
+    <span class="si-icon">🔖</span><span class="si-label">ブックマーク</span>
+    <span class="count-badge" id="cnt-bookmark">0</span>
+  </div>
+  <div class="sidebar-item" data-filter="tool" onclick="setFilter('tool')">
+    <span class="si-icon">🔧</span><span class="si-label">ツール/アプリ</span>
+    <span class="count-badge" id="cnt-tool">0</span>
+  </div>
+  <div class="sidebar-item" data-filter="task" onclick="setFilter('task')">
+    <span class="si-icon">✅</span><span class="si-label">タスク</span>
+    <span class="due-alert-badge" id="cnt-task-due" style="display:none"></span>
+    <span class="count-badge" id="cnt-task">0</span>
+  </div>
+  <div class="sidebar-item" data-filter="memo" onclick="setFilter('memo')">
+    <span class="si-icon">📝</span><span class="si-label">メモ</span>
+    <span class="count-badge" id="cnt-memo">0</span>
+  </div>
+  <div class="sidebar-item" data-filter="other" onclick="setFilter('other')">
+    <span class="si-icon">📦</span><span class="si-label">その他</span>
+    <span class="count-badge" id="cnt-other">0</span>
+  </div>
+  <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
+    <span class="si-icon">🚀</span><span class="si-label">セット</span>
+    <span class="count-badge" id="cnt-set">0</span>
+  </div>
+
+  <div class="sidebar-section" id="cat-section" style="display:none">カテゴリ</div>
+  <div id="cat-list"></div>
+
+  <div class="sidebar-footer">
+    <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600">⚙️ 設定</button>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.3</div>
+  </div>
+</aside>
+
+<!-- Dock Import Modal -->
+<div class="modal-overlay" id="dock-import-modal" style="display:none" onclick="if(event.target===this)closeDockImportModal()">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <span class="modal-title">🖥 Dockインポート</span>
+      <button class="modal-close" onclick="closeDockImportModal()">✕</button>
+    </div>
+    <div class="modal-body" id="dock-import-body" style="min-height:80px"></div>
+    <div class="modal-footer" id="dock-import-footer"></div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settings-modal" style="display:none" onclick="if(event.target===this)closeSettingsModal()">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <span class="modal-title">⚙️ 設定</span>
+      <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+    </div>
+    <div class="modal-body" style="gap:20px">
+
+      <!-- サーバー -->
+      <div>
+        <div class="settings-section-title">🖥 ローカルサーバー</div>
+        <div class="settings-section-body">
+          <div id="server-status" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted)">
+            <span id="server-dot" style="width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0"></span>
+            <span id="server-label">サーバー確認中…</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- データ -->
+      <div>
+        <div class="settings-section-title">📁 データ</div>
+        <div class="settings-section-body">
+          <button class="io-btn" onclick="exportJSON()">📤 JSONエクスポート</button>
+          <label class="io-btn" style="cursor:pointer">
+            📥 JSONインポート
+            <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+          </label>
+          <button class="io-btn" onclick="closeSettingsModal();openCalImportModal()" style="border-color:rgba(128,203,196,0.35);color:var(--set)">📅 カレンダーインポート</button>
+          <button class="io-btn" onclick="closeSettingsModal();openDockImportModal()" style="border-color:rgba(129,199,132,0.35);color:var(--tool)">🖥 Dockインポート</button>
+        </div>
+      </div>
+
+      <!-- 外観 -->
+      <div>
+        <div class="settings-section-title">🎨 外観</div>
+        <div class="settings-section-body">
+          <div style="display:flex;gap:6px">
+            <button id="theme-dark-btn" onclick="setDarkMode(true)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit">🌙 ダーク</button>
+            <button id="theme-light-btn" onclick="setDarkMode(false)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit">☀️ ライト</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;color:var(--text-muted);flex-shrink:0">アクセント</span>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;flex:1">
+              <button onclick="setAccentColor('#00afcc')" title="#00afcc" style="width:22px;height:22px;border-radius:50%;background:#00afcc;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <button onclick="setAccentColor('#7c83fd')" title="#7c83fd" style="width:22px;height:22px;border-radius:50%;background:#7c83fd;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <button onclick="setAccentColor('#66bb6a')" title="#66bb6a" style="width:22px;height:22px;border-radius:50%;background:#66bb6a;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <button onclick="setAccentColor('#ffb74d')" title="#ffb74d" style="width:22px;height:22px;border-radius:50%;background:#ffb74d;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <button onclick="setAccentColor('#f48fb1')" title="#f48fb1" style="width:22px;height:22px;border-radius:50%;background:#f48fb1;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <input type="color" id="accent-color-input" onchange="setAccentColor(this.value)" title="カスタムカラー" style="width:22px;height:22px;border-radius:50%;border:2px solid var(--border);cursor:pointer;padding:0;background:none">
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:12px;color:var(--text-muted)">優先度アイコン</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:11px;color:#66bb6a;width:14px;text-align:center;flex-shrink:0">低</span>
+              <div class="pi-preview" id="pi-preview-low">▂</div>
+              <input type="text" id="pi-low" placeholder="絵文字 または 画像URL" oninput="updatePiPreview('low')" onpaste="pastePiIcon(event,'low')" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:4px 7px;font-size:13px;font-family:inherit">
+              <button type="button" onclick="pastePiFromClipboard('low')" title="クリップボードの画像を貼り付け" style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:13px;flex-shrink:0">📋</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:11px;color:#ffb74d;width:14px;text-align:center;flex-shrink:0">中</span>
+              <div class="pi-preview" id="pi-preview-medium">▄</div>
+              <input type="text" id="pi-medium" placeholder="絵文字 または 画像URL" oninput="updatePiPreview('medium')" onpaste="pastePiIcon(event,'medium')" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:4px 7px;font-size:13px;font-family:inherit">
+              <button type="button" onclick="pastePiFromClipboard('medium')" title="クリップボードの画像を貼り付け" style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:13px;flex-shrink:0">📋</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:11px;color:#ef5350;width:14px;text-align:center;flex-shrink:0">高</span>
+              <div class="pi-preview" id="pi-preview-high">█</div>
+              <input type="text" id="pi-high" placeholder="絵文字 または 画像URL" oninput="updatePiPreview('high')" onpaste="pastePiIcon(event,'high')" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:4px 7px;font-size:13px;font-family:inherit">
+              <button type="button" onclick="pastePiFromClipboard('high')" title="クリップボードの画像を貼り付け" style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:13px;flex-shrink:0">📋</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 動作 -->
+      <div>
+        <div class="settings-section-title">☁️ GitHub Gist 同期</div>
+        <div class="settings-section-body">
+          <div class="io-btn" style="justify-content:space-between;gap:10px">
+            <span style="white-space:nowrap;font-size:12px">🔑 トークン</span>
+            <input type="password" id="github-token-input" placeholder="ghp_..." onchange="saveGithubToken(this.value)"
+              style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:3px 6px;font-size:12px;font-family:inherit;min-width:0">
+          </div>
+          <div class="io-btn" style="justify-content:space-between;gap:10px">
+            <span style="white-space:nowrap;font-size:12px">📎 Gist ID</span>
+            <input type="text" id="github-gist-id" placeholder="自動取得 or 手入力" onchange="saveGistId(this.value)"
+              style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:3px 6px;font-size:11px;font-family:monospace;min-width:0">
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="io-btn" style="flex:1;justify-content:center" onclick="gistUpload()">⬆️ Gistに保存</button>
+            <button class="io-btn" style="flex:1;justify-content:center" onclick="gistDownload()">⬇️ Gistから読込</button>
+          </div>
+          <div id="gist-status" style="font-size:11px;color:var(--text-muted);text-align:center;min-height:14px"></div>
+        </div>
+
+        <div class="settings-section-title">🔧 動作</div>
+        <div class="settings-section-body">
+          <label class="io-btn" style="cursor:pointer;justify-content:space-between" title="編集ダイアログを外クリックで閉じる前に確認する">
+            🔒 編集中の確認
+            <input type="checkbox" id="confirm-close-toggle" onchange="toggleConfirmOnClose(this)" style="accent-color:var(--accent);width:auto;cursor:pointer">
+          </label>
+          <label class="io-btn" style="cursor:pointer;justify-content:space-between" title="アラーム発火時にセットを自動起動する">
+            🚀 セット自動起動（アラーム）
+            <input type="checkbox" id="alarm-auto-launch-toggle" onchange="toggleAlarmAutoLaunch(this)" style="accent-color:var(--accent);width:auto;cursor:pointer">
+          </label>
+          <div class="io-btn" style="justify-content:space-between;gap:10px" title="全アラームの発火時刻を一括でずらす（負=前・正=後）">
+            <span style="white-space:nowrap">⏱ アラーム時刻ずらし（分）</span>
+            <input type="number" id="alarm-offset-input" onchange="setAlarmOffset(this)" style="width:70px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:3px 6px;font-size:13px;font-family:inherit;text-align:right" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<main class="main">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button class="hamburger-btn" onclick="toggleSidebar()" title="メニュー">☰</button>
+    <div class="toolbar-title" id="toolbar-title">すべて</div>
+    <div class="input-mode-wrap">
+      <button class="input-mode-btn" id="input-mode-btn" onclick="cycleInputMode()" title="モード切り替え（検索 / メモ / タスク）">🔍</button>
+      <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="検索…" oninput="onSearchInput(this)" onblur="hideTagDropdown()" onkeydown="onInputKeydown(event)">
+        <button id="search-clear" onclick="clearSearch()" title="検索をリセット" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:15px;padding:0;line-height:1">×</button>
+      </div>
+    </div>
+    <select class="sort-select" id="sort-select" onchange="onSortChange()">
+      <option value="manual">手動</option>
+      <option value="newest">新しい順</option>
+      <option value="oldest">古い順</option>
+      <option value="az">A → Z</option>
+      <option value="za">Z → A</option>
+      <option value="type">種類順</option>
+      <option value="priority">優先度順</option>
+    </select>
+    <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="グリッド表示">⊞</button>
+    <button class="view-btn" id="btn-list" onclick="setView('list')" title="リスト表示">☰</button>
+    <button class="view-btn" id="btn-icon" onclick="setView('icon')" title="アイコンのみ表示">⊡</button>
+    <button class="view-btn" id="btn-select" onclick="toggleSelectMode()" title="選択モード">☑</button>
+    <button class="add-btn" onclick="openModal()" title="新規追加 (⌘N)">＋ <span class="add-text">追加</span></button>
+  </div>
+  <!-- Task sub-filter chips -->
+  <div class="task-filter-row" id="task-filter-row" style="display:none">
+    <button class="task-filter-chip active" data-tsf="all"    onclick="setTaskSubFilter('all')">すべて</button>
+    <button class="task-filter-chip"        data-tsf="today"  onclick="setTaskSubFilter('today')">📅 今日締切</button>
+    <button class="task-filter-chip"        data-tsf="overdue" onclick="setTaskSubFilter('overdue')">🔴 期限超過</button>
+    <button class="task-filter-chip"        data-tsf="doing"  onclick="setTaskSubFilter('doing')">⚡ 進行中</button>
+  </div>
+  <!-- Filter tag chips -->
+  <div class="filter-tags-row" id="filter-tags-row" style="display:none"></div>
+  <!-- Select bar -->
+  <div id="select-bar" style="display:none;align-items:center;gap:10px;padding:8px 20px;background:var(--card-bg);border-bottom:1px solid var(--border);flex-shrink:0">
+    <input type="checkbox" id="select-all-check" onchange="toggleSelectAll(this.checked)" style="width:15px;height:15px;cursor:pointer;accent-color:var(--set)">
+    <span id="select-count" style="font-size:13px;color:var(--text-muted)">0件選択</span>
+    <button id="select-show-btn" onclick="setSelectedVisibility(false)" disabled style="opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 14px;cursor:pointer;font-size:12px">👁️ 表示にする</button>
+    <button id="select-hide-btn" onclick="setSelectedVisibility(true)" disabled style="opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 14px;cursor:pointer;font-size:12px">🙈 非表示にする</button>
+    <button id="select-del-btn" onclick="deleteSelected()" disabled style="opacity:0.4;background:transparent;border:1px solid var(--danger);border-radius:var(--radius-sm);color:var(--danger);padding:5px 14px;cursor:pointer;font-size:12px">🗑️ 削除</button>
+    <button onclick="toggleSelectMode()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:5px 8px">キャンセル</button>
+  </div>
+  <!-- Content -->
+  <div class="content" id="content"></div>
+</main>
+
+<!-- Tag dropdown -->
+<div class="tag-dropdown" id="tag-dropdown" style="display:none"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" style="display:none" onclick="overlayClick(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">新規追加</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Type -->
+      <div class="form-group">
+        <div class="form-label">種類</div>
+        <div class="type-selector">
+          <div class="type-option selected" data-type="bookmark" onclick="selectType('bookmark')">
+            <span class="to-icon">🔖</span>ブックマーク
+          </div>
+          <div class="type-option" data-type="tool" onclick="selectType('tool')">
+            <span class="to-icon">🔧</span>ツール/アプリ
+          </div>
+          <div class="type-option" data-type="task" onclick="selectType('task')">
+            <span class="to-icon">✅</span>タスク
+          </div>
+          <div class="type-option" data-type="memo" onclick="selectType('memo')">
+            <span class="to-icon">📝</span>メモ
+          </div>
+          <div class="type-option" data-type="other" onclick="selectType('other')">
+            <span class="to-icon">📦</span>その他
+          </div>
+          <div class="type-option" data-type="set" onclick="selectType('set')">
+            <span class="to-icon">🚀</span>セット
+          </div>
+        </div>
+      </div>
+      <!-- Title -->
+      <div class="form-group">
+        <div class="form-label">タイトル *</div>
+        <input class="form-input" id="f-title" placeholder="タイトルを入力">
+      </div>
+      <!-- URL -->
+      <div class="form-group" id="f-url-group">
+        <div class="form-label">URL / パス</div>
+        <input class="form-input" id="f-url" placeholder="https://..." oninput="handleUrlInput()">
+      </div>
+      <!-- Mac App Name (tool only) -->
+      <div class="form-group" id="f-appname-group" style="display:none">
+        <div class="form-label">Macアプリ名（ローカル起動）</div>
+        <input class="form-input" id="f-appname" placeholder="例: Blender, Adobe Photoshop 2025, Slack">
+        <div class="icon-hint">Dockに表示されているアプリ名をそのまま入力。URLより優先して起動します。</div>
+      </div>
+      <!-- Description -->
+      <div class="form-group">
+        <div class="form-label">説明</div>
+        <textarea class="form-textarea" id="f-desc" placeholder="説明・メモ内容を入力"></textarea>
+      </div>
+      <!-- Markdown hint (memo only) -->
+      <div id="f-md-hint" style="display:none;font-size:10.5px;color:rgba(139,144,170,0.5);line-height:2">
+        <code>**太字**</code> &nbsp; <code>*斜体*</code> &nbsp; <code>`コード`</code> &nbsp; <code>[文字](URL)</code> &nbsp; <code>---</code>（区切り線）&nbsp;
+        <code># 見出し1</code> &nbsp; <code>## 見出し2</code> &nbsp; <code>- リスト</code>
+      </div>
+      <!-- Icon -->
+      <div class="form-group">
+        <div class="form-label">アイコン</div>
+        <div class="icon-row">
+          <div class="icon-preview" id="icon-preview">🔖</div>
+          <div class="icon-inputs">
+            <div style="display:flex;gap:5px">
+              <input class="form-input" id="f-icon" placeholder="絵文字 または 画像URL" oninput="updateIconPreview()" onpaste="pasteIcon(event)" style="flex:1">
+              <button type="button" class="btn-secondary" onclick="pasteIconFromClipboard()" title="クリップボードの画像を貼り付け" style="padding:8px 10px;flex-shrink:0;font-size:13px">📋</button>
+            </div>
+            <div class="icon-hint">サポート：絵文字を入力、画像URL貼付け、画像コピーして📋 or ⌘+V、空はfavicon表示</div>
+          </div>
+        </div>
+      </div>
+      <!-- Category -->
+      <div class="form-group">
+        <div class="form-label">カテゴリ</div>
+        <input class="form-input" id="f-category" list="cat-datalist" placeholder="任意入力">
+        <datalist id="cat-datalist"></datalist>
+      </div>
+      <!-- Status + Priority (task only) -->
+      <div class="form-row" id="f-task-row" style="display:none">
+        <div class="form-group" id="f-status-group">
+          <div class="form-label">ステータス</div>
+          <div class="status-btn-group" id="status-btn-group">
+            <button type="button" class="status-btn active s-todo" data-status="todo" onclick="pickStatus('todo')">📋 未着手</button>
+            <button type="button" class="status-btn s-doing" data-status="doing" onclick="pickStatus('doing')">⚡ 進行中</button>
+            <button type="button" class="status-btn s-done" data-status="done" onclick="pickStatus('done')">✅ 完了</button>
+          </div>
+          <input type="hidden" id="f-status" value="todo">
+        </div>
+        <div class="form-group" id="f-priority-group" style="flex: 0 0 80px">
+          <div class="form-label">優先度</div>
+          <select class="form-select" id="f-priority">
+            <option value="medium">中</option>
+            <option value="high">高</option>
+            <option value="low">低</option>
+          </select>
+        </div>
+      </div>
+      <!-- Due date (task only) -->
+      <div class="form-group" id="f-due-group" style="display:none">
+        <div class="form-label">締切日時</div>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" type="date" id="f-due" style="flex:1">
+          <input class="form-input" type="time" id="f-due-time" style="width:110px" placeholder="時刻（任意）">
+        </div>
+      </div>
+      <!-- Set items (set only) -->
+      <div class="form-group" id="f-set-items-group" style="display:none">
+        <div class="form-label">起動するアイテムを選択</div>
+        <div id="f-set-items-list" style="display:flex;flex-direction:column;gap:5px;max-height:260px;overflow-y:auto;padding-right:2px"></div>
+      </div>
+      <!-- Tags -->
+      <div class="form-group">
+        <div class="form-label">タグ</div>
+        <input class="form-input" id="f-tag-input" placeholder="入力してEnter" onkeydown="addTag(event)" oninput="onTagInput(this)" onblur="hideTagDropdown()">
+        <div class="tags-wrap" id="tags-wrap"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="btn-delete" style="display:none" onclick="deleteItem()">🗑️ 削除</button>
+      <button class="btn-secondary" onclick="closeModal()">キャンセル</button>
+      <button class="btn-primary" onclick="saveItem()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Context menu -->
+<div class="ctx-menu" id="ctx-menu" style="display:none">
+  <div class="ctx-item" onclick="ctxEdit()">✏️ 編集</div>
+  <div class="ctx-item" onclick="ctxOpen()">🔗 開く</div>
+  <div class="ctx-item danger" onclick="ctxDelete()">🗑️ 削除</div>
+</div>
+
+<div id="toasts"></div>
+
+<!-- Calendar Import Modal -->
+<div class="modal-overlay" id="cal-import-modal" style="display:none" onclick="if(event.target===this)closeCalImportModal()">
+  <div class="modal" style="max-width:540px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">📅 Googleカレンダーインポート</div>
+      <button class="modal-close" onclick="closeCalImportModal()">✕</button>
+    </div>
+    <div class="modal-body" id="cal-import-body"></div>
+    <div class="modal-footer" id="cal-import-footer"></div>
+  </div>
+</div>
+
+<!-- Alarm Notification Popup -->
+<div class="alarm-popup-overlay" id="alarm-popup-overlay" style="display:none">
+  <div class="alarm-popup">
+    <div class="alarm-popup-icon">🔔</div>
+    <div class="alarm-popup-name" id="alarm-popup-name">アラーム</div>
+    <div class="alarm-popup-time" id="alarm-popup-time"></div>
+    <div class="alarm-popup-btns">
+      <button class="btn-primary" id="alarm-popup-execute" onclick="executeCurrentAlarm()">▶ 実行</button>
+      <button class="btn-secondary" onclick="snoozeAlarm()">⏰ 5分後</button>
+      <button class="btn-secondary" onclick="closeAlarmPopup()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- Alarm Management Modal -->
+<div class="modal-overlay" id="alarm-modal" style="display:none" onclick="closeAlarmModalOutside(event)">
+  <div class="modal" style="max-width:540px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">🔔 アラーム管理</div>
+      <button class="modal-close" onclick="closeAlarmModal()">✕</button>
+    </div>
+    <div class="modal-body" id="alarm-modal-body"></div>
+    <div class="modal-footer" id="alarm-modal-footer">
+      <button class="btn-primary" onclick="openAlarmForm(null)">＋ 追加</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// Constants & State
+// ═══════════════════════════════════════════
+const STORAGE_KEY = 'mydash_v1';
+const SERVER_BASE = `http://${location.hostname}:3737`;
+
+const TYPE_DEF = {
+  bookmark: { icon: '🔖', label: 'ブックマーク' },
+  tool:     { icon: '🔧', label: 'ツール/アプリ' },
+  task:     { icon: '✅', label: 'タスク' },
+  memo:     { icon: '📝', label: 'メモ' },
+  other:    { icon: '📦', label: 'その他' },
+  set:      { icon: '🚀', label: 'セット' },
+};
+
+const STATUS_LABEL = { todo: '未着手', doing: '進行中', done: '完了' };
+let PRIORITY_ICON  = { high: '█', medium: '▄', low: '▂' };
+const PRIORITY_LABEL = { high: '高', medium: '中', low: '低' };
+const CAT_COLORS = ['#4FC3F7','#81C784','#FFB74D','#F48FB1','#CE93D8','#80CBC4','#FFF176','#EF9A9A','#A5D6A7','#90CAF9'];
+function priorityIconHtml(priority) {
+  const val = PRIORITY_ICON[priority] || '';
+  const label = PRIORITY_LABEL[priority] || '';
+  const inner = /^https?:|^\/|^data:/.test(val)
+    ? `<img src="${esc(val)}" style="width:14px;height:14px;object-fit:contain;vertical-align:middle">`
+    : val;
+  return `<span class="priority-${priority}" title="優先度: ${label}">${inner}</span>`;
+}
+
+function getCatColor(catName) {
+  const cats = [...new Set(db.items.map(i => i.category).filter(Boolean))].sort();
+  const idx = cats.indexOf(catName);
+  return idx >= 0 ? CAT_COLORS[idx % CAT_COLORS.length] : null;
+}
+
+let db = { items: [] };
+let state = {
+  filter: 'all',
+  view: 'grid',
+  editId: null,
+  tags: [],
+  filterTags: [],
+  taskSubFilter: 'all',
+  type: 'bookmark',
+  ctxId: null,
+  expandedMemos: new Set(),
+  editingMemoId: null,
+  setItems: [], // セット型: [{ itemId, notionTodayPage }]
+  selectMode: false,
+  selectedIds: new Set(),
+};
+
+// ═══════════════════════════════════════════
+// Persistence
+// ═══════════════════════════════════════════
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) db = JSON.parse(raw);
+  } catch(_) {}
+  if (!Array.isArray(db.items)) db.items = [];
+  if (!Array.isArray(db.alarms)) db.alarms = [];
+  if (!Array.isArray(db.calNgList)) db.calNgList = [];
+  if (!db.calSync) db.calSync = { enabled: false, url: '', lastSync: null };
+  if (!db.settings) db.settings = {};
+  if (db.settings.confirmOnClose === undefined) db.settings.confirmOnClose = false;
+  if (db.settings.accentColor === undefined) db.settings.accentColor = '#00afcc';
+  if (db.settings.darkMode === undefined) db.settings.darkMode = true;
+  if (db.settings.alarmAutoLaunch === undefined) db.settings.alarmAutoLaunch = true;
+  if (db.settings.alarmOffsetMin === undefined) db.settings.alarmOffsetMin = 0;
+  if (db.settings.alarmMuted === undefined) db.settings.alarmMuted = false;
+  if (!db.settings.priorityIcons) db.settings.priorityIcons = { low:'▂', medium:'▄', high:'█' };
+  if (!db.settings.view) db.settings.view = 'grid';
+  if (!db.settings.sort) db.settings.sort = 'manual';
+  state.expandedMemos = new Set(Array.isArray(db.expandedMemos) ? db.expandedMemos : []);
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+  rebuildIndex();
+}
+
+let itemMap = new Map();
+let searchIndex = new Map();
+
+function rebuildIndex() {
+  itemMap = new Map(db.items.map(i => [i.id, i]));
+  searchIndex = new Map();
+  db.items.forEach(item => {
+    const parts = [item.title, item.desc, item.url, item.category, ...(item.tags || [])];
+    if (item.type === 'set' && item.setItems) {
+      item.setItems.forEach(si => {
+        const linked = itemMap.get(si.itemId);
+        if (linked) parts.push(linked.title, linked.desc, linked.url);
+      });
+    }
+    searchIndex.set(item.id, parts.filter(Boolean).join(' ').toLowerCase());
+  });
+}
+
+function repairBrokenRefs() {
+  const itemIds = new Set(db.items.map(i => i.id));
+  let count = 0;
+
+  db.items.forEach(item => {
+    if (item.type === 'set' && Array.isArray(item.setItems)) {
+      const before = item.setItems.length;
+      item.setItems = item.setItems.filter(si => itemIds.has(si.itemId));
+      count += before - item.setItems.length;
+    }
+  });
+
+  db.alarms.forEach(alarm => {
+    if (alarm.action?.type === 'set' && alarm.action.targetId && !itemIds.has(alarm.action.targetId)) {
+      alarm.action.targetId = null;
+      count++;
+    }
+  });
+
+  if (count > 0) {
+    save();
+    toast(`壊れた参照を${count}件修復しました`, '🔧');
+  }
+}
+
+// ═══════════════════════════════════════════
+// Helpers
+// ═══════════════════════════════════════════
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function relativeDate(iso) {
+  const d = new Date(iso), now = new Date();
+  const diff = (now - d) / 1000;
+  if (diff < 60) return 'たった今';
+  if (diff < 3600) return Math.floor(diff / 60) + '分前';
+  if (diff < 86400) return Math.floor(diff / 3600) + '時間前';
+  if (diff < 86400 * 7) return Math.floor(diff / 86400) + '日前';
+  return d.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' });
+}
+
+function renderMemo(text) {
+  if (!text) return '';
+  let s = esc(text);
+  // [文字](URL) → リンク（bare URLより先に処理）
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" onclick="event.stopPropagation()">$1</a>');
+  // bare URL → リンク
+  s = s.replace(/((?<!href=")(https?:\/\/[^\s<>"]+))/g, '<a href="$1" target="_blank" rel="noopener" onclick="event.stopPropagation()">$1</a>');
+  // **太字**
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // *斜体*
+  s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  // `コード`
+  s = s.replace(/`(.+?)`/g, '<code>$1</code>');
+  // ### 見出し
+  s = s.replace(/^### (.+)$/gm, '<strong style="font-size:12px;display:block;color:var(--text)">$1</strong>');
+  s = s.replace(/^## (.+)$/gm,  '<strong style="font-size:13px;display:block;color:var(--text)">$1</strong>');
+  s = s.replace(/^# (.+)$/gm,   '<strong style="font-size:14px;display:block;color:var(--text)">$1</strong>');
+  // --- 区切り線
+  s = s.replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:6px 0">');
+  // - / * リスト
+  s = s.replace(/^[-*] (.+)$/gm, '• $1');
+  // 改行 → <br>
+  s = s.replace(/\n/g, '<br>');
+  return s;
+}
+
+function dueBadge(item) {
+  if (item.type !== 'task' || !item.dueDate) return '';
+  const due = item.dueTime
+    ? new Date(item.dueDate + 'T' + item.dueTime)
+    : new Date(item.dueDate + 'T23:59:59');
+  const isOverdue = due < new Date() && (item.status || 'todo') !== 'done';
+  const d = new Date(item.dueDate + 'T00:00:00');
+  const label = d.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })
+    + (item.dueTime ? ' ' + item.dueTime : '');
+  return `<span class="due-badge ${isOverdue ? 'overdue' : 'normal'}">📅 ${label}</span>`;
+}
+
+function taskCardClass(item) {
+  if (item.type === 'task') return `task-${item.status || 'todo'}-card`;
+  if (item.type === 'memo') return 'memo-card';
+  return '';
+}
+
+function faviconUrl(url) {
+  try {
+    const domain = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  } catch(_) { return null; }
+}
+
+function iconHtml(item, size) {
+  // size: 'lg' (52px) or 'sm' (36px)
+  const fallback = TYPE_DEF[item.type].icon;
+  if (item.icon) {
+    if (/^https?:|^\/|^data:/.test(item.icon)) {
+      return `<img src="${esc(item.icon)}" onerror="this.parentElement.textContent='${fallback}'" loading="lazy">`;
+    }
+    return esc(item.icon);
+  }
+  if ((item.type === 'bookmark' || item.type === 'tool') && item.url) {
+    const fav = faviconUrl(item.url);
+    if (fav) return `<img src="${fav}" onerror="this.parentElement.textContent='${fallback}'" loading="lazy">`;
+  }
+  return fallback;
+}
+
+function typeBadge(item) {
+  if (item.type === 'task') {
+    const s = item.status || 'todo';
+    return `<span class="status-badge status-${s} status-clickable" onclick="event.stopPropagation();cycleStatus('${item.id}')" title="クリックでステータス変更">${STATUS_LABEL[s]}</span>`;
+  }
+  return `<span class="type-badge type-${item.type}">${TYPE_DEF[item.type].label}</span>`;
+}
+
+// ═══════════════════════════════════════════
+// Render
+// ═══════════════════════════════════════════
+function filteredItems() {
+  const q = INPUT_MODES[_inputModeIdx].key === 'search'
+    ? document.getElementById('search-input').value.toLowerCase() : '';
+  const sort = document.getElementById('sort-select').value;
+
+  let items = db.items.filter(item => {
+    if (item.hidden && !state.selectMode) return false;
+    if (state.filter !== 'all') {
+      if (state.filter === 'starred') {
+        if (!item.starred) return false;
+      } else if (state.filter.startsWith('cat:')) {
+        if ((item.category || '') !== state.filter.slice(4)) return false;
+      } else {
+        if (item.type !== state.filter) return false;
+      }
+    }
+    if (state.filterTags.length > 0) {
+      if (!state.filterTags.every(ft => (item.tags || []).includes(ft))) return false;
+    }
+    if (q) {
+      if (!(searchIndex.get(item.id) || '').includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (state.filter === 'task' && state.taskSubFilter !== 'all') {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    items = items.filter(item => {
+      if (state.taskSubFilter === 'today')   return item.dueDate === todayStr && (item.status || 'todo') !== 'done';
+      if (state.taskSubFilter === 'overdue') return item.dueDate && item.dueDate < todayStr && (item.status || 'todo') !== 'done';
+      if (state.taskSubFilter === 'doing')   return (item.status || 'todo') === 'doing';
+      return true;
+    });
+  }
+
+  if (sort === 'manual') {
+    const orderMap = new Map(getItemOrder().map((id, i) => [id, i]));
+    items.sort((a, b) => (orderMap.get(a.id) ?? 99999) - (orderMap.get(b.id) ?? 99999));
+  } else {
+    items.sort((a, b) => {
+      if (sort === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sort === 'oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sort === 'az') return a.title.localeCompare(b.title, 'ja');
+      if (sort === 'za') return b.title.localeCompare(a.title, 'ja');
+      if (sort === 'type') return a.type.localeCompare(b.type);
+      if (sort === 'priority') {
+        const PRI = { high: 0, medium: 1, low: 2 };
+        const sa = a.starred ? 0 : 1, sb = b.starred ? 0 : 1;
+        if (sa !== sb) return sa - sb;
+        const pa = PRI[a.priority] ?? 3, pb = PRI[b.priority] ?? 3;
+        if (pa !== pb) return pa - pb;
+        if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+        if (a.dueDate) return -1;
+        if (b.dueDate) return 1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      return 0;
+    });
+  }
+  return items;
+}
+
+function render() {
+  updateCounts();
+  updateCatList();
+  updateSelectBar();
+  updateTaskFilterRow();
+  const items = filteredItems();
+  const el = document.getElementById('content');
+  el.classList.toggle('select-mode', state.selectMode);
+
+  if (!items.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="ei">🌌</div>
+      <h3>アイテムがありません</h3>
+      <p>「＋ 追加」ボタンまたは ⌘N で追加</p>
+    </div>`;
+    return;
+  }
+
+  if (state.view === 'grid') {
+    el.innerHTML = `<div class="grid-view">${items.map(gridCard).join('')}</div>`;
+  } else if (state.view === 'icon') {
+    el.innerHTML = `<div class="icon-view">${items.map(iconCard).join('')}</div>`;
+  } else {
+    el.innerHTML = `<div class="list-view">${items.map(listCard).join('')}</div>`;
+  }
+  initDragSort();
+}
+
+function gridCard(item) {
+  if (item.type === 'set') {
+    const setItems = (item.setItems || [])
+      .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
+    const preview = setItems.length
+      ? setItems.slice(0, 3).map(i => esc(i.title)).join('・') + (setItems.length > 3 ? ` 他${setItems.length - 3}件` : '')
+      : '（アイテムなし）';
+    const starClass = item.starred ? ' starred' : '';
+    const selChkSet = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer"></div>` : '';
+    return `<div class="grid-card set-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+        onclick="cardClick(event,'${item.id}')"
+        oncontextmenu="showCtx(event,'${item.id}')">
+      ${selChkSet}
+      <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+      <div class="card-actions">
+        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
+        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
+      </div>
+      <div class="card-icon icon-bg-set">${iconHtml(item,'lg')}</div>
+      <div class="card-title">${esc(item.title)}</div>
+      <div class="set-preview">${preview}</div>
+      <button class="launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
+      <div style="display:flex;gap:4px;align-items:center;justify-content:center">
+        ${typeBadge(item)}
+      </div>
+      <div class="card-date">${relativeDate(item.createdAt)}</div>
+    </div>`;
+  }
+  const pri = item.type === 'task' && item.priority
+    ? priorityIconHtml(item.priority) : '';
+  const starClass = item.starred ? ' starred' : '';
+  const starIcon  = item.starred ? '⭐' : '☆';
+  const memoExpanded = state.expandedMemos.has(item.id);
+  const memoToggle = (item.type === 'memo' && item.desc)
+    ? `<button class="memo-toggle" style="align-self:stretch;text-align:center;padding:4px 0;border-top:1px solid var(--border)" onclick="event.stopPropagation();toggleMemoExpand('${item.id}')">${memoExpanded ? '▲ 閉じる' : '▼ 展開'}</button>` : '';
+  const memoBody = (item.type === 'memo' && item.desc && memoExpanded)
+    ? `<div class="memo-body">${renderMemo(item.desc)}</div>` : '';
+  const selChk = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer"></div>` : '';
+  return `<div class="grid-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+      onclick="cardClick(event,'${item.id}')"
+      oncontextmenu="showCtx(event,'${item.id}')">
+    ${selChk}
+    <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${starIcon}</button>
+    <div class="card-actions">
+      <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
+      <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
+    </div>
+    ${(item.type === 'memo' && !item.icon) ? '' : `<div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>`}
+    <div class="card-title">${esc(item.title)}</div>
+    ${memoToggle}
+    ${memoBody}
+    <div style="display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap">
+      ${typeBadge(item)} ${pri}
+    </div>
+    ${dueBadge(item)}
+    <div class="card-date">${relativeDate(item.createdAt)}</div>
+  </div>`;
+}
+
+function listCard(item) {
+  if (item.type === 'set') {
+    const setItems = (item.setItems || [])
+      .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
+    const preview = setItems.map(i => esc(i.title)).join('、') || '（アイテムなし）';
+    const selChkLS = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
+    return `<div class="list-card set-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}"
+        onclick="cardClick(event,'${item.id}')"
+        oncontextmenu="showCtx(event,'${item.id}')">
+      ${selChkLS}
+      <div class="list-icon icon-bg-set">${iconHtml(item,'sm')}</div>
+      <div class="list-info">
+        <div class="list-title">${esc(item.title)}</div>
+        <div class="list-desc">${preview}</div>
+      </div>
+      <div class="list-meta">
+        ${typeBadge(item)}
+        <button class="launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
+        <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+        <div class="list-actions">
+          <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
+          <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
+        </div>
+      </div>
+    </div>`;
+  }
+  const pri = item.type === 'task' && item.priority
+    ? priorityIconHtml(item.priority) : '';
+  const cat = item.category
+    ? `<span class="list-cat" style="font-size:11.5px;color:var(--text-muted)"><span class="cat-dot" style="background:${getCatColor(item.category)};width:7px;height:7px;vertical-align:middle;margin-right:3px"></span>${esc(item.category)}</span>` : '';
+  const memoExpanded = state.expandedMemos.has(item.id);
+  const selChkLM = state.selectMode ? `<div onclick="event.stopPropagation()" style="flex-shrink:0;padding-top:2px"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer"></div>` : '';
+  if (item.type === 'memo' && item.desc) {
+    return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+        style="flex-direction:column;align-items:stretch"
+        onclick="cardClick(event,'${item.id}')"
+        oncontextmenu="showCtx(event,'${item.id}')">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        ${selChkLM}
+        <div class="list-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
+        <div class="list-info" style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="list-title" style="flex:1;min-width:0">${esc(item.title)}</div>
+            <div class="list-meta">
+              ${typeBadge(item)} ${cat}
+              <span class="list-date">${relativeDate(item.createdAt)}</span>
+              <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+              <div class="list-actions">
+                <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
+                <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
+              </div>
+            </div>
+          </div>
+          <button class="memo-toggle" style="margin-top:3px;text-align:left" onclick="event.stopPropagation();toggleMemoExpand('${item.id}')">${memoExpanded ? '▲ 閉じる' : '▼ 展開'}</button>
+          ${memoExpanded ? (state.editingMemoId === item.id
+            ? `<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)" onclick="event.stopPropagation()">
+                <textarea id="memo-inline-${item.id}" style="width:100%;min-height:120px;background:var(--bg);border:1px solid var(--accent);border-radius:var(--radius-sm);color:var(--text);padding:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none" onblur="saveMemoInline('${item.id}')" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveMemoInline('${item.id}')}"></textarea>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:3px">⌘+Enter またはフォーカスを外すと保存</div>
+              </div>`
+            : `<div class="memo-body" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);cursor:text" onclick="event.stopPropagation();startMemoEdit('${item.id}')" title="クリックして編集">${renderMemo(item.desc)}</div>`
+          ) : ''}
+        </div>
+      </div>
+    </div>`;
+  }
+  const selChkL = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
+  return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+      onclick="cardClick(event,'${item.id}')"
+      oncontextmenu="showCtx(event,'${item.id}')">
+    ${selChkL}
+    <div class="list-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
+    <div class="list-info">
+      <div class="list-title">${esc(item.title)}</div>
+      <div class="list-desc">${esc(item.desc || item.url || (item.tags||[]).join(', ') || '')}</div>
+    </div>
+    <div class="list-meta">
+      ${pri} ${typeBadge(item)} ${dueBadge(item)} ${cat}
+      <span class="list-date">${relativeDate(item.createdAt)}</span>
+      <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+      <div class="list-actions">
+        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
+        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateCounts() {
+  document.getElementById('cnt-all').textContent = db.items.length;
+  document.getElementById('cnt-starred').textContent = db.items.filter(i => i.starred).length;
+  ['bookmark','tool','task','memo','other','set'].forEach(t => {
+    document.getElementById(`cnt-${t}`).textContent = db.items.filter(i => i.type === t).length;
+  });
+
+  // 期限切れ・今日締切タスクの警告バッジ
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const dueCount = db.items.filter(i =>
+    i.type === 'task' && i.dueDate && (i.status || 'todo') !== 'done' && i.dueDate <= todayStr
+  ).length;
+  const dueBadgeEl = document.getElementById('cnt-task-due');
+  if (dueBadgeEl) {
+    if (dueCount > 0) {
+      dueBadgeEl.textContent = dueCount;
+      dueBadgeEl.style.display = '';
+    } else {
+      dueBadgeEl.style.display = 'none';
+    }
+  }
+
+  // タブタイトルに件数を反映
+  document.title = dueCount > 0 ? `(${dueCount}) MyDash` : 'MyDash';
+
+}
+
+function updateCatList() {
+  const cats = [...new Set(db.items.map(i => i.category).filter(Boolean))].sort();
+  const uncatCount = db.items.filter(i => !i.category).length;
+  const sec = document.getElementById('cat-section');
+  const list = document.getElementById('cat-list');
+  sec.style.display = (cats.length || uncatCount) ? '' : 'none';
+  const uncatActive = state.filter === 'cat:' ? ' active' : '';
+  const uncatItem = uncatCount > 0 || state.filter === 'cat:' ? `<div class="sidebar-item${uncatActive}" data-filter="cat:" data-cat="" onclick="setFilter('cat:')"
+      ondragover="catDragOver(this,event)" ondragleave="catDragLeave(this)" ondrop="catDrop(this)">
+      <span class="si-icon"><span class="cat-dot cat-dot-unset"></span></span><span class="si-label">未設定</span>
+      <span class="count-badge">${uncatCount}</span>
+    </div>` : '';
+  list.innerHTML = uncatItem + cats.map((cat, idx) => {
+    const cnt = db.items.filter(i => i.category === cat).length;
+    const active = state.filter === 'cat:' + cat ? ' active' : '';
+    const color = CAT_COLORS[idx % CAT_COLORS.length];
+    return `<div class="sidebar-item${active}" data-filter="cat:${cat}" data-cat="${esc(cat)}" onclick="setFilter('cat:${cat}')"
+      ondragover="catDragOver(this,event)" ondragleave="catDragLeave(this)" ondrop="catDrop(this)">
+      <span class="si-icon"><span class="cat-dot" style="background:${color}"></span></span><span class="si-label">${esc(cat)}</span>
+      <button class="cat-rename-btn" onclick="event.stopPropagation();startCatRename(this,'${esc(cat)}')" title="カテゴリ名を変更">✏️</button>
+      <span class="count-badge">${cnt}</span>
+    </div>`;
+  }).join('');
+
+  // datalist
+  const dl = document.getElementById('cat-datalist');
+  if (dl) dl.innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
+}
+
+function startCatRename(btnEl, oldName) {
+  const labelEl = btnEl.previousElementSibling;
+  const input = document.createElement('input');
+  input.value = oldName;
+  input.style.cssText = 'flex:1;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:4px;padding:0 4px;font-size:13px;min-width:0';
+  btnEl.style.display = 'none';
+  labelEl.replaceWith(input);
+  input.focus();
+  input.select();
+  const commit = () => {
+    const newName = input.value.trim();
+    if (newName && newName !== oldName) renameCategory(oldName, newName);
+    else render();
+  };
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    if (e.key === 'Escape') render();
+  });
+  input.addEventListener('blur', commit);
+}
+
+function renameCategory(oldName, newName) {
+  db.items.forEach(item => {
+    if (item.category === oldName) item.category = newName;
+  });
+  if (state.filter === 'cat:' + oldName) state.filter = 'cat:' + newName;
+  save();
+  render();
+  toast(`📁 「${oldName}」→「${newName}」にリネームしました`, '📁');
+}
+
+// ═══════════════════════════════════════════
+// Filter / View
+// ═══════════════════════════════════════════
+const FILTER_LABELS = {
+  all: 'すべて', starred: '⭐ お気に入り', bookmark: 'ブックマーク', tool: 'ツール/アプリ',
+  task: 'タスク', memo: 'メモ', other: 'その他', set: '🚀 セット',
+};
+
+function setFilter(f) {
+  state.filter = f;
+  state.taskSubFilter = 'all';
+  document.querySelectorAll('.sidebar-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.filter === f);
+  });
+  const label = f.startsWith('cat:') ? (f.slice(4) ? '● ' + f.slice(4) : '○ 未設定') : FILTER_LABELS[f] || f;
+  document.getElementById('toolbar-title').textContent = label;
+  render();
+}
+
+function setTaskSubFilter(f) {
+  state.taskSubFilter = f;
+  document.querySelectorAll('.task-filter-chip').forEach(el => {
+    el.classList.toggle('active', el.dataset.tsf === f);
+  });
+  render();
+}
+
+function updateTaskFilterRow() {
+  const row = document.getElementById('task-filter-row');
+  row.style.display = state.filter === 'task' ? '' : 'none';
+  document.querySelectorAll('.task-filter-chip').forEach(el => {
+    el.classList.toggle('active', el.dataset.tsf === state.taskSubFilter);
+  });
+}
+
+function onSortChange() {
+  db.settings.sort = document.getElementById('sort-select').value;
+  save();
+  render();
+}
+
+function setView(v) {
+  state.view = v;
+  db.settings.view = v;
+  save();
+  document.getElementById('btn-grid').classList.toggle('active', v === 'grid');
+  document.getElementById('btn-list').classList.toggle('active', v === 'list');
+  document.getElementById('btn-icon').classList.toggle('active', v === 'icon');
+  render();
+}
+
+// ═══════════════════════════════════════════
+// Card interaction
+// ═══════════════════════════════════════════
+function cardClick(e, id) {
+  if (e.target.closest('.action-btn') || e.target.closest('.launch-btn')) return;
+  if (state.selectMode) { toggleItemSelect(id, !state.selectedIds.has(id)); return; }
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  if (item.type === 'set') { editItem(id); return; }
+  if (item.appName) { openWithServer(item.appName); return; }
+  if (item.url) { window.open(item.url, '_blank'); return; }
+  editItem(id);
+}
+
+// ローカルサーバー経由でMacアプリを起動
+async function openWithServer(appName) {
+  try {
+    const res = await fetch(`${SERVER_BASE}/open?app=${encodeURIComponent(appName)}`);
+    const json = await res.json();
+    if (json.ok) {
+      toast(`${appName} を起動しました`, '🚀');
+    } else {
+      toast(`起動失敗: ${json.error || 'unknown'}`, '❌');
+    }
+  } catch(_) {
+    toast('サーバーが起動していません。mydash-server.js を起動してください。', '⚠️');
+    updateServerStatus(false);
+  }
+}
+
+// サーバー状態確認
+async function pingServer() {
+  try {
+    const res = await fetch(`${SERVER_BASE}/ping`, { signal: AbortSignal.timeout(1500) });
+    const json = await res.json();
+    updateServerStatus(json.ok === true);
+  } catch(_) {
+    updateServerStatus(false);
+  }
+}
+
+function updateServerStatus(online) {
+  const dot   = document.getElementById('server-dot');
+  const label = document.getElementById('server-label');
+  if (online) {
+    dot.style.background = 'var(--success)';
+    label.textContent = 'サーバー稼働中';
+  } else {
+    dot.style.background = '#555';
+    label.textContent = 'サーバー停止中';
+  }
+}
+
+// ═══════════════════════════════════════════
+// Modal
+// ═══════════════════════════════════════════
+function openModal() {
+  state.editId = null;
+  state.tags = [];
+  document.getElementById('modal-title').textContent = '新規追加';
+  document.getElementById('btn-delete').style.display = 'none';
+  resetForm();
+  selectType('bookmark');
+  document.getElementById('modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('f-title').focus(), 50);
+}
+
+function closeModal(skipConfirm = false) {
+  if (!skipConfirm && !_confirmClose()) return;
+  document.getElementById('modal').style.display = 'none';
+  state.editId = null;
+}
+
+let _mousedownOnOverlay = false;
+
+document.getElementById('modal') && document.addEventListener('mousedown', e => {
+  const overlay = document.getElementById('modal');
+  _mousedownOnOverlay = overlay.style.display !== 'none' && e.target === overlay;
+});
+
+function overlayClick(e) {
+  if (e.target.id === 'modal' && _mousedownOnOverlay) closeModal();
+}
+
+function _confirmClose() {
+  if (!db.settings.confirmOnClose) return true;
+  return confirm('編集中の内容が保存されていません。閉じますか？');
+}
+
+function toggleConfirmOnClose(el) {
+  db.settings.confirmOnClose = el.checked;
+  save();
+}
+
+function toggleAlarmAutoLaunch(el) {
+  db.settings.alarmAutoLaunch = el.checked;
+  save();
+}
+
+function setAlarmOffset(el) {
+  db.settings.alarmOffsetMin = parseInt(el.value) || 0;
+  save();
+}
+
+function applyPriorityIcons() {
+  const pi = db.settings.priorityIcons;
+  PRIORITY_ICON.low    = pi.low    || '▂';
+  PRIORITY_ICON.medium = pi.medium || '▄';
+  PRIORITY_ICON.high   = pi.high   || '█';
+}
+
+function updatePiPreview(level) {
+  const val = document.getElementById('pi-' + level).value.trim();
+  const box = document.getElementById('pi-preview-' + level);
+  const def = { low:'▂', medium:'▄', high:'█' };
+  if (val && /^https?:|^\/|^data:/.test(val)) {
+    box.innerHTML = `<img src="${esc(val)}">`;
+  } else {
+    box.textContent = val || def[level];
+  }
+  db.settings.priorityIcons[level] = val || def[level];
+  applyPriorityIcons();
+  save();
+  render();
+}
+
+function pastePiIcon(e, level) {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('pi-' + level).value = ev.target.result;
+        updatePiPreview(level);
+      };
+      reader.readAsDataURL(item.getAsFile());
+      return;
+    }
+  }
+}
+
+async function pastePiFromClipboard(level) {
+  try {
+    const items = await navigator.clipboard.read();
+    for (const item of items) {
+      const imageType = item.types.find(t => t.startsWith('image/'));
+      if (imageType) {
+        const blob = await item.getType(imageType);
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('pi-' + level).value = e.target.result;
+          updatePiPreview(level);
+          toast('📋 画像を貼り付けました');
+        };
+        reader.readAsDataURL(blob);
+        return;
+      }
+    }
+    toast('クリップボードに画像がありません', '⚠️');
+  } catch(err) {
+    toast('クリップボードへのアクセスが拒否されました', '❌');
+  }
+}
+
+function savePriorityIcons() {
+  ['low','medium','high'].forEach(level => updatePiPreview(level));
+}
+
+function applyTheme() {
+  const s = db.settings;
+  // ダーク/ライト
+  document.body.classList.toggle('light', !s.darkMode);
+  document.getElementById('theme-dark-btn').style.borderColor = s.darkMode ? 'var(--accent)' : 'var(--border)';
+  document.getElementById('theme-light-btn').style.borderColor = !s.darkMode ? 'var(--accent)' : 'var(--border)';
+  // アクセントカラー
+  const color = s.accentColor || '#00afcc';
+  document.documentElement.style.setProperty('--accent', color);
+  document.documentElement.style.setProperty('--accent-hover', color);
+  document.getElementById('accent-color-input').value = color;
+  // プリセットボタンの選択状態
+  document.querySelectorAll('.accent-preset').forEach(btn => {
+    btn.style.borderColor = btn.title === color ? 'var(--text)' : 'transparent';
+  });
+}
+
+function setAccentColor(color) {
+  db.settings.accentColor = color;
+  save();
+  applyTheme();
+}
+
+function setDarkMode(dark) {
+  db.settings.darkMode = dark;
+  save();
+  applyTheme();
+}
+
+function resetForm() {
+  ['f-title','f-url','f-appname','f-desc','f-icon','f-category','f-tag-input','f-due','f-due-time'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  pickStatus('todo');
+  document.getElementById('f-priority').value = 'medium';
+  state.tags = [];
+  state.setItems = [];
+  renderTags();
+  updateIconPreview();
+}
+
+function selectType(type) {
+  state.type = type;
+  document.querySelectorAll('.type-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.type === type);
+  });
+  const hasUrl = type === 'bookmark' || type === 'tool';
+  const isTask = type === 'task';
+  const isTool = type === 'tool';
+  const isSet  = type === 'set';
+  document.getElementById('f-url-group').style.display = hasUrl ? '' : 'none';
+  document.getElementById('f-appname-group').style.display = isTool ? '' : 'none';
+  document.getElementById('f-task-row').style.display = isTask ? '' : 'none';
+  document.getElementById('f-due-group').style.display = isTask ? '' : 'none';
+  if (isTask && !state.editId) {
+    const dueEl = document.getElementById('f-due');
+    if (!dueEl.value) dueEl.value = new Date().toISOString().slice(0, 10);
+  }
+  document.getElementById('f-md-hint').style.display = type === 'memo' ? '' : 'none';
+  document.getElementById('f-desc').style.minHeight = type === 'memo' ? '180px' : '74px';
+  document.getElementById('f-set-items-group').style.display = isSet ? '' : 'none';
+  if (isSet) renderSetItemsList();
+  updateIconPreview();
+}
+
+function handleUrlInput() {
+  updateIconPreview();
+}
+
+function updateIconPreview() {
+  const iconVal = (document.getElementById('f-icon').value || '').trim();
+  const urlVal  = (document.getElementById('f-url').value  || '').trim();
+  const box = document.getElementById('icon-preview');
+  const fallback = TYPE_DEF[state.type].icon;
+
+  if (iconVal) {
+    if (/^https?:|^\/|^data:/.test(iconVal)) {
+      box.innerHTML = `<img src="${esc(iconVal)}" onerror="this.textContent='${fallback}'">`;
+    } else {
+      box.textContent = iconVal;
+    }
+    return;
+  }
+  if ((state.type === 'bookmark' || state.type === 'tool') && urlVal) {
+    const fav = faviconUrl(urlVal);
+    if (fav) {
+      box.innerHTML = `<img src="${fav}" onerror="this.textContent='${fallback}'">`;
+      return;
+    }
+  }
+  box.textContent = fallback;
+}
+
+function editItem(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  state.editId = id;
+  state.tags = [...(item.tags || [])];
+  // セット型: selectType より先に setItems を復元する
+  if (item.type === 'set') {
+    state.setItems = (item.setItems || []).map(s => ({ ...s }));
+  } else {
+    state.setItems = [];
+  }
+  document.getElementById('modal-title').textContent = '編集';
+  document.getElementById('btn-delete').style.display = '';
+  selectType(item.type);
+  document.getElementById('f-title').value    = item.title || '';
+  document.getElementById('f-url').value      = item.url || '';
+  document.getElementById('f-appname').value  = item.appName || '';
+  document.getElementById('f-desc').value     = item.desc || '';
+  document.getElementById('f-icon').value     = item.icon || '';
+  document.getElementById('f-category').value = item.category || '';
+  pickStatus(item.status || 'todo');
+  document.getElementById('f-priority').value = item.priority || 'medium';
+  document.getElementById('f-due').value = item.dueDate || (item.type === 'task' ? new Date().toISOString().slice(0, 10) : '');
+  document.getElementById('f-due-time').value = item.dueTime || '';
+  renderTags();
+  updateIconPreview();
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function saveItem() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { toast('タイトルを入力してください', '⚠️'); return; }
+
+  const data = {
+    type:     state.type,
+    title,
+    url:      document.getElementById('f-url').value.trim(),
+    appName:  document.getElementById('f-appname').value.trim() || null,
+    desc:     document.getElementById('f-desc').value.trim(),
+    icon:     document.getElementById('f-icon').value.trim() || null,
+    category: document.getElementById('f-category').value.trim(),
+    tags:     [...state.tags],
+    status:   document.getElementById('f-status').value,
+    priority: document.getElementById('f-priority').value,
+    dueDate:  document.getElementById('f-due').value || null,
+    dueTime:  document.getElementById('f-due-time').value || null,
+  };
+
+  if (state.type === 'set') {
+    data.setItems = [...state.setItems];
+  }
+
+  if (state.editId) {
+    const idx = db.items.findIndex(i => i.id === state.editId);
+    if (idx >= 0) db.items[idx] = { ...db.items[idx], ...data, updatedAt: new Date().toISOString() };
+    toast('更新しました', '✅');
+  } else {
+    const newItem = { id: genId(), ...data, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    db.items.unshift(newItem);
+    if (!db.itemOrder) db.itemOrder = [];
+    db.itemOrder.unshift(newItem.id);
+    toast('追加しました', '✨');
+  }
+
+  save(); closeModal(true); render();
+}
+
+function deleteItem() {
+  if (state.editId) { confirmDelete(state.editId); closeModal(true); }
+}
+
+function toggleStar(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  item.starred = !item.starred;
+  save();
+  render();
+}
+
+function cycleStatus(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  const order = ['todo', 'doing', 'done'];
+  const idx = order.indexOf(item.status || 'todo');
+  item.status = order[(idx + 1) % 3];
+  item.updatedAt = new Date().toISOString();
+  save(); render();
+}
+
+function toggleMemoExpand(id) {
+  if (state.expandedMemos.has(id)) {
+    state.expandedMemos.delete(id);
+  } else {
+    state.expandedMemos.add(id);
+  }
+  db.expandedMemos = [...state.expandedMemos];
+  save();
+  render();
+}
+
+function startMemoEdit(id) {
+  state.editingMemoId = id;
+  render();
+  setTimeout(() => {
+    const ta = document.getElementById(`memo-inline-${id}`);
+    if (!ta) return;
+    const item = db.items.find(i => i.id === id);
+    if (item) ta.value = item.desc || '';
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+  }, 0);
+}
+
+function saveMemoInline(id) {
+  if (state.editingMemoId !== id) return;
+  const ta = document.getElementById(`memo-inline-${id}`);
+  if (!ta) return;
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  item.desc = ta.value;
+  item.updatedAt = new Date().toISOString();
+  state.editingMemoId = null;
+  save();
+  render();
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+}
+
+function pickStatus(status) {
+  document.getElementById('f-status').value = status;
+  document.querySelectorAll('#status-btn-group .status-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.status === status);
+  });
+}
+
+function iconCard(item) {
+  if (item.type === 'set') {
+    return `<div class="icon-card" data-id="${item.id}"
+        onclick="launchSet('${item.id}')"
+        oncontextmenu="showCtx(event,'${item.id}')"
+        title="${esc(item.title)} ▶ クリックで起動">
+      <div class="card-icon icon-bg-set">${iconHtml(item,'lg')}</div>
+    </div>`;
+  }
+  const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:14px;height:14px;accent-color:var(--set);cursor:pointer"></div>` : '';
+  return `<div class="icon-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+      onclick="cardClick(event,'${item.id}')"
+      oncontextmenu="showCtx(event,'${item.id}')"
+      title="${esc(item.title)}" style="position:relative">
+    ${selChkI}
+    <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
+  </div>`;
+}
+
+function toggleSelectMode() {
+  state.selectMode = !state.selectMode;
+  state.selectedIds.clear();
+  document.getElementById('btn-select').classList.toggle('active', state.selectMode);
+  render();
+}
+
+function toggleItemSelect(id, checked) {
+  if (checked) state.selectedIds.add(id); else state.selectedIds.delete(id);
+  updateSelectBar();
+  // チェックボックスとカードのselectedクラスだけ更新（full render不要）
+  document.querySelectorAll(`[data-id="${id}"]`).forEach(el => {
+    el.classList.toggle('selected', checked);
+    const chk = el.querySelector('input[type="checkbox"]');
+    if (chk) chk.checked = checked;
+  });
+}
+
+function toggleSelectAll(checked) {
+  filteredItems().forEach(item => {
+    if (checked) state.selectedIds.add(item.id); else state.selectedIds.delete(item.id);
+  });
+  render();
+}
+
+function updateSelectBar() {
+  const bar = document.getElementById('select-bar');
+  if (!bar) return;
+  bar.style.display = state.selectMode ? 'flex' : 'none';
+  const count = state.selectedIds.size;
+  const allCount = filteredItems().length;
+  document.getElementById('select-count').textContent = `${count}件選択`;
+  const delBtn = document.getElementById('select-del-btn');
+  delBtn.disabled = count === 0;
+  delBtn.style.opacity = count ? '1' : '0.4';
+  delBtn.textContent = count ? `🗑️ 削除（${count}件）` : '🗑️ 削除';
+  const showBtn = document.getElementById('select-show-btn');
+  const hideBtn = document.getElementById('select-hide-btn');
+  showBtn.disabled = count === 0; showBtn.style.opacity = count ? '1' : '0.4';
+  hideBtn.disabled = count === 0; hideBtn.style.opacity = count ? '1' : '0.4';
+  const allChk = document.getElementById('select-all-check');
+  allChk.checked = count === allCount && allCount > 0;
+  allChk.indeterminate = count > 0 && count < allCount;
+}
+
+function setSelectedVisibility(hidden) {
+  const ids = [...state.selectedIds];
+  if (!ids.length) return;
+  ids.forEach(id => {
+    const item = db.items.find(i => i.id === id);
+    if (item) item.hidden = hidden || undefined;
+  });
+  state.selectedIds.clear();
+  save(); render();
+  toast(hidden ? `${ids.length}件を非表示にしました` : `${ids.length}件を表示にしました`, hidden ? '🙈' : '👁️');
+}
+
+function deleteSelected() {
+  const ids = [...state.selectedIds];
+  if (!ids.length) return;
+  if (!confirm(`${ids.length}件を削除しますか？`)) return;
+  db.items = db.items.filter(i => !ids.includes(i.id));
+  state.selectedIds.clear();
+  save(); render(); toast(`${ids.length}件削除しました`, '🗑️');
+}
+
+function confirmDelete(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  if (confirm(`「${item.title}」を削除しますか？`)) {
+    db.items = db.items.filter(i => i.id !== id);
+    save(); render(); toast('削除しました', '🗑️');
+  }
+}
+
+// ═══════════════════════════════════════════
+// Tags
+// ═══════════════════════════════════════════
+// Tag autocomplete & filter
+// ═══════════════════════════════════════════
+function getAllTags() {
+  const tags = new Set();
+  db.items.forEach(item => (item.tags || []).forEach(t => tags.add(t)));
+  return [...tags].sort();
+}
+
+let _dropdownOnSelect = null;
+
+function showTagDropdown(inputEl, onSelect) {
+  const val = inputEl.value.trim().toLowerCase();
+  if (!val) { hideTagDropdown(); return; }
+  const suggestions = getAllTags().filter(t => t.toLowerCase().includes(val));
+  if (suggestions.length === 0) { hideTagDropdown(); return; }
+  const dropdown = document.getElementById('tag-dropdown');
+  dropdown.innerHTML = suggestions.map(t =>
+    `<div class="tag-dropdown-item" onmousedown="event.preventDefault();selectTagDropdown('${esc(t)}')">${esc(t)}</div>`
+  ).join('');
+  const rect = inputEl.getBoundingClientRect();
+  dropdown.style.top  = (rect.bottom + 4) + 'px';
+  dropdown.style.left = rect.left + 'px';
+  dropdown.style.width = rect.width + 'px';
+  dropdown.style.display = 'block';
+  _dropdownOnSelect = onSelect;
+}
+
+function hideTagDropdown() {
+  document.getElementById('tag-dropdown').style.display = 'none';
+  _dropdownOnSelect = null;
+}
+
+function selectTagDropdown(tag) {
+  if (_dropdownOnSelect) _dropdownOnSelect(tag);
+  hideTagDropdown();
+}
+
+function updateSearchClear() {
+  const hasText = document.getElementById('search-input').value.length > 0;
+  const hasTags = state.filterTags.length > 0;
+  document.getElementById('search-clear').style.display = (hasText || hasTags) ? '' : 'none';
+}
+
+// ─── 入力モード（検索 / メモ / タスク）────────
+const INPUT_MODES = [
+  { key: 'search', icon: '🔍', cls: '',          placeholder: '検索…'           },
+  { key: 'memo',   icon: '📝', cls: 'mode-memo', placeholder: 'メモを入力… Enter で即登録' },
+  { key: 'task',   icon: '✅', cls: 'mode-task', placeholder: 'タスクを入力… Enter で即登録' },
+];
+let _inputModeIdx = 0;
+
+function cycleInputMode() {
+  _inputModeIdx = (_inputModeIdx + 1) % INPUT_MODES.length;
+  applyInputMode();
+  document.getElementById('search-input').focus();
+}
+
+function applyInputMode() {
+  const m = INPUT_MODES[_inputModeIdx];
+  const btn = document.getElementById('input-mode-btn');
+  const input = document.getElementById('search-input');
+  btn.textContent = m.icon;
+  btn.className = 'input-mode-btn' + (m.cls ? ' ' + m.cls : '');
+  input.placeholder = m.placeholder;
+  // 検索モード以外のとき検索結果はリセット
+  if (m.key !== 'search') {
+    input.value = '';
+    state.filterTags = [];
+    renderFilterTags();
+    updateSearchClear();
+    render();
+  }
+}
+
+function onInputKeydown(e) {
+  const m = INPUT_MODES[_inputModeIdx];
+  if (e.key !== 'Enter' || e.isComposing || m.key === 'search') return;
+  const title = e.target.value.trim();
+  if (!title) return;
+  e.preventDefault();
+  const today = new Date().toISOString().slice(0, 10);
+  if (m.key === 'memo') {
+    const newItem = { id: genId(), type: 'memo', title, desc: '', url: '', icon: '', category: '', tags: [], starred: false, createdAt: new Date().toISOString() };
+    db.items.unshift(newItem);
+    if (!db.itemOrder) db.itemOrder = [];
+    db.itemOrder.unshift(newItem.id);
+    toast(`📝 メモを追加しました`, '📝');
+  } else if (m.key === 'task') {
+    const newItem = { id: genId(), type: 'task', title, desc: '', url: '', icon: '', category: '', tags: [], starred: false, status: 'todo', priority: 'medium', dueDate: today, createdAt: new Date().toISOString() };
+    db.items.unshift(newItem);
+    if (!db.itemOrder) db.itemOrder = [];
+    db.itemOrder.unshift(newItem.id);
+    toast(`✅ タスクを追加しました`, '✅');
+  }
+  e.target.value = '';
+  updateSearchClear();
+  save();
+  render();
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  state.filterTags = [];
+  renderFilterTags();
+  updateSearchClear();
+  render();
+}
+
+function onSearchInput(inputEl) {
+  if (INPUT_MODES[_inputModeIdx].key !== 'search') return;
+  updateSearchClear();
+  render();
+  showTagDropdown(inputEl, tag => {
+    addFilterTag(tag);
+    inputEl.value = '';
+    updateSearchClear();
+    render();
+  });
+}
+
+function onTagInput(inputEl) {
+  showTagDropdown(inputEl, tag => {
+    if (!state.tags.includes(tag)) { state.tags.push(tag); renderTags(); }
+    inputEl.value = '';
+  });
+}
+
+function addFilterTag(tag) {
+  if (!state.filterTags.includes(tag)) {
+    state.filterTags.push(tag);
+    renderFilterTags();
+  }
+}
+
+function removeFilterTag(tag) {
+  state.filterTags = state.filterTags.filter(t => t !== tag);
+  renderFilterTags();
+  updateSearchClear();
+  render();
+}
+
+function renderFilterTags() {
+  const row = document.getElementById('filter-tags-row');
+  if (state.filterTags.length === 0) { row.style.display = 'none'; return; }
+  row.style.display = 'flex';
+  row.innerHTML = state.filterTags.map(t =>
+    `<div class="filter-tag"># ${esc(t)} <span class="filter-tag-remove" onclick="removeFilterTag('${esc(t)}')">×</span></div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════
+function addTag(e) {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  const val = e.target.value.trim();
+  if (val && !state.tags.includes(val)) { state.tags.push(val); renderTags(); }
+  e.target.value = '';
+  hideTagDropdown();
+}
+
+function removeTag(tag) {
+  state.tags = state.tags.filter(t => t !== tag);
+  renderTags();
+}
+
+function renderTags() {
+  document.getElementById('tags-wrap').innerHTML = state.tags.map(t =>
+    `<div class="tag">${esc(t)} <span class="tag-remove" onclick="removeTag('${esc(t)}')">×</span></div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════
+// Context menu
+// ═══════════════════════════════════════════
+function showCtx(e, id) {
+  e.preventDefault();
+  state.ctxId = id;
+  const m = document.getElementById('ctx-menu');
+  m.style.display = 'block';
+  m.style.left = Math.min(e.pageX, window.innerWidth - 170) + 'px';
+  m.style.top  = Math.min(e.pageY, window.innerHeight - 100) + 'px';
+}
+function hideCtx() { document.getElementById('ctx-menu').style.display = 'none'; }
+function ctxEdit()   { editItem(state.ctxId); hideCtx(); }
+function ctxOpen()   { const it = db.items.find(i => i.id === state.ctxId); if (it?.type === 'set') { launchSet(state.ctxId); } else if (it?.url) { window.open(it.url,'_blank'); } hideCtx(); }
+function ctxDelete() { confirmDelete(state.ctxId); hideCtx(); }
+
+// ═══════════════════════════════════════════
+// Import / Export
+// ═══════════════════════════════════════════
+// IndexedDB にフォルダハンドルを保存・取得
+function _idbExportDir(mode, handle) {
+  return new Promise(resolve => {
+    const req = indexedDB.open('mydash-fs', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('handles');
+    req.onsuccess = e => {
+      const idb = e.target.result;
+      if (mode === 'get') {
+        const tx = idb.transaction('handles', 'readonly');
+        const r = tx.objectStore('handles').get('exportDir');
+        r.onsuccess = () => resolve(r.result || null);
+        r.onerror = () => resolve(null);
+      } else {
+        const tx = idb.transaction('handles', 'readwrite');
+        tx.objectStore('handles').put(handle, 'exportDir');
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      }
+    };
+    req.onerror = () => resolve(null);
+  });
+}
+
+async function exportJSON() {
+  const json = JSON.stringify(db, null, 2);
+  const fileName = `mydash_${new Date().toISOString().slice(0,10)}.json`;
+
+  if (window.showDirectoryPicker) {
+    try {
+      let dirHandle = await _idbExportDir('get');
+
+      // 保存済みフォルダがあれば権限チェック
+      if (dirHandle) {
+        const perm = await dirHandle.queryPermission({ mode: 'readwrite' });
+        if (perm !== 'granted') {
+          const req = await dirHandle.requestPermission({ mode: 'readwrite' });
+          if (req !== 'granted') dirHandle = null;
+        }
+      }
+
+      // フォルダ未選択 or 権限なし → ダイアログ
+      if (!dirHandle) {
+        dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+        await _idbExportDir('set', dirHandle);
+      }
+
+      const fh = await dirHandle.getFileHandle(fileName, { create: true });
+      const writable = await fh.createWritable();
+      await writable.write(json);
+      await writable.close();
+      toast(`${dirHandle.name}/ に保存しました`, '📤');
+      return;
+    } catch(e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+
+  // フォールバック
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([json], { type: 'application/json' })),
+    download: fileName,
+  });
+  a.click();
+  toast('エクスポートしました', '📤');
+}
+
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data.items)) throw new Error('invalid format');
+      const mode = confirm(
+        `${data.items.length} 件のデータが見つかりました。\n\n` +
+        `[OK]     → 現在のデータを上書きする\n` +
+        `[キャンセル] → 現在のデータにマージする`
+      );
+      if (mode) {
+        db = data;
+      } else {
+        const existIds = new Set(db.items.map(i => i.id));
+        data.items.forEach(item => { if (!existIds.has(item.id)) db.items.push(item); });
+      }
+      save(); render(); toast('インポートしました', '📥');
+    } catch(_) { toast('JSONの読み込みに失敗しました', '❌'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ═══════════════════════════════════════════
+// Set type functions
+// ═══════════════════════════════════════════
+
+// セットモーダル: アイテム一覧をレンダリング
+function renderSetItemsList() {
+  const el = document.getElementById('f-set-items-list');
+  if (!el) return;
+
+  // bookmark / tool / その他 URL持ちアイテム（セット以外）
+  const candidates = db.items.filter(i => i.type !== 'set' && (i.url || i.appName));
+
+  if (!candidates.length) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:6px">URLまたはアプリを持つアイテムがありません</div>';
+    return;
+  }
+
+  el.innerHTML = candidates.map(item => {
+    const si    = state.setItems.find(s => s.itemId === item.id);
+    const checked = !!si;
+    const fallback = TYPE_DEF[item.type]?.icon || '📄';
+    const iconEl = item.icon
+      ? (/^https?:/.test(item.icon)
+          ? `<img src="${esc(item.icon)}" style="width:16px;height:16px;object-fit:contain;border-radius:3px;flex-shrink:0">`
+          : `<span style="flex-shrink:0">${item.icon}</span>`)
+      : `<span style="flex-shrink:0">${fallback}</span>`;
+    const sub = item.type === 'tool' && item.appName ? item.appName : (item.url || '');
+
+    return `<label class="set-item-row" style="cursor:pointer">
+      <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleSetItem('${item.id}', this.checked)">
+      ${iconEl}
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(item.title)}</span>
+      <span style="font-size:10.5px;color:var(--text-muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sub)}</span>
+    </label>`;
+  }).join('');
+}
+
+function toggleSetItem(itemId, checked) {
+  if (checked) {
+    if (!state.setItems.find(s => s.itemId === itemId)) {
+      state.setItems.push({ itemId, notionTodayPage: false });
+    }
+  } else {
+    state.setItems = state.setItems.filter(s => s.itemId !== itemId);
+  }
+  renderSetItemsList();
+}
+
+// セットを起動: Chrome新ウィンドウで開く
+async function launchSet(id) {
+  const set = db.items.find(i => i.id === id);
+  if (!set || set.type !== 'set') return;
+
+  const setItems = set.setItems || [];
+  if (!setItems.length) { toast('セットにアイテムがありません', '⚠️'); return; }
+
+  toast('起動中…', '🚀');
+
+  const urls = [];
+  const appNames = [];
+
+  for (const si of setItems) {
+    const item = db.items.find(i => i.id === si.itemId);
+    if (!item) continue;
+    if (item.type === 'tool' && item.appName) {
+      appNames.push(item.appName);
+    } else if (item.url) {
+      urls.push(item.url);
+    }
+  }
+
+  // ツール/アプリを起動
+  for (const appName of appNames) {
+    openWithServer(appName);
+  }
+
+  // ChromeでURLを一括で新ウィンドウ表示
+  if (urls.length > 0) {
+    try {
+      const r = await fetch(`${SERVER_BASE}/open-chrome`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ urls }),
+        signal: AbortSignal.timeout(5000),
+      });
+      const j = await r.json();
+      if (j.ok) {
+        toast(`${j.count}件をChromeで開きました`, '✅');
+      } else {
+        toast(`Chrome起動失敗: ${j.error || 'unknown'}`, '❌');
+      }
+    } catch (_) {
+      toast('サーバーが起動していません。mydash-server.js を起動してください。', '⚠️');
+      updateServerStatus(false);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+// Toast
+// ═══════════════════════════════════════════
+function toast(msg, icon='✅') {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = icon + '  ' + msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 2800);
+}
+
+// ═══════════════════════════════════════════
+// Clock
+// ═══════════════════════════════════════════
+function initClock() {
+  const DAYS = ['日','月','火','水','木','金','土'];
+  function tick() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    const ss = String(now.getSeconds()).padStart(2,'0');
+    const t = document.getElementById('clock-time');
+    const d = document.getElementById('clock-date');
+    if (t) t.textContent = `${hh}:${mm}:${ss}`;
+    if (d) d.textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${DAYS[now.getDay()]}）`;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ═══════════════════════════════════════════
+// Alarm System
+// ═══════════════════════════════════════════
+const ALARM_DAYS = ['日','月','火','水','木','金','土'];
+let _currentAlarm = null;
+let _alarmFormId = null;
+let _alarmFormDays = [];
+let _alarmCheckLock = false;
+let _snoozeTimer = null;
+
+function getAlarms() { return db.alarms || []; }
+
+function updateAlarmBadge() {
+  const el = document.getElementById('cnt-alarm');
+  if (el) el.textContent = getAlarms().filter(a => a.enabled).length;
+}
+
+function alarmSchedDesc(alarm) {
+  const s = alarm.schedule;
+  const daysStr = (s.days || []).map(d => ALARM_DAYS[d]).join('・');
+  const t = s.time || '';
+  const off = db.settings?.alarmOffsetMin || 0;
+  const offStr = off === 0 ? '' : off > 0 ? ` (+${off}分)` : ` (${Math.abs(off)}分前)`;
+  switch (s.type) {
+    case 'daily':            return `毎日 ${t}${offStr}`;
+    case 'weekly':           return `毎週 ${daysStr} ${t}${offStr}`;
+    case 'biweekly':         return `隔週 ${daysStr} ${t}${offStr}`;
+    case 'monthly-date':     return `毎月${s.monthDay}日 ${t}${offStr}`;
+    case 'monthly-weekday':  return `毎月第${s.weekdayN==-1?'最終':s.weekdayN}${ALARM_DAYS[s.weekday]??'?'} ${t}${offStr}`;
+    case 'yearly':           return `毎年${s.month}月${s.day}日 ${t}${offStr}`;
+    default:                 return t;
+  }
+}
+
+function shouldFireAlarm(alarm, now) {
+  if (!alarm.enabled) return false;
+  const s = alarm.schedule;
+
+  // グローバルオフセット（±分）を適用した実際の発火時刻を計算
+  const offsetMin = db.settings.alarmOffsetMin || 0;
+  const [baseH, baseM] = (s.time || '00:00').split(':').map(Number);
+  const totalMin = ((baseH * 60 + baseM + offsetMin) % 1440 + 1440) % 1440;
+  const fireH = Math.floor(totalMin / 60);
+  const fireM = totalMin % 60;
+  const fireTime = `${String(fireH).padStart(2,'0')}:${String(fireM).padStart(2,'0')}`;
+
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  if (`${hh}:${mm}` !== fireTime) return false;
+
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${s.time}`;
+  if (alarm.lastFired === todayKey) return false;
+
+  switch (s.type) {
+    case 'daily': return true;
+    case 'weekly': return (s.days||[]).includes(now.getDay());
+    case 'biweekly': {
+      if (!(s.days||[]).includes(now.getDay())) return false;
+      if (!s.biweeklyRef) return true;
+      const ref = new Date(s.biweeklyRef);
+      return Math.round((now - ref) / (7*24*60*60*1000)) % 2 === 0;
+    }
+    case 'monthly-date': return now.getDate() === (s.monthDay||1);
+    case 'monthly-weekday': {
+      if (now.getDay() !== s.weekday) return false;
+      if (s.weekdayN === -1) {
+        const next = new Date(now); next.setDate(next.getDate()+7);
+        return next.getMonth() !== now.getMonth();
+      }
+      return Math.ceil(now.getDate()/7) === s.weekdayN;
+    }
+    case 'yearly': return now.getMonth()+1 === s.month && now.getDate() === s.day;
+    default: return false;
+  }
+}
+
+// ═══════════════════════════════════════════
+// Widget
+// ═══════════════════════════════════════════
+function openWidget() {
+  const btn = document.getElementById('widget-btn');
+  const icon = document.getElementById('widget-btn-icon');
+  const label = document.getElementById('widget-btn-label');
+  if (btn.dataset.loading) return;
+  btn.dataset.loading = '1';
+  icon.textContent = '⏳';
+  label.textContent = '起動中…';
+  fetch(`${SERVER_BASE}/open-widget`)
+    .then(r => r.json())
+    .then(d => { if (!d.ok) toast('ウィジェットを開けませんでした', '⚠️'); })
+    .catch(() => toast('サーバーに接続できません', '⚠️'))
+    .finally(() => {
+      delete btn.dataset.loading;
+      icon.textContent = '📌';
+      label.textContent = 'ウィジェット';
+    });
+}
+
+function toggleAlarmMute() {
+  db.settings.alarmMuted = !db.settings.alarmMuted;
+  save();
+  applyAlarmMuteUI();
+  toast(db.settings.alarmMuted ? '集中モードON（アラーム無効）' : 'アラームONに戻しました', db.settings.alarmMuted ? '🔕' : '🔔');
+}
+
+function applyAlarmMuteUI() {
+  const btn = document.getElementById('alarm-mute-btn');
+  if (!btn) return;
+  const muted = db.settings.alarmMuted;
+  btn.textContent = muted ? '🔕' : '🔔';
+  btn.style.background = muted ? 'rgba(239,83,80,0.15)' : '';
+  btn.style.borderColor = muted ? 'rgba(239,83,80,0.5)' : '';
+}
+
+function startAlarmChecker() {
+  setInterval(() => {
+    const now = new Date();
+    if (db.settings.alarmMuted) return;
+    if (now.getSeconds() > 8) return;
+    if (_alarmCheckLock) return;
+    _alarmCheckLock = true;
+    setTimeout(() => { _alarmCheckLock = false; }, 50000);
+
+    for (const alarm of getAlarms()) {
+      if (shouldFireAlarm(alarm, now)) {
+        const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${alarm.schedule.time}`;
+        alarm.lastFired = todayKey;
+        save();
+        showAlarmPopup(alarm);
+        break;
+      }
+    }
+  }, 4000);
+}
+
+function showAlarmPopup(alarm) {
+  _currentAlarm = alarm;
+  const a = alarm.action;
+
+  // セット紐付きアラームは自動起動（設定がONの場合）
+  if (a?.type === 'set' && a.targetId && db.settings.alarmAutoLaunch !== false) {
+    launchSet(a.targetId);
+    const setItem = db.items.find(i => i.id === a.targetId);
+    const setName = setItem ? setItem.title : 'セット';
+    toast(`🔔 ${alarm.name} — 「${setName}」を自動起動しました`, '🚀');
+    _currentAlarm = null;
+    // ビープ音
+    try {
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880; osc.type = 'sine';
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
+    } catch(_) {}
+    return;
+  }
+
+  document.getElementById('alarm-popup-name').textContent = alarm.name;
+  const now = new Date();
+  document.getElementById('alarm-popup-time').textContent =
+    `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${ALARM_DAYS[now.getDay()]}） ${alarm.schedule.time}`;
+
+  const execBtn = document.getElementById('alarm-popup-execute');
+  if (a && a.type === 'url') {
+    execBtn.style.display = '';
+    execBtn.textContent = '🔗 開く';
+  } else {
+    execBtn.style.display = 'none';
+  }
+  document.getElementById('alarm-popup-overlay').style.display = 'flex';
+
+  // ビープ音
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880; osc.type = 'sine';
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
+  } catch(_) {}
+}
+
+function closeAlarmPopup() {
+  document.getElementById('alarm-popup-overlay').style.display = 'none';
+  _currentAlarm = null;
+}
+
+function snoozeAlarm() {
+  const alarm = _currentAlarm;
+  closeAlarmPopup();
+  if (!alarm) return;
+  if (_snoozeTimer) clearTimeout(_snoozeTimer);
+  _snoozeTimer = setTimeout(() => {
+    _snoozeTimer = null;
+    showAlarmPopup(alarm);
+  }, 5 * 60 * 1000);
+  toast('⏰ 5分後に再通知します', '🔔');
+}
+
+function executeCurrentAlarm() {
+  if (!_currentAlarm) return;
+  const a = _currentAlarm.action;
+  if (a?.type === 'set' && a.targetId) launchSet(a.targetId);
+  else if (a?.type === 'url' && a.url) window.open(a.url, '_blank');
+  closeAlarmPopup();
+}
+
+// ═══════════════════════════════════════════
+// Google Calendar ICS Import
+// ═══════════════════════════════════════════
+function parseICS(text) {
+  const lines = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+    .split('\n').reduce((acc, line) => {
+      if ((line[0]===' '||line[0]==='\t') && acc.length) acc[acc.length-1] += line.slice(1);
+      else if (line) acc.push(line);
+      return acc;
+    }, []);
+  const events = [];
+  let cur = null;
+  for (const line of lines) {
+    if (line==='BEGIN:VEVENT') { cur={}; continue; }
+    if (line==='END:VEVENT') { if(cur) events.push(cur); cur=null; continue; }
+    if (!cur) continue;
+    const ci = line.indexOf(':');
+    if (ci < 0) continue;
+    const key = line.slice(0, ci).split(';')[0];
+    const val = line.slice(ci+1).replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\\\/g,'\\');
+    cur[key] = val;
+  }
+  return events;
+}
+
+function parseICSDate(s) {
+  if (!s) return null;
+  const m = s.replace(/[^\dTZ]/g,'').match(/^(\d{4})(\d{2})(\d{2})(T(\d{2})(\d{2})(\d{2})(Z?))?/);
+  if (!m) return null;
+  const [,y,mo,d,,hh='00',mm='00',ss='00',z] = m;
+  return z==='Z'
+    ? new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}Z`)
+    : new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}`);
+}
+
+function parseRRule(s) {
+  const r={};
+  s.split(';').forEach(p=>{ const [k,v]=p.split('='); if(k) r[k]=v; });
+  return r;
+}
+
+const BYDAY_MAP = {SU:0,MO:1,TU:2,WE:3,TH:4,FR:5,SA:6};
+
+function rruleToSchedule(rrule, dtStart) {
+  const freq = rrule.FREQ || 'WEEKLY';
+  const interval = parseInt(rrule.INTERVAL || '1');
+  const byday = rrule.BYDAY;
+  const time = dtStart
+    ? `${String(dtStart.getHours()).padStart(2,'0')}:${String(dtStart.getMinutes()).padStart(2,'0')}`
+    : '09:00';
+
+  if (freq === 'DAILY') return { type: 'daily', time };
+
+  if (freq === 'WEEKLY') {
+    const days = byday
+      ? byday.split(',').map(d => BYDAY_MAP[d.replace(/^[-\d]+/, '')]).filter(d => d !== undefined)
+      : (dtStart ? [dtStart.getDay()] : []);
+    if (interval >= 2) return { type: 'biweekly', days, time, biweeklyRef: dtStart?.toISOString().slice(0,10) };
+    return { type: 'weekly', days, time };
+  }
+
+  if (freq === 'MONTHLY') {
+    if (rrule.BYMONTHDAY) return { type: 'monthly-date', monthDay: parseInt(rrule.BYMONTHDAY), time };
+    if (byday) {
+      const m = byday.match(/^(-?\d+)([A-Z]{2})$/);
+      if (m) return { type: 'monthly-weekday', weekdayN: parseInt(m[1]), weekday: BYDAY_MAP[m[2]] ?? 0, time };
+    }
+    return { type: 'monthly-date', monthDay: dtStart ? dtStart.getDate() : 1, time };
+  }
+
+  if (freq === 'YEARLY') {
+    return { type: 'yearly', month: dtStart ? dtStart.getMonth()+1 : 1, day: dtStart ? dtStart.getDate() : 1, time };
+  }
+
+  // フォールバック（週次扱い）
+  const days = byday
+    ? byday.split(',').map(d => BYDAY_MAP[d.replace(/^[-\d]+/, '')]).filter(d => d !== undefined)
+    : (dtStart ? [dtStart.getDay()] : []);
+  return { type: 'weekly', days, time };
+}
+
+function rruleDesc(rrule, dtStart) {
+  return alarmSchedDesc({ schedule: rruleToSchedule(rrule, dtStart) });
+}
+
+function groupICSEvents(events) {
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const future = new Date(now); future.setMonth(future.getMonth()+1);
+  const recurringMap=new Map(), single=[];
+  const ngSet = new Set(db.calNgList || []);
+  for (const ev of events) {
+    if (ev['RECURRENCE-ID']) continue; // 個別編集されたインスタンスはスキップ
+    const summary = (ev.SUMMARY||'（タイトルなし）').trim();
+    if (ngSet.has(summary)) continue; // NGリストに含まれるイベントをスキップ
+    const dtStart = parseICSDate(ev.DTSTART);
+    if (ev.RRULE) {
+      // UNTIL が過去なら終了済みイベントとしてスキップ
+      const rrule = parseRRule(ev.RRULE);
+      if (rrule.UNTIL) {
+        const until = parseICSDate(rrule.UNTIL);
+        if (until && until < now) continue;
+      }
+      // タイトルでまとめる（同名イベントは1件に）
+      if (!recurringMap.has(summary)) {
+        recurringMap.set(summary, {summary, dtStart, rrule});
+      }
+    } else if (dtStart && dtStart>=now && dtStart<=future) {
+      single.push({summary, dtStart});
+    }
+  }
+  const recurring = [...recurringMap.values()];
+  single.sort((a,b)=>a.dtStart-b.dtStart);
+  return {recurring, single};
+}
+
+let _icsGroups=null, _icsSelR=new Set(), _icsSelS=new Set();
+
+function openCalImportModal() {
+  renderCalStep1();
+  document.getElementById('cal-import-modal').style.display='flex';
+}
+function closeCalImportModal() { document.getElementById('cal-import-modal').style.display='none'; }
+
+function renderCalStep1() {
+  const ng = db.calNgList || [];
+  const ngHtml = ng.length ? `
+    <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px">🚫 NGリスト（${ng.length}件）</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        ${ng.map((s,i)=>`
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;padding:4px 6px;background:var(--card-bg);border-radius:6px">
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s)}</span>
+            <button onclick="removeCalNg(${i})" title="NGリストから削除" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--text-muted);padding:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+          </div>`).join('')}
+      </div>
+    </div>` : '';
+  const sync = db.calSync;
+  const lastSyncStr = sync.lastSync
+    ? new Date(sync.lastSync).toLocaleString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
+    : 'なし';
+  document.getElementById('cal-import-body').innerHTML=`
+    <div style="font-size:12px;color:var(--text-muted);line-height:1.9;margin-bottom:8px">
+      Googleカレンダー → ⚙️設定 → 対象カレンダーを選択 →「iCal形式の非公開URL」をコピーして貼り付けてください
+    </div>
+    <div class="form-group">
+      <div class="form-label">ICS URL（非公開）</div>
+      <input class="form-input" id="cal-ics-url" placeholder="https://calendar.google.com/calendar/ical/..." style="font-size:12px" value="${esc(sync.url||'')}">
+    </div>
+    <div id="cal-status" style="font-size:12px;color:var(--text-muted);margin-top:6px"></div>
+    <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:12px;font-weight:700">🔄 自動同期（1日1回）</span>
+        <label class="alarm-toggle" title="${sync.enabled?'ON':'OFF'}">
+          <input type="checkbox" id="cal-sync-toggle" ${sync.enabled?'checked':''} onchange="toggleCalSync(this.checked)">
+          <span class="alarm-toggle-slider"></span>
+        </label>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);display:flex;align-items:center;justify-content:space-between">
+        <span>最終同期: ${lastSyncStr}</span>
+        <button onclick="runCalSync(true)" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);padding:0" ${sync.url?'':'disabled'}>今すぐ同期</button>
+      </div>
+    </div>
+    ${ngHtml}`;
+  document.getElementById('cal-import-footer').innerHTML=`
+    <button class="btn-secondary" onclick="closeCalImportModal()">キャンセル</button>
+    <button class="btn-primary" onclick="fetchCalendar()">📅 取得して解析</button>`;
+}
+
+function addCalNg(summary) {
+  if (!Array.isArray(db.calNgList)) db.calNgList = [];
+  if (!db.calNgList.includes(summary)) {
+    db.calNgList.push(summary);
+    save();
+  }
+  // プレビューから該当行を削除
+  _icsGroups.recurring = _icsGroups.recurring.filter(e => e.summary !== summary);
+  _icsGroups.single = _icsGroups.single.filter(e => e.summary !== summary);
+  _icsSelR = new Set(_icsGroups.recurring.map((_,i)=>i));
+  _icsSelS = new Set(_icsGroups.single.map((_,i)=>i));
+  toast(`「${summary}」をNGリストに追加`, '🚫');
+  renderCalStep2();
+}
+
+function removeCalNg(index) {
+  db.calNgList.splice(index, 1);
+  save();
+  renderCalStep1();
+}
+
+function toggleCalSync(enabled) {
+  db.calSync.enabled = enabled;
+  save();
+  if (enabled && !db.calSync.url) {
+    toast('URLを入力して「取得して解析」を先に実行してください', '⚠️');
+    document.getElementById('cal-sync-toggle').checked = false;
+    db.calSync.enabled = false;
+    save();
+    return;
+  }
+  toast(enabled ? '自動同期をONにしました' : '自動同期をOFFにしました', '🔄');
+}
+
+function openSettingsModal() {
+  document.getElementById('settings-modal').style.display = 'flex';
+  const token = localStorage.getItem('mydash_github_token') || '';
+  const gistId = localStorage.getItem('mydash_gist_id') || '';
+  document.getElementById('github-token-input').value = token;
+  document.getElementById('github-gist-id').value = gistId;
+  document.getElementById('gist-status').textContent = '';
+}
+function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+
+function saveGithubToken(val) {
+  localStorage.setItem('mydash_github_token', val.trim());
+}
+
+function saveGistId(val) {
+  localStorage.setItem('mydash_gist_id', val.trim());
+}
+
+function gistStatus(msg, isErr) {
+  const el = document.getElementById('gist-status');
+  el.textContent = msg;
+  el.style.color = isErr ? 'var(--danger)' : 'var(--text-muted)';
+}
+
+async function gistUpload() {
+  const token = localStorage.getItem('mydash_github_token') || '';
+  if (!token) { gistStatus('❌ トークンを入力してください', true); return; }
+  gistStatus('⏳ 保存中…', false);
+  const content = JSON.stringify(db, null, 2);
+  const gistId = localStorage.getItem('mydash_gist_id') || '';
+  try {
+    let res, data;
+    if (gistId) {
+      res = await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: { 'mydash-data.json': { content } } })
+      });
+    } else {
+      res = await fetch('https://api.github.com/gists', {
+        method: 'POST',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: 'MyDash Data', public: false, files: { 'mydash-data.json': { content } } })
+      });
+    }
+    data = await res.json();
+    if (!res.ok) throw new Error(data.message || res.status);
+    localStorage.setItem('mydash_gist_id', data.id);
+    document.getElementById('github-gist-id').value = data.id;
+    gistStatus(`✅ 保存完了（${new Date().toLocaleTimeString('ja-JP')}）`, false);
+  } catch(e) {
+    gistStatus(`❌ ${e.message}`, true);
+  }
+}
+
+async function gistDownload() {
+  const token = localStorage.getItem('mydash_github_token') || '';
+  const gistId = localStorage.getItem('mydash_gist_id') || '';
+  if (!token) { gistStatus('❌ トークンを入力してください', true); return; }
+  if (!gistId) { gistStatus('❌ まず「Gistに保存」を実行してください', true); return; }
+  gistStatus('⏳ 読込中…', false);
+  try {
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || res.status);
+    const raw = data.files['mydash-data.json']?.content;
+    if (!raw) throw new Error('データが見つかりません');
+    const remote = JSON.parse(raw);
+
+    // マージ: IDベースで新しい updatedAt を採用
+    const localMap = new Map(db.items.map(i => [i.id, i]));
+    const remoteMap = new Map(remote.items.map(i => [i.id, i]));
+    const allIds = new Set([...localMap.keys(), ...remoteMap.keys()]);
+    const merged = [];
+    allIds.forEach(id => {
+      const l = localMap.get(id);
+      const r = remoteMap.get(id);
+      if (l && r) {
+        merged.push((l.updatedAt || l.createdAt) >= (r.updatedAt || r.createdAt) ? l : r);
+      } else {
+        merged.push(l || r);
+      }
+    });
+
+    // itemOrder もマージ（remote優先、ローカルのみIDは末尾に追加）
+    const remoteOrder = remote.itemOrder || [];
+    const localOnlyIds = merged.map(i => i.id).filter(id => !remoteOrder.includes(id));
+    db.items = merged;
+    db.itemOrder = [...remoteOrder, ...localOnlyIds];
+
+    save();
+    render();
+    gistStatus(`✅ マージ完了（${new Date().toLocaleTimeString('ja-JP')}）`, false);
+  } catch(e) {
+    gistStatus(`❌ ${e.message}`, true);
+  }
+}
+
+// ── Dockインポート ──────────────────────────────
+async function openDockImportModal() {
+  document.getElementById('dock-import-modal').style.display = 'flex';
+  const body = document.getElementById('dock-import-body');
+  const footer = document.getElementById('dock-import-footer');
+  body.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:20px">取得中…</div>';
+  footer.innerHTML = '';
+  try {
+    const r = await fetch(`${SERVER_BASE}/dock-apps`, {signal: AbortSignal.timeout(8000)});
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'unknown');
+    renderDockImportList(j.apps);
+  } catch(e) {
+    body.innerHTML = `<div style="color:var(--danger);text-align:center;padding:20px">❌ 取得失敗: ${e.message}<br><span style="font-size:12px;color:var(--text-muted)">mydash-server.js が起動しているか確認してください</span></div>`;
+  }
+}
+
+function closeDockImportModal() {
+  document.getElementById('dock-import-modal').style.display = 'none';
+}
+
+function renderDockImportList(apps) {
+  const body = document.getElementById('dock-import-body');
+  const footer = document.getElementById('dock-import-footer');
+  const existingNames = new Set(db.items.map(i => (i.appName || i.title || '').toLowerCase()));
+
+  const rows = apps.map((app, i) => {
+    const dup = existingNames.has(app.appName.toLowerCase());
+    return `<label style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);cursor:${dup?'default':'pointer'}">
+      <input type="checkbox" data-idx="${i}" ${dup?'disabled':'checked'} style="accent-color:var(--accent);width:15px;height:15px;flex-shrink:0;cursor:${dup?'default':'pointer'}">
+      <span style="font-size:18px">📦</span>
+      <span style="flex:1;font-size:13.5px;${dup?'color:var(--text-muted)':''}">
+        ${esc(app.appName)}${dup?' <span style="font-size:10px;color:var(--task);font-weight:700">既存</span>':''}
+      </span>
+    </label>`;
+  }).join('');
+
+  body.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:12px;color:var(--text-muted)">${apps.length}件のDockアプリ</span>
+      <label style="font-size:12px;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:5px">
+        <input type="checkbox" id="dock-select-all" checked onchange="toggleDockAll(this)" style="accent-color:var(--accent)"> すべて選択
+      </label>
+    </div>
+    <div style="max-height:320px;overflow-y:auto">${rows}</div>`;
+
+  footer.innerHTML = `
+    <button class="io-btn" onclick="closeDockImportModal()" style="flex:1">キャンセル</button>
+    <button class="io-btn" onclick="executeDockImport(${JSON.stringify(apps).replace(/"/g,'&quot;')})"
+      style="flex:1;background:var(--accent);border-color:var(--accent);color:white;font-weight:700">インポート</button>`;
+}
+
+function toggleDockAll(chk) {
+  document.querySelectorAll('#dock-import-body input[type=checkbox][data-idx]').forEach(c => {
+    if (!c.disabled) c.checked = chk.checked;
+  });
+}
+
+function executeDockImport(apps) {
+  const checked = [...document.querySelectorAll('#dock-import-body input[data-idx]:checked')].map(c => parseInt(c.dataset.idx));
+  if (!checked.length) { toast('アプリを選択してください', '⚠️'); return; }
+  const existingNames = new Set(db.items.map(i => (i.appName || i.title || '').toLowerCase()));
+  let added = 0;
+  checked.forEach(i => {
+    const app = apps[i];
+    if (existingNames.has(app.appName.toLowerCase())) return;
+    db.items.push({
+      id: 'item_' + Math.random().toString(36).slice(2,10),
+      type: 'tool', title: app.appName, appName: app.appName,
+      url: app.url || '', icon: null, category: 'Dock',
+      desc: '', tags: [], status: 'todo', priority: 'medium',
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    });
+    added++;
+  });
+  save(); render();
+  closeDockImportModal();
+  toast(`${added}件のアプリをインポートしました`, '🖥');
+}
+
+// ── サイドバーカテゴリへのドロップ ────────────────
+function catDragOver(el, e) {
+  if (!_dragSrcId) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  el.classList.add('drop-target');
+}
+function catDragLeave(el) {
+  el.classList.remove('drop-target');
+}
+function catDrop(el) {
+  el.classList.remove('drop-target');
+  if (!_dragSrcId) return;
+  const cat = el.dataset.cat ?? '';
+  const item = db.items.find(i => i.id === _dragSrcId);
+  if (!item) return;
+  item.category = cat;
+  save();
+  render();
+  toast(`📂 「${item.title}」→ ${cat || '未設定'}`);
+}
+
+// ── アイコンのクリップボードペースト ──────────────
+function pasteIcon(e) {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('f-icon').value = ev.target.result;
+        updateIconPreview();
+      };
+      reader.readAsDataURL(item.getAsFile());
+      return;
+    }
+  }
+}
+async function pasteIconFromClipboard() {
+  try {
+    const items = await navigator.clipboard.read();
+    for (const item of items) {
+      const imageType = item.types.find(t => t.startsWith('image/'));
+      if (imageType) {
+        const blob = await item.getType(imageType);
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('f-icon').value = e.target.result;
+          updateIconPreview();
+          toast('📋 画像を貼り付けました');
+        };
+        reader.readAsDataURL(blob);
+        return;
+      }
+    }
+    toast('クリップボードに画像がありません', '⚠️');
+  } catch(err) {
+    toast('クリップボードへのアクセスが拒否されました', '❌');
+  }
+}
+
+// ── ドラッグ＆ドロップ並び替え ──────────────────
+function getItemOrder() {
+  if (!db.itemOrder) db.itemOrder = [];
+  const allIds = db.items.map(i => i.id);
+  // 未登録アイテムを末尾に追加
+  allIds.forEach(id => { if (!db.itemOrder.includes(id)) db.itemOrder.push(id); });
+  // 削除済みアイテムを除去
+  db.itemOrder = db.itemOrder.filter(id => allIds.includes(id));
+  return db.itemOrder;
+}
+
+let _dragSrcId = null;
+function initDragSort() {
+  if (document.getElementById('sort-select').value !== 'manual') return;
+  const cards = document.querySelectorAll('[data-id]');
+
+  function clearIndicators() {
+    document.querySelectorAll('.drag-insert-before,.drag-insert-after,.dragging')
+      .forEach(el => el.classList.remove('drag-insert-before','drag-insert-after','dragging'));
+  }
+
+  function insertPos(card, e) {
+    const rect = card.getBoundingClientRect();
+    const isGrid = card.classList.contains('grid-card') || card.classList.contains('icon-card');
+    return isGrid
+      ? (e.clientX < rect.left + rect.width / 2 ? 'before' : 'after')
+      : (e.clientY < rect.top + rect.height / 2 ? 'before' : 'after');
+  }
+
+  cards.forEach(card => {
+    card.draggable = true;
+    card.addEventListener('dragstart', e => {
+      _dragSrcId = card.dataset.id;
+      setTimeout(() => card.classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', clearIndicators);
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (card.dataset.id === _dragSrcId) return;
+      clearIndicators();
+      card.classList.add(insertPos(card, e) === 'before' ? 'drag-insert-before' : 'drag-insert-after');
+    });
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drag-insert-before','drag-insert-after');
+    });
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      const targetId = card.dataset.id;
+      if (!_dragSrcId || _dragSrcId === targetId) { clearIndicators(); return; }
+      const before = card.classList.contains('drag-insert-before');
+      clearIndicators();
+      const order = getItemOrder();
+      order.splice(order.indexOf(_dragSrcId), 1);
+      const tgtIdx = order.indexOf(targetId);
+      order.splice(before ? tgtIdx : tgtIdx + 1, 0, _dragSrcId);
+      db.itemOrder = order;
+      save();
+      render();
+    });
+  });
+}
+
+// ICSをフェッチ: 直接fetch → ローカルサーバー の順で試みる
+async function fetchICSText(url) {
+  // ① 直接fetch
+  try {
+    const r = await fetch(url, {signal: AbortSignal.timeout(10000)});
+    if (r.ok) { console.log('[ICS] 直接fetchで取得'); return await r.text(); }
+  } catch(_) {}
+  // ② ローカルサーバー経由
+  console.log('[ICS] ローカルサーバー経由で取得');
+  const r = await fetch(`${SERVER_BASE}/fetch-ical?url=${encodeURIComponent(url)}`, {signal: AbortSignal.timeout(15000)});
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'unknown');
+  return j.data;
+}
+
+async function runCalSync(manual = false) {
+  const sync = db.calSync;
+  if (!sync.url) return;
+  if (!manual) {
+    if (!sync.enabled) return;
+    const elapsed = Date.now() - (sync.lastSync || 0);
+    if (elapsed < 23 * 60 * 60 * 1000) return; // 23時間未満はスキップ
+  }
+  try {
+    const events = parseICS(await fetchICSText(sync.url));
+    const groups = groupICSEvents(events);
+    let added = 0;
+
+    // 繰り返し → アラーム（同名がなければ追加）
+    if (!Array.isArray(db.alarms)) db.alarms = [];
+    const existingAlarmNames = new Set(db.alarms.map(a => a.name));
+    for (const ev of groups.recurring) {
+      if (!existingAlarmNames.has(ev.summary)) {
+        db.alarms.push({id: 'alarm_' + genId(), name: ev.summary, schedule: rruleToSchedule(ev.rrule, ev.dtStart), action: {type: 'none'}, enabled: true, lastFired: null, fromCalSync: true});
+        added++;
+      }
+    }
+
+    // 単発 → タスク（同タイトル＋同日がなければ追加）
+    for (const ev of groups.single) {
+      const d = ev.dtStart;
+      const due = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const exists = db.items.some(i => i.title === ev.summary && i.due === due);
+      if (!exists) {
+        db.items.push({id: genId(), type: 'task', title: ev.summary, desc: '', url: '', icon: '📅', category: 'カレンダー', status: 'todo', priority: 'medium', due, tags: [], starred: false, createdAt: new Date().toISOString(), fromCalSync: true});
+        added++;
+      }
+    }
+
+    db.calSync.lastSync = Date.now();
+    save();
+    if (added > 0) {
+      toast(`カレンダー同期: ${added}件追加`, '📅');
+      render();
+      updateAlarmBadge();
+    } else if (manual) {
+      toast('新しいイベントはありませんでした', '📅');
+    }
+    // モーダルが開いていたら表示を更新
+    if (document.getElementById('cal-import-modal').style.display !== 'none') renderCalStep1();
+  } catch(e) {
+    if (manual) toast(`同期失敗: ${e.message}`, '❌');
+    else console.warn('calSync failed:', e);
+  }
+}
+
+// 30分ごとに自動同期チェック
+setInterval(() => runCalSync(false), 30 * 60 * 1000);
+
+async function fetchCalendar() {
+  const url = document.getElementById('cal-ics-url').value.trim();
+  if (!url) { toast('URLを入力してください','⚠️'); return; }
+  // URLを保存
+  db.calSync.url = url;
+  save();
+  const status = document.getElementById('cal-status');
+  status.textContent='取得中…';
+  try {
+    const events = parseICS(await fetchICSText(url));
+    _icsGroups = groupICSEvents(events);
+    _icsSelR = new Set(_icsGroups.recurring.map((_,i)=>i));
+    _icsSelS = new Set(_icsGroups.single.map((_,i)=>i));
+    renderCalStep2();
+  } catch(e) {
+    status.textContent=`❌ 取得失敗: ${e.message}`;
+    if (!url.startsWith('https://calendar.google.com')) status.textContent+=' ※Googleカレンダーの非公開URLか確認してください';
+  }
+}
+
+function renderCalStep2() {
+  const {recurring, single} = _icsGroups;
+  let html='';
+  if (!recurring.length && !single.length) {
+    html=`<div class="empty-state" style="padding:28px"><div class="ei">📭</div><h3>対象イベントなし</h3><div style="font-size:12px;color:var(--text-muted);margin-top:4px">直近1ヶ月のイベントが対象です</div></div>`;
+  }
+  if (recurring.length) {
+    html+=`<div style="font-size:10.5px;font-weight:700;color:var(--set);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🔔 繰り返し → アラームとして追加（${recurring.length}件）</div>`;
+    html+=`<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">`;
+    recurring.forEach((ev,i)=>{
+      html+=`<div class="set-item-row" style="gap:4px">
+        <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;min-width:0">
+          <input type="checkbox" checked onchange="if(this.checked)_icsSelR.add(${i});else _icsSelR.delete(${i})" style="accent-color:var(--set);flex-shrink:0">
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(ev.summary)}</span>
+          <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${rruleDesc(ev.rrule,ev.dtStart)}</span>
+        </label>
+        <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  if (single.length) {
+    html+=`<div style="font-size:10.5px;font-weight:700;color:var(--task);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">✅ 単発 → タスクとして追加（${single.length}件）</div>`;
+    html+=`<div style="display:flex;flex-direction:column;gap:5px">`;
+    single.forEach((ev,i)=>{
+      const d=ev.dtStart;
+      const ds=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      html+=`<div class="set-item-row" style="gap:4px">
+        <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;min-width:0">
+          <input type="checkbox" checked onchange="if(this.checked)_icsSelS.add(${i});else _icsSelS.delete(${i})" style="accent-color:var(--task);flex-shrink:0">
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(ev.summary)}</span>
+          <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${ds}</span>
+        </label>
+        <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  document.getElementById('cal-import-body').innerHTML=`<div style="max-height:360px;overflow-y:auto;padding-right:3px">${html}</div>`;
+  document.getElementById('cal-import-footer').innerHTML=`
+    <button class="btn-secondary" onclick="renderCalStep1()">← 戻る</button>
+    <button class="btn-primary" onclick="importCalendarEvents()">✅ インポート</button>`;
+}
+
+function importCalendarEvents() {
+  const {recurring,single} = _icsGroups;
+  if (!Array.isArray(db.alarms)) db.alarms=[];
+  let count=0;
+  for (const i of _icsSelR) {
+    const ev=recurring[i]; if(!ev) continue;
+    db.alarms.push({id:'alarm_'+genId(), name:ev.summary, schedule:rruleToSchedule(ev.rrule,ev.dtStart), action:{type:'none'}, enabled:true, lastFired:null});
+    count++;
+  }
+  for (const i of _icsSelS) {
+    const ev=single[i]; if(!ev) continue;
+    const d=ev.dtStart;
+    const due=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    db.items.push({id:genId(), type:'task', title:ev.summary, desc:'', url:'', icon:'📅', category:'カレンダー', status:'todo', priority:'medium', due, tags:[], starred:false, createdAt:new Date().toISOString()});
+    count++;
+  }
+  save(); render(); updateAlarmBadge();
+  closeCalImportModal();
+  toast(`${count}件をインポートしました`,'📅');
+}
+
+// ── Alarm Modal ──────────────────────────────
+function openAlarmModal() {
+  updateAlarmBadge();
+  renderAlarmList();
+  document.getElementById('alarm-modal').style.display = 'flex';
+}
+function closeAlarmModal() { document.getElementById('alarm-modal').style.display = 'none'; }
+function closeAlarmModalOutside(e) { if (e.target === document.getElementById('alarm-modal')) closeAlarmModal(); }
+
+function renderAlarmList() {
+  const body = document.getElementById('alarm-modal-body');
+  const footer = document.getElementById('alarm-modal-footer');
+  const alarms = getAlarms();
+  if (!alarms.length) {
+    body.innerHTML = `<div class="empty-state" style="padding:40px 20px">
+      <div class="ei">🔔</div><h3>アラームなし</h3>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:6px">「＋ 追加」でアラームを作成できます</div></div>`;
+  } else {
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:2px">
+        <input type="checkbox" id="alarm-check-all" onchange="toggleAllAlarmChecks(this.checked)" style="width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--set)">
+        <span style="font-size:12px;color:var(--text-muted);cursor:pointer;user-select:none" onclick="document.getElementById('alarm-check-all').click()">すべて選択</span>
+      </div>
+      <div class="alarm-list">${alarms.map(a => `
+      <div class="alarm-row">
+        <input type="checkbox" class="alarm-check" data-id="${a.id}" onchange="updateAlarmActionBtns()" style="width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--set)">
+        <div class="alarm-row-info">
+          <div class="alarm-row-name">${esc(a.name)}</div>
+          <div class="alarm-row-sched">${alarmSchedDesc(a)}${a.action?.type==='set' && a.action.targetId ? ` · 🚀 自動起動: ${esc((db.items.find(i=>i.id===a.action.targetId)||{}).title||'?')}` : ''}</div>
+        </div>
+        ${a.action?.type==='url' && a.action.url ? `<button class="action-btn" onclick="event.stopPropagation();window.open('${esc(a.action.url)}','_blank')" title="URLを開く">🔗</button>` : ''}
+        ${a.action?.type==='set' && a.action.targetId ? `<button class="action-btn" onclick="event.stopPropagation();launchSet('${a.action.targetId}');closeAlarmModal()" title="セットを今すぐ起動">▶</button>` : ''}
+        <label class="alarm-toggle" title="${a.enabled?'ON':'OFF'}">
+          <input type="checkbox" ${a.enabled?'checked':''} onchange="toggleAlarmEnabled('${a.id}',this.checked)">
+          <span class="alarm-toggle-slider"></span>
+        </label>
+        <button class="action-btn" onclick="openAlarmForm('${a.id}')" title="編集">✏️</button>
+        <button class="action-btn danger" onclick="deleteAlarm('${a.id}')" title="削除">🗑️</button>
+      </div>`).join('')}</div>`;
+  }
+  footer.innerHTML = `
+    <button class="btn-danger" id="alarm-del-sel-btn" onclick="deleteSelectedAlarms()" disabled style="opacity:0.4;margin-right:auto">🗑️ 選択削除</button>
+    <button class="btn-secondary" id="alarm-off-sel-btn" onclick="toggleSelectedAlarms(false)" disabled style="opacity:0.4">⏸ 無効化</button>
+    <button class="btn-secondary" id="alarm-on-sel-btn" onclick="toggleSelectedAlarms(true)" disabled style="opacity:0.4">▶ 有効化</button>
+    <button class="btn-primary" onclick="openAlarmForm(null)">＋ 追加</button>`;
+}
+
+function updateAlarmActionBtns() {
+  const all = document.querySelectorAll('.alarm-check');
+  const checked = document.querySelectorAll('.alarm-check:checked');
+  const count = checked.length;
+  const setBtn = (id, label) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.disabled = count === 0;
+    btn.style.opacity = count ? '1' : '0.4';
+    if (label) btn.textContent = count ? `${label}（${count}件）` : label;
+  };
+  setBtn('alarm-del-sel-btn', '🗑️ 選択削除');
+  setBtn('alarm-off-sel-btn', '⏸ 無効化');
+  setBtn('alarm-on-sel-btn', '▶ 有効化');
+  // 全選択チェックの状態を同期
+  const allChk = document.getElementById('alarm-check-all');
+  if (!allChk) return;
+  allChk.checked = count === all.length;
+  allChk.indeterminate = count > 0 && count < all.length;
+}
+
+function toggleAllAlarmChecks(checked) {
+  document.querySelectorAll('.alarm-check').forEach(c => c.checked = checked);
+  updateAlarmActionBtns();
+}
+
+function deleteSelectedAlarms() {
+  const ids = [...document.querySelectorAll('.alarm-check:checked')].map(c => c.dataset.id);
+  if (!ids.length) return;
+  if (!confirm(`${ids.length}件のアラームを削除しますか？`)) return;
+  db.alarms = db.alarms.filter(a => !ids.includes(a.id));
+  save(); renderAlarmList(); updateAlarmBadge();
+}
+
+function toggleSelectedAlarms(enabled) {
+  const ids = [...document.querySelectorAll('.alarm-check:checked')].map(c => c.dataset.id);
+  if (!ids.length) return;
+  db.alarms.forEach(a => { if (ids.includes(a.id)) a.enabled = enabled; });
+  save(); renderAlarmList(); updateAlarmBadge();
+}
+
+function toggleAlarmEnabled(id, val) {
+  const a = getAlarms().find(a => a.id === id);
+  if (a) { a.enabled = val; save(); updateAlarmBadge(); }
+}
+
+function deleteAlarm(id) {
+  if (!confirm('このアラームを削除しますか？')) return;
+  db.alarms = db.alarms.filter(a => a.id !== id);
+  save(); renderAlarmList(); updateAlarmBadge();
+}
+
+function openAlarmForm(id) {
+  _alarmFormId = id;
+  const alarm = id ? getAlarms().find(a => a.id === id) : null;
+  _alarmFormDays = alarm ? [...(alarm.schedule.days || [])] : [];
+  _alarmMonthWeekday = alarm?.schedule?.weekday ?? 1;
+  const schedType = alarm?.schedule?.type || 'weekly';
+  const actionType = alarm?.action?.type || 'none';
+  const sets = db.items.filter(i => i.type === 'set');
+  const setOpts = sets.map(s => `<option value="${s.id}" ${alarm?.action?.targetId===s.id?'selected':''}>${esc(s.title)}</option>`).join('');
+
+  document.getElementById('alarm-modal-body').innerHTML = `
+    <div class="form-group">
+      <div class="form-label">アラーム名</div>
+      <input class="form-input" id="af-name" placeholder="例: 朝のミーティング" value="${esc(alarm?.name||'')}">
+    </div>
+    <div class="form-group">
+      <div class="form-label">繰り返し</div>
+      <select class="form-select" id="af-type" onchange="onAlarmTypeChange()">
+        <option value="daily"            ${schedType==='daily'?'selected':''}>毎日</option>
+        <option value="weekly"           ${schedType==='weekly'?'selected':''}>毎週</option>
+        <option value="biweekly"         ${schedType==='biweekly'?'selected':''}>隔週</option>
+        <option value="monthly-date"     ${schedType==='monthly-date'?'selected':''}>毎月（日付）</option>
+        <option value="monthly-weekday"  ${schedType==='monthly-weekday'?'selected':''}>毎月（第N曜日）</option>
+        <option value="yearly"           ${schedType==='yearly'?'selected':''}>毎年</option>
+      </select>
+    </div>
+    <div class="form-group" id="af-days-group">
+      <div class="form-label">曜日</div>
+      <div class="day-picker">${ALARM_DAYS.map((d,i)=>`
+        <button type="button" class="day-btn${_alarmFormDays.includes(i)?' selected':''}"
+          onclick="toggleAlarmDay(${i},this)">${d}</button>`).join('')}</div>
+    </div>
+    <div class="form-group" id="af-biweekly-group" style="display:none">
+      <div class="form-label">隔週の基準日（この日の週から開始）</div>
+      <input class="form-input" type="date" id="af-biweekly-ref" value="${alarm?.schedule?.biweeklyRef||new Date().toISOString().slice(0,10)}">
+    </div>
+    <div class="form-group" id="af-monthday-group" style="display:none">
+      <div class="form-label">毎月何日</div>
+      <input class="form-input" type="number" id="af-monthday" min="1" max="31" value="${alarm?.schedule?.monthDay||1}" style="width:90px">
+    </div>
+    <div class="form-group" id="af-monthweekday-group" style="display:none">
+      <div class="form-label">第何週・曜日</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select class="form-select" id="af-weekday-n" style="width:100px">
+          ${[1,2,3,4,5].map(n=>`<option value="${n}" ${alarm?.schedule?.weekdayN===n?'selected':''}>第${n}</option>`).join('')}
+          <option value="-1" ${alarm?.schedule?.weekdayN===-1?'selected':''}>最終</option>
+        </select>
+        <div class="day-picker">${ALARM_DAYS.map((d,i)=>`
+          <button type="button" class="day-btn${alarm?.schedule?.weekday===i?' selected':''}"
+            onclick="selectMonthWeekday(${i},this)">${d}</button>`).join('')}</div>
+      </div>
+    </div>
+    <div class="form-group" id="af-yearly-group" style="display:none">
+      <div class="form-label">毎年何月何日</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select class="form-select" id="af-yearly-month" style="width:90px">
+          ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${alarm?.schedule?.month===i+1?'selected':''}>${i+1}月</option>`).join('')}
+        </select>
+        <input class="form-input" type="number" id="af-yearly-day" min="1" max="31" value="${alarm?.schedule?.day||1}" style="width:70px">
+        <span style="color:var(--text-muted);font-size:13px">日</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">時刻</div>
+      <input class="form-input" type="time" id="af-time" value="${alarm?.schedule?.time||'09:00'}">
+    </div>
+    <div class="form-group">
+      <div class="form-label">アクション（時間になったら）</div>
+      <select class="form-select" id="af-action-type" onchange="onAlarmActionTypeChange()">
+        <option value="none" ${actionType==='none'?'selected':''}>通知のみ</option>
+        <option value="set"  ${actionType==='set'?'selected':''}>セットを起動</option>
+        <option value="url"  ${actionType==='url'?'selected':''}>URLを開く</option>
+      </select>
+    </div>
+    <div class="form-group" id="af-set-group" style="${actionType!=='set'?'display:none':''}">
+      <div class="form-label">起動するセット</div>
+      <select class="form-select" id="af-set-target">${sets.length?setOpts:'<option value="">（セットがありません）</option>'}</select>
+    </div>
+    <div class="form-group" id="af-url-group" style="${actionType!=='url'?'display:none':''}">
+      <div class="form-label">URL</div>
+      <input class="form-input" id="af-url" placeholder="https://..." value="${esc(alarm?.action?.url||'')}">
+    </div>`;
+
+  document.getElementById('alarm-modal-footer').innerHTML = `
+    ${id?`<button class="btn-danger" onclick="deleteAlarm('${id}')">🗑️ 削除</button>`:''}
+    <button class="btn-secondary" onclick="renderAlarmList()">← 戻る</button>
+    <button class="btn-primary" onclick="saveAlarm()">保存</button>`;
+
+  onAlarmTypeChange();
+}
+
+let _alarmMonthWeekday = 1; // 毎月第N曜日用の選択中の曜日
+
+function onAlarmTypeChange() {
+  const type = document.getElementById('af-type').value;
+  const show = id => document.getElementById(id).style.display = '';
+  const hide = id => document.getElementById(id).style.display = 'none';
+  // まず全部隠す
+  ['af-days-group','af-biweekly-group','af-monthday-group','af-monthweekday-group','af-yearly-group'].forEach(hide);
+  if (type === 'weekly' || type === 'biweekly') show('af-days-group');
+  if (type === 'biweekly') show('af-biweekly-group');
+  if (type === 'monthly-date') show('af-monthday-group');
+  if (type === 'monthly-weekday') show('af-monthweekday-group');
+  if (type === 'yearly') show('af-yearly-group');
+}
+
+function selectMonthWeekday(idx, btn) {
+  document.querySelectorAll('#af-monthweekday-group .day-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  _alarmMonthWeekday = idx;
+}
+
+function onAlarmActionTypeChange() {
+  const type = document.getElementById('af-action-type').value;
+  document.getElementById('af-set-group').style.display = type === 'set' ? '' : 'none';
+  document.getElementById('af-url-group').style.display = type === 'url' ? '' : 'none';
+}
+
+function toggleAlarmDay(idx, btn) {
+  if (_alarmFormDays.includes(idx)) {
+    _alarmFormDays = _alarmFormDays.filter(d => d !== idx);
+    btn.classList.remove('selected');
+  } else {
+    _alarmFormDays.push(idx);
+    btn.classList.add('selected');
+  }
+}
+
+function saveAlarm() {
+  const name = document.getElementById('af-name').value.trim();
+  if (!name) { toast('アラーム名を入力してください', '⚠️'); return; }
+  const schedType = document.getElementById('af-type').value;
+  const time = document.getElementById('af-time').value;
+  if (!time) { toast('時刻を入力してください', '⚠️'); return; }
+  const needsDays = ['weekly','biweekly'].includes(schedType);
+  if (needsDays && _alarmFormDays.length === 0) { toast('曜日を選択してください', '⚠️'); return; }
+
+  const actionType = document.getElementById('af-action-type').value;
+  const action = { type: actionType };
+  if (actionType === 'set') action.targetId = document.getElementById('af-set-target').value;
+  else if (actionType === 'url') action.url = document.getElementById('af-url').value.trim();
+
+  const schedule = { type: schedType, time };
+  if (needsDays) schedule.days = [..._alarmFormDays];
+  if (schedType === 'biweekly') schedule.biweeklyRef = document.getElementById('af-biweekly-ref').value;
+  if (schedType === 'monthly-date') schedule.monthDay = parseInt(document.getElementById('af-monthday').value) || 1;
+  if (schedType === 'monthly-weekday') {
+    schedule.weekdayN = parseInt(document.getElementById('af-weekday-n').value);
+    schedule.weekday = _alarmMonthWeekday;
+  }
+  if (schedType === 'yearly') {
+    schedule.month = parseInt(document.getElementById('af-yearly-month').value);
+    schedule.day = parseInt(document.getElementById('af-yearly-day').value) || 1;
+  }
+
+  if (!Array.isArray(db.alarms)) db.alarms = [];
+
+  if (_alarmFormId) {
+    const a = db.alarms.find(a => a.id === _alarmFormId);
+    if (a) { a.name = name; a.schedule = schedule; a.action = action; a.lastFired = null; }
+  } else {
+    db.alarms.push({ id: 'alarm_' + genId(), name, schedule, action, enabled: true, lastFired: null });
+  }
+
+  save(); updateAlarmBadge(); renderAlarmList();
+  toast(_alarmFormId ? 'アラームを更新しました' : 'アラームを追加しました', '🔔');
+}
+
+// ═══════════════════════════════════════════
+// Events
+// ═══════════════════════════════════════════
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ctx-menu')) hideCtx();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !e.isComposing) closeModal();
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    _inputModeIdx = 0; applyInputMode();
+    document.getElementById('search-input').focus();
+    document.getElementById('search-input').select();
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+    e.preventDefault();
+    openModal();
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === ',') {
+    e.preventDefault();
+    openSettingsModal();
+  }
+  // 入力中・修飾キー使用中はグローバルショートカットをスキップ
+  const inInput = ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName);
+  if (inInput || e.metaKey || e.ctrlKey || e.altKey || e.isComposing) return;
+
+  // 表示切り替え
+  if (e.key === 'g' || e.key === 'G') { e.preventDefault(); setView('grid'); return; }
+  if (e.key === 'l' || e.key === 'L') { e.preventDefault(); setView('list'); return; }
+  if (e.key === 'i' || e.key === 'I') { e.preventDefault(); setView('icon'); return; }
+
+  // フィルター切り替え（0=すべて, 1〜6=タイプ）
+  const FILTER_KEYS = ['all','bookmark','tool','task','memo','other','set'];
+  const n = parseInt(e.key);
+  if (!isNaN(n) && n >= 0 && n <= 6) { e.preventDefault(); setFilter(FILTER_KEYS[n]); }
+});
+
+// ═══════════════════════════════════════════
+// Init
+// ═══════════════════════════════════════════
+window.name = 'mydash-main';
+load();
+rebuildIndex();
+if (db.settings.windowSize) {
+  const { w, h, x, y } = db.settings.windowSize;
+  setTimeout(() => {
+    fetch(`${SERVER_BASE}/restore-position?x=${x}&y=${y}&w=${w}&h=${h}`).catch(() => {});
+  }, 1200);
+}
+document.getElementById('confirm-close-toggle').checked = !!db.settings.confirmOnClose;
+document.getElementById('alarm-auto-launch-toggle').checked = db.settings.alarmAutoLaunch !== false;
+applyAlarmMuteUI();
+document.getElementById('alarm-offset-input').value = db.settings.alarmOffsetMin || 0;
+applyTheme();
+applyPriorityIcons();
+['low','medium','high'].forEach(level => {
+  const val = db.settings.priorityIcons?.[level] || {low:'▂',medium:'▄',high:'█'}[level];
+  document.getElementById('pi-' + level).value = val;
+  const box = document.getElementById('pi-preview-' + level);
+  if (/^https?:|^\/|^data:/.test(val)) box.innerHTML = `<img src="${esc(val)}">`;
+  else box.textContent = val;
+});
+document.getElementById('sort-select').value = db.settings.sort || 'manual';
+setView(db.settings.view || 'grid');
+repairBrokenRefs();
+pingServer();
+// 30秒ごとにサーバー状態を確認
+setInterval(pingServer, 30000);
+initClock();
+startAlarmChecker();
+updateAlarmBadge();
+runCalSync(false); // ページ読み込み時に自動同期チェック
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+  }
+});
+
+window.addEventListener('beforeunload', () => {
+  const w = window.outerWidth, h = window.outerHeight, x = window.screenX, y = window.screenY;
+  db.settings.windowSize = { w, h, x, y };
+  save();
+});
+
+// 10秒ごとにウィンドウ位置・サイズをサーバーに保存
+setInterval(() => {
+  const w = window.outerWidth, h = window.outerHeight, x = window.screenX, y = window.screenY;
+  fetch(`${SERVER_BASE}/save-position?x=${x}&y=${y}&w=${w}&h=${h}`).catch(() => {});
+}, 10000);
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+backup Hatakeyama/
+.DS_Store
+.window-state.json
+mydash-server.js
+*.app
