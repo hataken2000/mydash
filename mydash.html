@@ -2709,13 +2709,33 @@ function handleShortcutExec() {
   const title = p.get('t') || '';
   const body  = p.get('b') || '';
   const urls  = (p.get('u') || '').split('|').filter(Boolean);
-  if (exec === 'url' && urls[0]) {
-    window.open(urls[0], '_blank');
-  } else if (exec === 'urls') {
-    urls.forEach(u => window.open(u, '_blank'));
+  if (exec === 'url' && urls.length === 1) {
+    // 単一URLはそのままリダイレクト
+    location.href = urls[0];
+  } else if (exec === 'urls' || (exec === 'url' && urls.length > 1)) {
+    // 複数URLはタップできるリンクのパネルを表示（Safariのwindow.openブロック回避）
+    showShortcutUrlPanel(title, urls);
   } else if (exec === 'memo' || exec === 'task') {
     showShortcutPopup(exec, title, body);
   }
+}
+
+function showShortcutUrlPanel(title, urls) {
+  const el = document.createElement('div');
+  el.id = 'shortcut-popup';
+  el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
+  const linkItems = urls.map(u => {
+    const label = u.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    return `<a href="${esc(u)}" target="_blank" style="display:block;padding:13px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--accent);text-decoration:none;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:8px">${esc(label)}</a>`;
+  }).join('');
+  el.innerHTML = `
+    <div style="background:var(--card-bg);border-radius:var(--radius);padding:24px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+      <div style="font-size:26px;margin-bottom:8px">🚀</div>
+      ${title ? `<div style="font-size:17px;font-weight:700;margin-bottom:14px">${esc(title)}</div>` : ''}
+      <div style="max-height:55vh;overflow-y:auto">${linkItems}</div>
+      <button onclick="document.getElementById('shortcut-popup').remove()" style="margin-top:14px;width:100%;padding:12px;background:var(--card-bg);color:var(--text-muted);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;cursor:pointer">閉じる</button>
+    </div>`;
+  document.body.appendChild(el);
 }
 
 function showShortcutPopup(type, title, body) {
