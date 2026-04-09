@@ -1249,7 +1249,9 @@ body {
 // Constants & State
 // ═══════════════════════════════════════════
 const STORAGE_KEY = 'mydash_v1';
-const SERVER_BASE = `http://${location.hostname}:3737`;
+const _h = location.hostname;
+const SERVER_BASE = (_h === 'localhost' || _h === '127.0.0.1' || /^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[01])\./.test(_h))
+  ? `http://${_h}:3737` : null;
 
 const TYPE_DEF = {
   bookmark: { icon: '🔖', label: 'ブックマーク' },
@@ -1877,6 +1879,7 @@ async function openWithServer(appName) {
 
 // サーバー状態確認
 async function pingServer() {
+  if (!SERVER_BASE) { updateServerStatus(false); return; }
   try {
     const res = await fetch(`${SERVER_BASE}/ping`, { signal: AbortSignal.timeout(1500) });
     const json = await res.json();
