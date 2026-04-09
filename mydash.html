@@ -3961,7 +3961,7 @@ document.addEventListener('keydown', e => {
 window.name = 'mydash-main';
 load();
 rebuildIndex();
-if (db.settings.windowSize) {
+if (SERVER_BASE && db.settings.windowSize) {
   const { w, h, x, y } = db.settings.windowSize;
   setTimeout(() => {
     fetch(`${SERVER_BASE}/restore-position?x=${x}&y=${y}&w=${w}&h=${h}`).catch(() => {});
@@ -4006,11 +4006,13 @@ window.addEventListener('beforeunload', () => {
   save();
 });
 
-// 10秒ごとにウィンドウ位置・サイズをサーバーに保存
-setInterval(() => {
-  const w = window.outerWidth, h = window.outerHeight, x = window.screenX, y = window.screenY;
-  fetch(`${SERVER_BASE}/save-position?x=${x}&y=${y}&w=${w}&h=${h}`).catch(() => {});
-}, 10000);
+// 10秒ごとにウィンドウ位置・サイズをサーバーに保存（ローカルサーバーがある場合のみ）
+if (SERVER_BASE) {
+  setInterval(() => {
+    const w = window.outerWidth, h = window.outerHeight, x = window.screenX, y = window.screenY;
+    fetch(`${SERVER_BASE}/save-position?x=${x}&y=${y}&w=${w}&h=${h}`).catch(() => {});
+  }, 10000);
+}
 </script>
 </body>
 </html>
