@@ -24,6 +24,7 @@
   --danger: #ef5350;
   --success: #66bb6a;
   --set: #80cbc4;
+  --slack: #4ab95f;
   --radius: 12px;
   --radius-sm: 8px;
 }
@@ -369,12 +370,14 @@ body {
 .type-memo     { color: var(--memo);     background: rgba(244,143,177,0.14); }
 .type-other    { color: var(--other);    background: rgba(206,147,216,0.14); }
 .type-set      { color: var(--set);      background: rgba(128,203,196,0.14); }
+.type-slack    { color: var(--slack);   background: rgba(74,185,95,0.14); }
 .icon-bg-bookmark { background: rgba(79,195,247,0.10); }
 .icon-bg-tool     { background: rgba(129,199,132,0.10); }
 .icon-bg-task     { background: rgba(255,183,77,0.10); }
 .icon-bg-memo     { background: rgba(244,143,177,0.10); }
 .icon-bg-other    { background: rgba(206,147,216,0.10); }
 .icon-bg-set      { background: rgba(128,203,196,0.10); }
+.icon-bg-slack    { background: rgba(74,185,95,0.10); }
 .status-todo  { background: rgba(139,144,170,0.18); color: var(--text-muted); }
 .status-doing { background: rgba(255,183,77,0.18);  color: var(--task); }
 .status-done  { background: rgba(102,187,106,0.18); color: var(--success); }
@@ -831,8 +834,8 @@ body.hide-server .launch-btn { display: none !important; }
     <div style="margin-top:8px">
       <div class="sidebar-item" style="padding:6px 8px;border-radius:8px;justify-content:center;gap:6px">
         <button class="input-mode-btn" id="alarm-mute-btn" onclick="toggleAlarmMute()" title="アラームON/OFF（集中モード）" style="width:22px;height:22px;font-size:13px;flex-shrink:0">🔔</button>
-        <span style="font-size:12px;color:var(--text-muted);flex:1;cursor:pointer" onclick="openAlarmModal()">アラーム管理</span>
-        <span class="count-badge" id="cnt-alarm" style="cursor:pointer" onclick="openAlarmModal()">0</span>
+        <span style="font-size:12px;color:var(--text-muted);flex:1;cursor:pointer" onclick="goToAlarmFilter()">アラーム管理</span>
+        <span class="count-badge" id="cnt-alarm" style="cursor:pointer" onclick="goToAlarmFilter()">0</span>
       </div>
       <div class="sidebar-item server-feature" id="widget-btn" onclick="openWidget()" style="padding:6px 8px;border-radius:8px;justify-content:center;gap:6px;margin-top:4px">
         <span style="font-size:13px" id="widget-btn-icon">📌</span>
@@ -876,6 +879,10 @@ body.hide-server .launch-btn { display: none !important; }
   <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
     <span class="si-icon">🚀</span><span class="si-label">セット</span>
     <span class="count-badge" id="cnt-set">0</span>
+  </div>
+  <div class="sidebar-item" data-filter="slack" onclick="setFilter('slack')">
+    <span class="si-icon">💬</span><span class="si-label">Slack送信</span>
+    <span class="count-badge" id="cnt-slack">0</span>
   </div>
 
   <div class="sidebar-section" id="cat-section" style="display:none">カテゴリ</div>
@@ -1043,6 +1050,7 @@ body.hide-server .launch-btn { display: none !important; }
       <option value="za">Z → A</option>
       <option value="type">種類順</option>
       <option value="priority">優先度順</option>
+      <option value="alarm">🔔アラームあり順</option>
     </select>
     <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="グリッド表示">⊞</button>
     <button class="view-btn" id="btn-list" onclick="setView('list')" title="リスト表示">☰</button>
@@ -1057,6 +1065,10 @@ body.hide-server .launch-btn { display: none !important; }
     <button class="task-filter-chip"        data-tsf="overdue" onclick="setTaskSubFilter('overdue')">🔴 期限超過</button>
     <button class="task-filter-chip"        data-tsf="doing"  onclick="setTaskSubFilter('doing')">⚡ 進行中</button>
   </div>
+  <div class="task-filter-row" id="set-filter-row" style="display:none">
+    <button class="task-filter-chip active" data-ssf="all"   onclick="setSetSubFilter('all')">すべて</button>
+    <button class="task-filter-chip"        data-ssf="alarm" onclick="setSetSubFilter('alarm')">🔔 アラームあり</button>
+  </div>
   <!-- Filter tag chips -->
   <div class="filter-tags-row" id="filter-tags-row" style="display:none"></div>
   <!-- Select bar -->
@@ -1065,6 +1077,8 @@ body.hide-server .launch-btn { display: none !important; }
     <span id="select-count" style="font-size:13px;color:var(--text-muted)">0件選択</span>
     <button id="select-show-btn" onclick="setSelectedVisibility(false)" disabled style="opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 14px;cursor:pointer;font-size:12px">👁️ 表示にする</button>
     <button id="select-hide-btn" onclick="setSelectedVisibility(true)" disabled style="opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 14px;cursor:pointer;font-size:12px">🙈 非表示にする</button>
+    <button id="select-alarm-on-btn" onclick="setSelectedAlarm(true)" disabled style="display:none;opacity:0.4;background:transparent;border:1px solid var(--set);border-radius:var(--radius-sm);color:var(--set);padding:5px 14px;cursor:pointer;font-size:12px">🔔 ON</button>
+    <button id="select-alarm-off-btn" onclick="setSelectedAlarm(false)" disabled style="display:none;opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);padding:5px 14px;cursor:pointer;font-size:12px">🔕 OFF</button>
     <button id="select-del-btn" onclick="deleteSelected()" disabled style="opacity:0.4;background:transparent;border:1px solid var(--danger);border-radius:var(--radius-sm);color:var(--danger);padding:5px 14px;cursor:pointer;font-size:12px">🗑️ 削除</button>
     <button onclick="toggleSelectMode()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:5px 8px">キャンセル</button>
   </div>
@@ -1105,6 +1119,9 @@ body.hide-server .launch-btn { display: none !important; }
           <div class="type-option" data-type="set" onclick="selectType('set')">
             <span class="to-icon">🚀</span>セット
           </div>
+          <div class="type-option" data-type="slack" onclick="selectType('slack')">
+            <span class="to-icon">💬</span>Slack送信
+          </div>
         </div>
       </div>
       <!-- Title -->
@@ -1114,8 +1131,13 @@ body.hide-server .launch-btn { display: none !important; }
       </div>
       <!-- URL -->
       <div class="form-group" id="f-url-group">
-        <div class="form-label">URL / パス</div>
+        <div class="form-label" id="f-url-label">URL / パス</div>
         <input class="form-input" id="f-url" placeholder="https://..." oninput="handleUrlInput()">
+      </div>
+      <!-- Slack Message -->
+      <div class="form-group" id="f-slack-msg-group" style="display:none">
+        <div class="form-label">送信テキスト *</div>
+        <textarea class="form-textarea" id="f-slack-msg" placeholder="Slackに送信するテキストを入力" style="min-height:100px"></textarea>
       </div>
       <!-- Mac App Name (tool only) -->
       <div class="form-group" id="f-appname-group" style="display:none">
@@ -1186,6 +1208,67 @@ body.hide-server .launch-btn { display: none !important; }
         <div class="form-label">起動するアイテムを選択</div>
         <div id="f-set-items-list" style="display:flex;flex-direction:column;gap:5px;max-height:260px;overflow-y:auto;padding-right:2px"></div>
       </div>
+      <!-- Set Alarm -->
+      <div class="form-group" id="f-set-alarm-group" style="display:none">
+        <div class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+          <span>🔔 アラーム</span>
+          <label class="alarm-toggle"><input type="checkbox" id="f-alarm-enabled" onchange="onSetAlarmToggle(this.checked)"><span class="alarm-toggle-slider"></span></label>
+        </div>
+        <div id="f-alarm-settings" style="display:none;margin-top:10px">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <select class="form-select" id="f-alarm-type" onchange="onSetAlarmTypeChange()">
+              <option value="daily">毎日</option>
+              <option value="weekly">毎週</option>
+              <option value="biweekly">隔週</option>
+              <option value="monthly-date">毎月（日付）</option>
+              <option value="monthly-weekday">毎月（第N曜日）</option>
+              <option value="yearly">毎年</option>
+            </select>
+            <div id="f-alarm-days-group" style="display:none">
+              <div class="day-picker">
+                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(0,this)">日</button>
+                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(1,this)">月</button>
+                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(2,this)">火</button>
+                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(3,this)">水</button>
+                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(4,this)">木</button>
+                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(5,this)">金</button>
+                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(6,this)">土</button>
+              </div>
+            </div>
+            <div id="f-alarm-monthday-group" style="display:none">
+              <span style="font-size:12px;color:var(--text-muted);margin-right:6px">毎月</span>
+              <input class="form-input" type="number" id="f-alarm-monthday" min="1" max="31" value="1" style="width:70px;display:inline-block">
+              <span style="font-size:12px;color:var(--text-muted);margin-left:6px">日</span>
+            </div>
+            <div id="f-alarm-monthweekday-group" style="display:none">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <select class="form-select" id="f-alarm-weekday-n" style="width:90px">
+                  <option value="1">第1</option><option value="2">第2</option><option value="3">第3</option><option value="4">第4</option><option value="5">第5</option><option value="-1">最終</option>
+                </select>
+                <div class="day-picker" id="f-alarm-mw-days">
+                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(0,this)">日</button>
+                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(1,this)">月</button>
+                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(2,this)">火</button>
+                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(3,this)">水</button>
+                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(4,this)">木</button>
+                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(5,this)">金</button>
+                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(6,this)">土</button>
+                </div>
+              </div>
+            </div>
+            <div id="f-alarm-yearly-group" style="display:none">
+              <div style="display:flex;gap:8px;align-items:center">
+                <select class="form-select" id="f-alarm-yearly-month" style="width:80px">
+                  <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option><option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option><option value="9">9月</option><option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+                </select>
+                <input class="form-input" type="number" id="f-alarm-yearly-day" min="1" max="31" value="1" style="width:60px">
+                <span style="font-size:12px;color:var(--text-muted)">日</span>
+              </div>
+            </div>
+            <input class="form-input" type="time" id="f-alarm-time" value="08:00" style="width:120px">
+          </div>
+        </div>
+      </div>
       <!-- Tags -->
       <div class="form-group">
         <div class="form-label">タグ</div>
@@ -1236,6 +1319,30 @@ body.hide-server .launch-btn { display: none !important; }
   </div>
 </div>
 
+<!-- Slack Confirm Modal -->
+<div class="modal-overlay" id="slack-modal" style="display:none" onclick="if(event.target===this)closeSlackModal()">
+  <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">💬 Slack に送信</div>
+      <button class="modal-close" onclick="closeSlackModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">チャンネルURL</div>
+        <div id="slack-confirm-url" style="font-size:12px;color:var(--text-muted);word-break:break-all;padding:4px 0"></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">送信テキスト</div>
+        <div id="slack-confirm-msg" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-size:13px;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeSlackModal()">キャンセル</button>
+      <button class="btn-primary" onclick="execSlackSend()" style="background:var(--slack)">💬 送信</button>
+    </div>
+  </div>
+</div>
+
 <!-- Alarm Management Modal -->
 <div class="modal-overlay" id="alarm-modal" style="display:none" onclick="closeAlarmModalOutside(event)">
   <div class="modal" style="max-width:540px" onclick="event.stopPropagation()">
@@ -1252,6 +1359,13 @@ body.hide-server .launch-btn { display: none !important; }
 
 <script>
 // ═══════════════════════════════════════════
+// 拡張機能からの通知を受け取る（chrome.runtime を初期化時に触らないため postMessage で検知）
+window.addEventListener('message', (e) => {
+  if (e.data?.type === 'MYDASH_EXTENSION_READY') {
+    window._mydashExtension = true;
+  }
+});
+
 // Constants & State
 // ═══════════════════════════════════════════
 const STORAGE_KEY = 'mydash_v1';
@@ -1266,6 +1380,7 @@ const TYPE_DEF = {
   memo:     { icon: '📝', label: 'メモ' },
   other:    { icon: '📦', label: 'その他' },
   set:      { icon: '🚀', label: 'セット' },
+  slack:    { icon: '💬', label: 'Slack送信' },
 };
 
 const STATUS_LABEL = { todo: '未着手', doing: '進行中', done: '完了' };
@@ -1295,6 +1410,7 @@ let state = {
   tags: [],
   filterTags: [],
   taskSubFilter: 'all',
+  setSubFilter: 'all',
   type: 'bookmark',
   ctxId: null,
   expandedMemos: new Set(),
@@ -1505,6 +1621,10 @@ function filteredItems() {
     return true;
   });
 
+  if (state.filter === 'set' && state.setSubFilter === 'alarm') {
+    items = items.filter(i => i.alarm?.enabled);
+  }
+
   if (state.filter === 'task' && state.taskSubFilter !== 'all') {
     const todayStr = new Date().toISOString().slice(0, 10);
     items = items.filter(item => {
@@ -1524,6 +1644,12 @@ function filteredItems() {
       if (sort === 'oldest') return new Date(a.createdAt) - new Date(b.createdAt);
       if (sort === 'az') return a.title.localeCompare(b.title, 'ja');
       if (sort === 'za') return b.title.localeCompare(a.title, 'ja');
+      if (sort === 'alarm') {
+        const aHas = (a.type==='set' && a.alarm?.enabled) ? 0 : 1;
+        const bHas = (b.type==='set' && b.alarm?.enabled) ? 0 : 1;
+        if (aHas !== bHas) return aHas - bHas;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
       if (sort === 'type') return a.type.localeCompare(b.type);
       if (sort === 'priority') {
         const PRI = { high: 0, medium: 1, low: 2 };
@@ -1547,6 +1673,7 @@ function render() {
   updateCatList();
   updateSelectBar();
   updateTaskFilterRow();
+  updateSetFilterRow();
   const items = filteredItems();
   const el = document.getElementById('content');
   el.classList.toggle('select-mode', state.selectMode);
@@ -1571,6 +1698,30 @@ function render() {
 }
 
 function gridCard(item) {
+  if (item.type === 'slack') {
+    const starClass = item.starred ? ' starred' : '';
+    const selChk = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--slack);cursor:pointer"></div>` : '';
+    const msgPreview = (item.slackMessage || '').slice(0, 55) + ((item.slackMessage || '').length > 55 ? '…' : '');
+    return `<div class="grid-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+        style="border-color:rgba(74,185,95,0.3)"
+        onclick="cardClick(event,'${item.id}')"
+        oncontextmenu="showCtx(event,'${item.id}')">
+      ${selChk}
+      <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+      <div class="card-actions">
+        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
+        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
+      </div>
+      <div class="card-icon icon-bg-slack">${iconHtml(item,'lg')}</div>
+      <div class="card-title">${esc(item.title)}</div>
+      ${msgPreview ? `<div class="set-preview">${esc(msgPreview)}</div>` : ''}
+      <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();sendSlackMessage('${item.id}')">💬 送信</button>
+      <div style="display:flex;gap:4px;align-items:center;justify-content:center">
+        ${typeBadge(item)}
+      </div>
+      <div class="card-date">${relativeDate(item.createdAt)}</div>
+    </div>`;
+  }
   if (item.type === 'set') {
     const setItems = (item.setItems || [])
       .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
@@ -1585,12 +1736,14 @@ function gridCard(item) {
       ${selChkSet}
       <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
       <div class="card-actions">
+        <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
         <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
         <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
       </div>
       <div class="card-icon icon-bg-set">${iconHtml(item,'lg')}</div>
       <div class="card-title">${esc(item.title)}</div>
       <div class="set-preview">${preview}</div>
+      ${item.alarm?.enabled ? `<div style="font-size:11px;color:var(--set);margin-top:2px">🔔 ${alarmSchedDesc({schedule:item.alarm.schedule})}</div>` : ''}
       <button class="launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
       <div style="display:flex;gap:4px;align-items:center;justify-content:center">
         ${typeBadge(item)}
@@ -1614,6 +1767,7 @@ function gridCard(item) {
     ${selChk}
     <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${starIcon}</button>
     <div class="card-actions">
+      <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
       <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
       <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
     </div>
@@ -1630,25 +1784,49 @@ function gridCard(item) {
 }
 
 function listCard(item) {
+  if (item.type === 'slack') {
+    const selChkS = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--slack);cursor:pointer;flex-shrink:0"></div>` : '';
+    return `<div class="list-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+        style="border-left:3px solid var(--slack)"
+        onclick="cardClick(event,'${item.id}')"
+        oncontextmenu="showCtx(event,'${item.id}')">
+      ${selChkS}
+      <div class="list-icon icon-bg-slack">${iconHtml(item,'sm')}</div>
+      <div class="list-info">
+        <div class="list-title">${esc(item.title)}</div>
+        <div class="list-desc">${esc((item.slackMessage || '').slice(0, 80))}</div>
+      </div>
+      <div class="list-meta">
+        ${typeBadge(item)}
+        <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();sendSlackMessage('${item.id}')">💬 送信</button>
+        <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+        <div class="list-actions">
+          <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
+          <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
+        </div>
+      </div>
+    </div>`;
+  }
   if (item.type === 'set') {
     const setItems = (item.setItems || [])
       .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
     const preview = setItems.map(i => esc(i.title)).join('、') || '（アイテムなし）';
     const selChkLS = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
-    return `<div class="list-card set-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}"
+    return `<div class="list-card set-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
         onclick="cardClick(event,'${item.id}')"
         oncontextmenu="showCtx(event,'${item.id}')">
       ${selChkLS}
       <div class="list-icon icon-bg-set">${iconHtml(item,'sm')}</div>
       <div class="list-info">
         <div class="list-title">${esc(item.title)}</div>
-        <div class="list-desc">${preview}</div>
+        <div class="list-desc">${item.alarm?.enabled ? `🔔 ${alarmSchedDesc({schedule:item.alarm.schedule})}　` : ''}${preview}</div>
       </div>
       <div class="list-meta">
         ${typeBadge(item)}
         <button class="launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
         <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
         <div class="list-actions">
+          <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
           <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
           <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
         </div>
@@ -1677,6 +1855,7 @@ function listCard(item) {
               <span class="list-date">${relativeDate(item.createdAt)}</span>
               <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
               <div class="list-actions">
+                <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
                 <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
                 <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
               </div>
@@ -1709,6 +1888,7 @@ function listCard(item) {
       <span class="list-date">${relativeDate(item.createdAt)}</span>
       <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
       <div class="list-actions">
+        <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
         <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
         <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
       </div>
@@ -1719,7 +1899,7 @@ function listCard(item) {
 function updateCounts() {
   document.getElementById('cnt-all').textContent = db.items.length;
   document.getElementById('cnt-starred').textContent = db.items.filter(i => i.starred).length;
-  ['bookmark','tool','task','memo','other','set'].forEach(t => {
+  ['bookmark','tool','task','memo','other','set','slack'].forEach(t => {
     document.getElementById(`cnt-${t}`).textContent = db.items.filter(i => i.type === t).length;
   });
 
@@ -1741,6 +1921,7 @@ function updateCounts() {
   // タブタイトルに件数を反映
   document.title = dueCount > 0 ? `(${dueCount}) MyDash` : 'MyDash';
 
+  updateAlarmBadge();
 }
 
 function updateCatList() {
@@ -1814,6 +1995,7 @@ const FILTER_LABELS = {
 function setFilter(f) {
   state.filter = f;
   state.taskSubFilter = 'all';
+  state.setSubFilter = 'all';
   document.querySelectorAll('.sidebar-item').forEach(el => {
     el.classList.toggle('active', el.dataset.filter === f);
   });
@@ -1836,6 +2018,30 @@ function updateTaskFilterRow() {
   document.querySelectorAll('.task-filter-chip').forEach(el => {
     el.classList.toggle('active', el.dataset.tsf === state.taskSubFilter);
   });
+}
+
+function updateSetFilterRow() {
+  const row = document.getElementById('set-filter-row');
+  if (!row) return;
+  row.style.display = state.filter === 'set' ? '' : 'none';
+  document.querySelectorAll('[data-ssf]').forEach(el => {
+    el.classList.toggle('active', el.dataset.ssf === state.setSubFilter);
+  });
+}
+
+function setSetSubFilter(f) {
+  state.setSubFilter = f;
+  updateSetFilterRow();
+  render();
+}
+
+function goToAlarmFilter() {
+  setFilter('set');
+  setSetSubFilter('alarm');
+}
+
+function toggleAlarmFilter() {
+  goToAlarmFilter();
 }
 
 function onSortChange() {
@@ -1863,6 +2069,7 @@ function cardClick(e, id) {
   const item = db.items.find(i => i.id === id);
   if (!item) return;
   if (item.type === 'set') { editItem(id); return; }
+  if (item.type === 'slack') { sendSlackMessage(id); return; }
   if (item.appName) { openWithServer(item.appName); return; }
   if (item.url) { window.open(item.url, '_blank'); return; }
   editItem(id);
@@ -2062,6 +2269,12 @@ function resetForm() {
   document.getElementById('f-priority').value = 'medium';
   state.tags = [];
   state.setItems = [];
+  // セットアラームUIをリセット
+  const alEn = document.getElementById('f-alarm-enabled');
+  if (alEn) { alEn.checked = false; onSetAlarmToggle(false); }
+  document.querySelectorAll('#f-alarm-days-group .day-btn').forEach(b => b.classList.remove('selected'));
+  const alTime = document.getElementById('f-alarm-time');
+  if (alTime) alTime.value = '08:00';
   renderTags();
   updateIconPreview();
 }
@@ -2071,11 +2284,15 @@ function selectType(type) {
   document.querySelectorAll('.type-option').forEach(el => {
     el.classList.toggle('selected', el.dataset.type === type);
   });
-  const hasUrl = type === 'bookmark' || type === 'tool';
-  const isTask = type === 'task';
-  const isTool = type === 'tool';
-  const isSet  = type === 'set';
+  const isSlack = type === 'slack';
+  const hasUrl  = type === 'bookmark' || type === 'tool' || isSlack;
+  const isTask  = type === 'task';
+  const isTool  = type === 'tool';
+  const isSet   = type === 'set';
   document.getElementById('f-url-group').style.display = hasUrl ? '' : 'none';
+  document.getElementById('f-url-label').textContent   = isSlack ? 'チャンネルURL' : 'URL / パス';
+  document.getElementById('f-url').placeholder         = isSlack ? 'https://app.slack.com/client/...' : 'https://...';
+  document.getElementById('f-slack-msg-group').style.display = isSlack ? '' : 'none';
   document.getElementById('f-appname-group').style.display = isTool ? '' : 'none';
   document.getElementById('f-task-row').style.display = isTask ? '' : 'none';
   document.getElementById('f-due-group').style.display = isTask ? '' : 'none';
@@ -2086,6 +2303,7 @@ function selectType(type) {
   document.getElementById('f-md-hint').style.display = type === 'memo' ? '' : 'none';
   document.getElementById('f-desc').style.minHeight = type === 'memo' ? '180px' : '74px';
   document.getElementById('f-set-items-group').style.display = isSet ? '' : 'none';
+  document.getElementById('f-set-alarm-group').style.display = isSet ? '' : 'none';
   if (isSet) renderSetItemsList();
   updateIconPreview();
 }
@@ -2126,8 +2344,10 @@ function editItem(id) {
   // セット型: selectType より先に setItems を復元する
   if (item.type === 'set') {
     state.setItems = (item.setItems || []).map(s => ({ ...s }));
+    state.setAlarmDays = item.alarm ? [...(item.alarm.schedule?.days || [])] : [];
   } else {
     state.setItems = [];
+    state.setAlarmDays = [];
   }
   document.getElementById('modal-title').textContent = '編集';
   document.getElementById('btn-delete').style.display = '';
@@ -2136,6 +2356,7 @@ function editItem(id) {
   document.getElementById('f-url').value      = item.url || '';
   document.getElementById('f-appname').value  = item.appName || '';
   document.getElementById('f-desc').value     = item.desc || '';
+  document.getElementById('f-slack-msg').value = item.slackMessage || '';
   document.getElementById('f-icon').value     = item.icon || '';
   document.getElementById('f-category').value = item.category || '';
   pickStatus(item.status || 'todo');
@@ -2144,6 +2365,38 @@ function editItem(id) {
   document.getElementById('f-due-time').value = item.dueTime || '';
   renderTags();
   updateIconPreview();
+  // セットのアラーム設定を復元
+  if (item.type === 'set') {
+    const al = item.alarm;
+    const enabledEl = document.getElementById('f-alarm-enabled');
+    enabledEl.checked = !!(al?.enabled);
+    onSetAlarmToggle(enabledEl.checked);
+    if (al) {
+      const s = al.schedule || {};
+      document.getElementById('f-alarm-type').value = s.type || 'weekly';
+      document.getElementById('f-alarm-time').value = s.time || '08:00';
+      onSetAlarmTypeChange();
+      // 曜日ボタン（weekly/biweekly）
+      document.querySelectorAll('#f-alarm-days-group .day-btn').forEach((btn, i) => {
+        btn.classList.toggle('selected', (s.days || []).includes(i));
+      });
+      // monthly-date
+      if (s.monthDay) document.getElementById('f-alarm-monthday').value = s.monthDay;
+      // monthly-weekday
+      if (s.weekdayN != null) document.getElementById('f-alarm-weekday-n').value = s.weekdayN;
+      if (s.weekday != null) {
+        _setAlarmMWDay = s.weekday;
+        document.querySelectorAll('#f-alarm-mw-days .day-btn').forEach((btn, i) => {
+          btn.classList.toggle('selected', i === s.weekday);
+        });
+      }
+      // yearly
+      if (s.month) document.getElementById('f-alarm-yearly-month').value = s.month;
+      if (s.day) document.getElementById('f-alarm-yearly-day').value = s.day;
+    } else {
+      onSetAlarmTypeChange();
+    }
+  }
   document.getElementById('modal').style.display = 'flex';
 }
 
@@ -2168,6 +2421,33 @@ function saveItem() {
 
   if (state.type === 'set') {
     data.setItems = [...state.setItems];
+    // アラーム設定を保存
+    const alarmEnabled = document.getElementById('f-alarm-enabled').checked;
+    if (alarmEnabled) {
+      const schedType = document.getElementById('f-alarm-type').value;
+      const time = document.getElementById('f-alarm-time').value || '08:00';
+      const days = [...document.querySelectorAll('#f-alarm-days-group .day-btn.selected')].map(b =>
+        [...b.parentElement.children].indexOf(b));
+      const schedule = { type: schedType, time };
+      if (['weekly','biweekly'].includes(schedType)) schedule.days = days;
+      if (schedType === 'monthly-date') schedule.monthDay = parseInt(document.getElementById('f-alarm-monthday').value) || 1;
+      if (schedType === 'monthly-weekday') {
+        schedule.weekdayN = parseInt(document.getElementById('f-alarm-weekday-n').value) || 1;
+        schedule.weekday = _setAlarmMWDay;
+      }
+      if (schedType === 'yearly') {
+        schedule.month = parseInt(document.getElementById('f-alarm-yearly-month').value) || 1;
+        schedule.day = parseInt(document.getElementById('f-alarm-yearly-day').value) || 1;
+      }
+      // 既存アラームの lastFired を引き継ぐ
+      const existing = state.editId ? db.items.find(i => i.id === state.editId) : null;
+      data.alarm = { enabled: true, schedule, lastFired: existing?.alarm?.lastFired || null };
+    } else {
+      data.alarm = null;
+    }
+  }
+  if (state.type === 'slack') {
+    data.slackMessage = document.getElementById('f-slack-msg').value.trim();
   }
 
   if (state.editId) {
@@ -2258,20 +2538,22 @@ function pickStatus(status) {
   });
 }
 
+function iconCardClick(event, id) {
+  if (state.selectMode) { toggleItemSelect(id, !state.selectedIds.has(id)); return; }
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  if (item.type === 'set') { launchSet(id); return; }
+  if (item.type === 'slack') { sendSlackMessage(id); return; }
+  cardClick(event, id);
+}
+
 function iconCard(item) {
-  if (item.type === 'set') {
-    return `<div class="icon-card" data-id="${item.id}"
-        onclick="launchSet('${item.id}')"
-        oncontextmenu="showCtx(event,'${item.id}')"
-        title="${esc(item.title)} ▶ クリックで起動">
-      <div class="card-icon icon-bg-set">${iconHtml(item,'lg')}</div>
-    </div>`;
-  }
   const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:14px;height:14px;accent-color:var(--set);cursor:pointer"></div>` : '';
+  const titleSuffix = item.type === 'set' ? ' ▶ クリックで起動' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
   return `<div class="icon-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-      onclick="cardClick(event,'${item.id}')"
+      onclick="iconCardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')"
-      title="${esc(item.title)}" style="position:relative">
+      title="${esc(item.title)}${titleSuffix}" style="position:relative">
     ${selChkI}
     <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
   </div>`;
@@ -2317,9 +2599,45 @@ function updateSelectBar() {
   const hideBtn = document.getElementById('select-hide-btn');
   showBtn.disabled = count === 0; showBtn.style.opacity = count ? '1' : '0.4';
   hideBtn.disabled = count === 0; hideBtn.style.opacity = count ? '1' : '0.4';
+  // アラームON/OFFボタン：選択中にセットがあれば表示
+  const selectedSets = [...state.selectedIds].filter(id => {
+    const item = db.items.find(i => i.id === id);
+    return item?.type === 'set';
+  });
+  const hasSet = selectedSets.length > 0;
+  const alarmOnBtn = document.getElementById('select-alarm-on-btn');
+  const alarmOffBtn = document.getElementById('select-alarm-off-btn');
+  if (alarmOnBtn) {
+    alarmOnBtn.style.display = hasSet ? '' : 'none';
+    alarmOnBtn.disabled = !hasSet; alarmOnBtn.style.opacity = hasSet ? '1' : '0.4';
+  }
+  if (alarmOffBtn) {
+    alarmOffBtn.style.display = hasSet ? '' : 'none';
+    alarmOffBtn.disabled = !hasSet; alarmOffBtn.style.opacity = hasSet ? '1' : '0.4';
+  }
   const allChk = document.getElementById('select-all-check');
   allChk.checked = count === allCount && allCount > 0;
   allChk.indeterminate = count > 0 && count < allCount;
+}
+
+function toggleAlarmFilter() {
+  state.alarmFilter = !state.alarmFilter;
+  // バッジ・ラベルのハイライト
+  const label = document.getElementById('alarm-filter-label');
+  const badge = document.getElementById('cnt-alarm');
+  if (label) label.style.color = state.alarmFilter ? 'var(--set)' : '';
+  if (badge) badge.style.background = state.alarmFilter ? 'var(--set)' : '';
+  render();
+}
+
+function setSelectedAlarm(enabled) {
+  const ids = [...state.selectedIds];
+  ids.forEach(id => {
+    const item = db.items.find(i => i.id === id);
+    if (item?.type === 'set' && item.alarm) item.alarm.enabled = enabled;
+  });
+  save(); render(); updateAlarmBadge();
+  toast(`${ids.length}件のアラームを${enabled ? 'ON' : 'OFF'}にしました`, enabled ? '🔔' : '🔕');
 }
 
 function setSelectedVisibility(hidden) {
@@ -2343,12 +2661,85 @@ function deleteSelected() {
   save(); render(); toast(`${ids.length}件削除しました`, '🗑️');
 }
 
+// ═══════════════════════════════════════════
+// ショートカットURL
+// ═══════════════════════════════════════════
+const SHORTCUT_BASE = 'https://hataken2000.github.io/mydash/';
+
+function shortcutUrl(item) {
+  const p = new URLSearchParams();
+  if (item.type === 'bookmark' || (item.type === 'tool' && item.url)) {
+    p.set('exec', 'url'); p.set('u', item.url || ''); p.set('t', item.title);
+  } else if (item.type === 'memo') {
+    p.set('exec', 'memo'); p.set('t', item.title || ''); p.set('b', item.desc || '');
+  } else if (item.type === 'task') {
+    p.set('exec', 'task'); p.set('t', item.title); p.set('b', item.desc || '');
+  } else if (item.type === 'other') {
+    p.set('exec', 'memo'); p.set('t', item.title); p.set('b', item.desc || item.url || '');
+  } else if (item.type === 'set') {
+    const urls = (item.setItems || [])
+      .map(si => db.items.find(i => i.id === si.itemId))
+      .filter(i => i?.url).map(i => i.url);
+    if (!urls.length) return null;
+    p.set('exec', 'urls'); p.set('u', urls.join('|')); p.set('t', item.title);
+  } else {
+    return null;
+  }
+  return SHORTCUT_BASE + '?' + p.toString();
+}
+
+function copyShortcutUrl(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  const url = shortcutUrl(item);
+  if (!url) { toast('このアイテムはショートカットURLを生成できません', '⚠️'); return; }
+  navigator.clipboard.writeText(url)
+    .then(() => toast('ショートカットURLをコピーしました', '📱'))
+    .catch(() => {
+      const ta = Object.assign(document.createElement('textarea'), { value: url });
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+      toast('ショートカットURLをコピーしました', '📱');
+    });
+}
+
+function handleShortcutExec() {
+  const p = new URLSearchParams(location.search);
+  const exec = p.get('exec');
+  if (!exec) return;
+  const title = p.get('t') || '';
+  const body  = p.get('b') || '';
+  const urls  = (p.get('u') || '').split('|').filter(Boolean);
+  if (exec === 'url' && urls[0]) {
+    window.open(urls[0], '_blank');
+  } else if (exec === 'urls') {
+    urls.forEach(u => window.open(u, '_blank'));
+  } else if (exec === 'memo' || exec === 'task') {
+    showShortcutPopup(exec, title, body);
+  }
+}
+
+function showShortcutPopup(type, title, body) {
+  const icon = type === 'task' ? '✅' : '📝';
+  const el = document.createElement('div');
+  el.id = 'shortcut-popup';
+  el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
+  el.innerHTML = `
+    <div style="background:var(--card-bg);border-radius:var(--radius);padding:28px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+      <div style="font-size:28px;margin-bottom:10px">${icon}</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:${body ? '14' : '0'}px">${esc(title)}</div>
+      ${body ? `<div style="font-size:14px;color:var(--text-muted);white-space:pre-wrap;line-height:1.7;max-height:60vh;overflow-y:auto">${esc(body)}</div>` : ''}
+      <button onclick="document.getElementById('shortcut-popup').remove()" style="margin-top:22px;width:100%;padding:12px;background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);font-size:15px;cursor:pointer;font-weight:600">閉じる</button>
+    </div>`;
+  document.body.appendChild(el);
+}
+
 function confirmDelete(id) {
   const item = db.items.find(i => i.id === id);
   if (!item) return;
-  if (confirm(`「${item.title}」を削除しますか？`)) {
+  const alarmNote = (item.type === 'set' && item.alarm) ? '\n（このセットのアラームも一緒に削除されます）' : '';
+  if (confirm(`「${item.title}」を削除しますか？${alarmNote}`)) {
     db.items = db.items.filter(i => i.id !== id);
-    save(); render(); toast('削除しました', '🗑️');
+    save(); render(); updateAlarmBadge(); toast('削除しました', '🗑️');
   }
 }
 
@@ -2685,6 +3076,32 @@ function toggleSetItem(itemId, checked) {
   renderSetItemsList();
 }
 
+// ═══════════════════════════════════════════
+// Slack送信
+// ═══════════════════════════════════════════
+let _slackSendTarget = null;
+
+function sendSlackMessage(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  _slackSendTarget = { url: item.url, message: item.slackMessage || '' };
+  document.getElementById('slack-confirm-url').textContent = item.url || '（URLなし）';
+  document.getElementById('slack-confirm-msg').textContent = item.slackMessage || '（メッセージなし）';
+  document.getElementById('slack-modal').style.display = 'flex';
+}
+
+function closeSlackModal() {
+  document.getElementById('slack-modal').style.display = 'none';
+  _slackSendTarget = null;
+}
+
+function execSlackSend() {
+  if (!_slackSendTarget) return;
+  window.dispatchEvent(new CustomEvent('mydash-slack-send', { detail: _slackSendTarget }));
+  closeSlackModal();
+  toast('Chrome拡張にSlack送信リクエストを送りました', '💬');
+}
+
 // セットを起動: Chrome新ウィンドウで開く
 async function launchSet(id) {
   const set = db.items.find(i => i.id === id);
@@ -2715,22 +3132,30 @@ async function launchSet(id) {
 
   // ChromeでURLを一括で新ウィンドウ表示
   if (urls.length > 0) {
-    try {
-      const r = await fetch(`${SERVER_BASE}/open-chrome`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ urls }),
-        signal: AbortSignal.timeout(5000),
-      });
-      const j = await r.json();
-      if (j.ok) {
-        toast(`${j.count}件をChromeで開きました`, '✅');
-      } else {
-        toast(`Chrome起動失敗: ${j.error || 'unknown'}`, '❌');
+    // 拡張機能があればタブグループ付きで開く
+    if (window._mydashExtension) {
+      window.dispatchEvent(new CustomEvent('mydash-open-set', {
+        detail: { urls, title: set.title }
+      }));
+      toast(`${urls.length}件をChromeで開きました`, '✅');
+    } else {
+      try {
+        const r = await fetch(`${SERVER_BASE}/open-chrome`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ urls }),
+          signal: AbortSignal.timeout(5000),
+        });
+        const j = await r.json();
+        if (j.ok) {
+          toast(`${j.count}件をChromeで開きました`, '✅');
+        } else {
+          toast(`Chrome起動失敗: ${j.error || 'unknown'}`, '❌');
+        }
+      } catch (_) {
+        toast('サーバーが起動していません。mydash-server.js を起動してください。', '⚠️');
+        updateServerStatus(false);
       }
-    } catch (_) {
-      toast('サーバーが起動していません。mydash-server.js を起動してください。', '⚠️');
-      updateServerStatus(false);
     }
   }
 }
@@ -2779,7 +3204,10 @@ function getAlarms() { return db.alarms || []; }
 
 function updateAlarmBadge() {
   const el = document.getElementById('cnt-alarm');
-  if (el) el.textContent = getAlarms().filter(a => a.enabled).length;
+  if (!el) return;
+  const standaloneCount = getAlarms().filter(a => a.enabled).length;
+  const setAlarmCount = (db.items || []).filter(i => i.type === 'set' && i.alarm?.enabled).length;
+  el.textContent = standaloneCount + setAlarmCount;
 }
 
 function alarmSchedDesc(alarm) {
@@ -2894,6 +3322,17 @@ function startAlarmChecker() {
         alarm.lastFired = todayKey;
         save();
         showAlarmPopup(alarm);
+        break;
+      }
+    }
+    // セット内蔵アラームのチェック
+    for (const item of db.items.filter(i => i.type === 'set' && i.alarm?.enabled)) {
+      const synth = { ...item.alarm, name: item.title, action: { type: 'set', targetId: item.id } };
+      if (shouldFireAlarm(synth, now)) {
+        const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${item.alarm.schedule.time}`;
+        item.alarm.lastFired = todayKey;
+        save();
+        showAlarmPopup(synth);
         break;
       }
     }
@@ -3497,13 +3936,15 @@ function initDragSort() {
 }
 
 // ICSをフェッチ: 直接fetch → ローカルサーバー の順で試みる
-async function fetchICSText(url) {
+async function fetchICSText(url, onPhase) {
   // ① 直接fetch
   try {
+    onPhase?.('📡 取得中');
     const r = await fetch(url, {signal: AbortSignal.timeout(10000)});
     if (r.ok) { console.log('[ICS] 直接fetchで取得'); return await r.text(); }
   } catch(_) {}
   // ② ローカルサーバー経由
+  onPhase?.('📡 サーバー経由で取得中');
   console.log('[ICS] ローカルサーバー経由で取得');
   const r = await fetch(`${SERVER_BASE}/fetch-ical?url=${encodeURIComponent(url)}`, {signal: AbortSignal.timeout(15000)});
   const j = await r.json();
@@ -3524,12 +3965,16 @@ async function runCalSync(manual = false) {
     const groups = groupICSEvents(events);
     let added = 0;
 
-    // 繰り返し → アラーム（同名がなければ追加）
-    if (!Array.isArray(db.alarms)) db.alarms = [];
-    const existingAlarmNames = new Set(db.alarms.map(a => a.name));
+    // 繰り返し → アラーム内蔵セット（同名がなければ追加）
+    const existingSetTitles = new Set((db.items || []).filter(i => i.type === 'set' && i.alarm).map(i => i.title));
     for (const ev of groups.recurring) {
-      if (!existingAlarmNames.has(ev.summary)) {
-        db.alarms.push({id: 'alarm_' + genId(), name: ev.summary, schedule: rruleToSchedule(ev.rrule, ev.dtStart), action: {type: 'none'}, enabled: true, lastFired: null, fromCalSync: true});
+      if (!existingSetTitles.has(ev.summary)) {
+        db.items.push({
+          id: genId(), type: 'set', title: ev.summary, desc: '', url: '', icon: '📅',
+          category: 'カレンダー', tags: [], starred: false, setItems: [],
+          alarm: { enabled: true, schedule: rruleToSchedule(ev.rrule, ev.dtStart), lastFired: null },
+          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), fromCalSync: true
+        });
         added++;
       }
     }
@@ -3572,14 +4017,27 @@ async function fetchCalendar() {
   db.calSync.url = url;
   save();
   const status = document.getElementById('cal-status');
-  status.textContent='取得中…';
+
+  // アニメーション付きステータス表示
+  const frames = ['', '.', '..', '...'];
+  let fi = 0, phase = '📡 取得中';
+  const ani = setInterval(() => {
+    status.textContent = phase + frames[fi++ % frames.length];
+  }, 300);
+  status.textContent = '📡 取得中…';
+
   try {
-    const events = parseICS(await fetchICSText(url));
+    const icsText = await fetchICSText(url, (p) => { phase = p; });
+    phase = '🔍 解析中';
+    await new Promise(r => setTimeout(r, 50)); // UIを更新してから解析
+    const events = parseICS(icsText);
     _icsGroups = groupICSEvents(events);
     _icsSelR = new Set(_icsGroups.recurring.map((_,i)=>i));
     _icsSelS = new Set(_icsGroups.single.map((_,i)=>i));
+    clearInterval(ani);
     renderCalStep2();
   } catch(e) {
+    clearInterval(ani);
     status.textContent=`❌ 取得失敗: ${e.message}`;
     if (!url.startsWith('https://calendar.google.com')) status.textContent+=' ※Googleカレンダーの非公開URLか確認してください';
   }
@@ -3635,7 +4093,14 @@ function importCalendarEvents() {
   let count=0;
   for (const i of _icsSelR) {
     const ev=recurring[i]; if(!ev) continue;
-    db.alarms.push({id:'alarm_'+genId(), name:ev.summary, schedule:rruleToSchedule(ev.rrule,ev.dtStart), action:{type:'none'}, enabled:true, lastFired:null});
+    // 繰り返しイベント → アラーム内蔵セットとして作成
+    db.items.push({
+      id: genId(), type: 'set', title: ev.summary, desc: '', url: '', icon: '📅',
+      category: 'カレンダー', tags: [], starred: false,
+      setItems: [],
+      alarm: { enabled: true, schedule: rruleToSchedule(ev.rrule, ev.dtStart), lastFired: null },
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+    });
     count++;
   }
   for (const i of _icsSelS) {
@@ -3663,12 +4128,17 @@ function renderAlarmList() {
   const body = document.getElementById('alarm-modal-body');
   const footer = document.getElementById('alarm-modal-footer');
   const alarms = getAlarms();
-  if (!alarms.length) {
+  const setAlarms = (db.items || []).filter(i => i.type === 'set' && i.alarm);
+  const total = alarms.length + setAlarms.length;
+
+  if (!total) {
     body.innerHTML = `<div class="empty-state" style="padding:40px 20px">
       <div class="ei">🔔</div><h3>アラームなし</h3>
       <div style="font-size:13px;color:var(--text-muted);margin-top:6px">「＋ 追加」でアラームを作成できます</div></div>`;
   } else {
-    body.innerHTML = `
+    let html = '';
+    if (alarms.length) {
+      html += `
       <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:2px">
         <input type="checkbox" id="alarm-check-all" onchange="toggleAllAlarmChecks(this.checked)" style="width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--set)">
         <span style="font-size:12px;color:var(--text-muted);cursor:pointer;user-select:none" onclick="document.getElementById('alarm-check-all').click()">すべて選択</span>
@@ -3689,12 +4159,32 @@ function renderAlarmList() {
         <button class="action-btn" onclick="openAlarmForm('${a.id}')" title="編集">✏️</button>
         <button class="action-btn danger" onclick="deleteAlarm('${a.id}')" title="削除">🗑️</button>
       </div>`).join('')}</div>`;
+    }
+    if (setAlarms.length) {
+      html += `
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin:${alarms.length?'14px':'0px'} 0 6px;letter-spacing:0.04em">🚀 セット内蔵アラーム</div>
+      <div class="alarm-list">${setAlarms.map(item => `
+      <div class="alarm-row">
+        <input type="checkbox" class="alarm-check" data-setid="${item.id}" onchange="updateAlarmActionBtns()" style="width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--set)">
+        <div class="alarm-row-info">
+          <div class="alarm-row-name">${esc(item.title)}</div>
+          <div class="alarm-row-sched">${alarmSchedDesc({schedule:item.alarm.schedule})}</div>
+        </div>
+        <button class="action-btn" onclick="event.stopPropagation();launchSet('${item.id}');closeAlarmModal()" title="今すぐ起動">▶</button>
+        <label class="alarm-toggle" title="${item.alarm.enabled?'ON':'OFF'}">
+          <input type="checkbox" ${item.alarm.enabled?'checked':''} onchange="toggleSetAlarmEnabled('${item.id}',this.checked)">
+          <span class="alarm-toggle-slider"></span>
+        </label>
+        <button class="action-btn" onclick="editItem('${item.id}');closeAlarmModal()" title="セットを編集">✏️</button>
+        <button class="action-btn danger" onclick="deleteSetWithAlarm('${item.id}')" title="削除">🗑️</button>
+      </div>`).join('')}</div>`;
+    }
+    body.innerHTML = html;
   }
   footer.innerHTML = `
     <button class="btn-danger" id="alarm-del-sel-btn" onclick="deleteSelectedAlarms()" disabled style="opacity:0.4;margin-right:auto">🗑️ 選択削除</button>
     <button class="btn-secondary" id="alarm-off-sel-btn" onclick="toggleSelectedAlarms(false)" disabled style="opacity:0.4">⏸ 無効化</button>
-    <button class="btn-secondary" id="alarm-on-sel-btn" onclick="toggleSelectedAlarms(true)" disabled style="opacity:0.4">▶ 有効化</button>
-    <button class="btn-primary" onclick="openAlarmForm(null)">＋ 追加</button>`;
+    <button class="btn-secondary" id="alarm-on-sel-btn" onclick="toggleSelectedAlarms(true)" disabled style="opacity:0.4">▶ 有効化</button>`;
 }
 
 function updateAlarmActionBtns() {
@@ -3724,17 +4214,23 @@ function toggleAllAlarmChecks(checked) {
 }
 
 function deleteSelectedAlarms() {
-  const ids = [...document.querySelectorAll('.alarm-check:checked')].map(c => c.dataset.id);
-  if (!ids.length) return;
-  if (!confirm(`${ids.length}件のアラームを削除しますか？`)) return;
-  db.alarms = db.alarms.filter(a => !ids.includes(a.id));
-  save(); renderAlarmList(); updateAlarmBadge();
+  const checked = [...document.querySelectorAll('.alarm-check:checked')];
+  if (!checked.length) return;
+  const alarmIds = checked.filter(c => c.dataset.id).map(c => c.dataset.id);
+  const setIds = checked.filter(c => c.dataset.setid).map(c => c.dataset.setid);
+  const total = alarmIds.length + setIds.length;
+  if (!confirm(`${total}件を削除しますか？${setIds.length ? `\n（セット${setIds.length}件もアラームと一緒に削除されます）` : ''}`)) return;
+  db.alarms = db.alarms.filter(a => !alarmIds.includes(a.id));
+  db.items = db.items.filter(i => !setIds.includes(i.id));
+  save(); render(); renderAlarmList(); updateAlarmBadge();
 }
 
 function toggleSelectedAlarms(enabled) {
-  const ids = [...document.querySelectorAll('.alarm-check:checked')].map(c => c.dataset.id);
-  if (!ids.length) return;
-  db.alarms.forEach(a => { if (ids.includes(a.id)) a.enabled = enabled; });
+  const checked = [...document.querySelectorAll('.alarm-check:checked')];
+  const alarmIds = checked.filter(c => c.dataset.id).map(c => c.dataset.id);
+  const setIds = checked.filter(c => c.dataset.setid).map(c => c.dataset.setid);
+  db.alarms.forEach(a => { if (alarmIds.includes(a.id)) a.enabled = enabled; });
+  db.items.forEach(i => { if (setIds.includes(i.id) && i.alarm) i.alarm.enabled = enabled; });
   save(); renderAlarmList(); updateAlarmBadge();
 }
 
@@ -3747,6 +4243,20 @@ function deleteAlarm(id) {
   if (!confirm('このアラームを削除しますか？')) return;
   db.alarms = db.alarms.filter(a => a.id !== id);
   save(); renderAlarmList(); updateAlarmBadge();
+}
+
+function toggleSetAlarmEnabled(itemId, val) {
+  const item = db.items.find(i => i.id === itemId);
+  if (item?.alarm) { item.alarm.enabled = val; save(); updateAlarmBadge(); }
+}
+
+function deleteSetWithAlarm(itemId) {
+  const item = db.items.find(i => i.id === itemId);
+  if (!item) return;
+  if (!confirm(`このアラームを削除しますか？\n（セット「${item.title}」も一緒に削除されます）`)) return;
+  db.items = db.items.filter(i => i.id !== itemId);
+  save(); render(); renderAlarmList(); updateAlarmBadge();
+  toast('削除しました', '🗑️');
 }
 
 function openAlarmForm(id) {
@@ -3877,6 +4387,34 @@ function toggleAlarmDay(idx, btn) {
   }
 }
 
+// ── セットフォーム用アラーム関数 ──
+function onSetAlarmToggle(enabled) {
+  document.getElementById('f-alarm-settings').style.display = enabled ? '' : 'none';
+  if (enabled) onSetAlarmTypeChange();
+}
+
+function onSetAlarmTypeChange() {
+  const type = document.getElementById('f-alarm-type').value;
+  const show = id => { const el=document.getElementById(id); if(el) el.style.display=''; };
+  const hide = id => { const el=document.getElementById(id); if(el) el.style.display='none'; };
+  ['f-alarm-days-group','f-alarm-monthday-group','f-alarm-monthweekday-group','f-alarm-yearly-group'].forEach(hide);
+  if (['weekly','biweekly'].includes(type)) show('f-alarm-days-group');
+  if (type === 'monthly-date') show('f-alarm-monthday-group');
+  if (type === 'monthly-weekday') show('f-alarm-monthweekday-group');
+  if (type === 'yearly') show('f-alarm-yearly-group');
+}
+
+function toggleSetAlarmDay(idx, btn) {
+  btn.classList.toggle('selected');
+}
+
+let _setAlarmMWDay = 1;
+function selectSetAlarmMWDay(idx, btn) {
+  document.querySelectorAll('#f-alarm-mw-days .day-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  _setAlarmMWDay = idx;
+}
+
 function saveAlarm() {
   const name = document.getElementById('af-name').value.trim();
   if (!name) { toast('アラーム名を入力してください', '⚠️'); return; }
@@ -3991,6 +4529,7 @@ initClock();
 startAlarmChecker();
 updateAlarmBadge();
 runCalSync(false); // ページ読み込み時に自動同期チェック
+handleShortcutExec(); // iPhoneショートカットURLパラメータの処理
 
 window.addEventListener('resize', () => {
   if (window.innerWidth > 768) {

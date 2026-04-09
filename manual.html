@@ -454,35 +454,36 @@ code {
 
   <!-- ── アラーム ── -->
   <h2 id="alarm">アラーム</h2>
-  <p>指定した時刻にポップアップ通知を出す機能。繰り返しスケジュールに対応。セットと紐付けると発火時に自動起動できる。</p>
+  <p>アラームは<strong>セットの中に設定する</strong>機能。指定した時刻にセットを自動起動できる。繰り返しスケジュールに対応。</p>
 
-  <h3>アラームの追加</h3>
+  <h3>アラームの設定（セット編集から）</h3>
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
-        <strong>サイドバー上部「🔔 アラーム管理」をクリック</strong>
+        <strong>セットを作成 or 既存セットを編集</strong>
+        <p>「＋ 追加」→ 種類「🚀 セット」、または既存セットの ✏️ ボタン</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>「＋ 追加」→ 名前・時刻・繰り返しを設定</strong>
-        <p>毎日・毎週・隔週・毎月・毎年 を選べる</p>
+        <strong>フォーム下部「🔔 アラーム」のトグルをONにする</strong>
+        <p>繰り返し・時刻の設定欄が展開する</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <strong>アクションで「セットを起動」を選択（任意）</strong>
-        <p>セットを紐付けると発火時に自動でセットが起動する。操作不要。</p>
+        <strong>繰り返しと時刻を設定して保存</strong>
+        <p>毎日・毎週（曜日指定）・隔週・毎月・第N曜日・毎年 から選択</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
-        <strong>発火するとトースト通知 or ポップアップが表示される</strong>
-        <p>セット紐付きはトーストのみで自動起動。URLアクションはポップアップで確認あり。ポップアップには「⏰ 5分後」スヌーズボタンあり。</p>
+        <strong>設定時刻になるとセットが自動起動する</strong>
+        <p>トースト通知とビープ音で知らせる。操作不要。</p>
       </div>
     </div>
   </div>
@@ -497,9 +498,22 @@ code {
     <tr><td>毎年</td><td>毎年指定した月日に発火</td></tr>
   </table>
 
+  <h3>アラームの確認・管理</h3>
+  <p>アラームを設定したセットはカードに <strong>🔔 毎週 月・水…</strong> のようにスケジュールが表示される。</p>
+  <div class="card-grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <strong>「アラーム管理」クリック</strong>
+      <p style="margin:4px 0 0">サイドバー上部の「アラーム管理」または🔔バッジをクリックすると、セット一覧が「🔔 アラームあり」でフィルタされる。</p>
+    </div>
+    <div class="card">
+      <strong>選択モードで一括ON/OFF</strong>
+      <p style="margin:4px 0 0">セットを選択モードで複数選択すると「🔔 ON」「🔕 OFF」ボタンが表示される。</p>
+    </div>
+  </div>
+
   <div class="tip">
     <span class="tip-icon">💡</span>
-    <span>アラーム一覧でセット紐付き済みのものは「🚀 自動起動: セット名」と表示される。▶ボタンで手動即時起動も可能。</span>
+    <span>セット削除するとアラームも一緒に削除される。削除確認ダイアログにその旨が表示される。</span>
   </div>
 
   <h3>集中モード（アラーム一時停止）</h3>
@@ -531,8 +545,15 @@ code {
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
+        <strong>🔔 アラームを設定（任意）</strong>
+        <p>フォーム下部のアラームトグルをONにすると繰り返し・時刻を設定できる。設定時刻になると自動でセットが起動する。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
         <strong>保存 → カードの「🚀 起動」ボタンで一括実行</strong>
-        <p>URLはChromeの新ウィンドウで、アプリはそのまま起動</p>
+        <p>URLはChromeの新ウィンドウで、アプリはそのまま起動。アラームありのセットにはカードに🔔スケジュールが表示される。</p>
       </div>
     </div>
   </div>
@@ -563,8 +584,8 @@ code {
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <strong>繰り返し予定 → アラームに変換、単発予定 → タスクに変換</strong>
-        <p>自動同期は23時間ごと。手動で「再同期」も可能</p>
+        <strong>繰り返し予定 → アラーム付きセットに変換、単発予定 → タスクに変換</strong>
+        <p>繰り返し予定は「アラームあり」のセットとして追加される。起動するアイテムは後から編集で設定できる。自動同期は23時間ごと。手動で「再同期」も可能</p>
       </div>
     </div>
   </div>
@@ -686,8 +707,8 @@ code {
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
-        <strong>「🔔 アラーム管理」でアラームを作成し、アクションで「セットを起動」を選択</strong>
-        <p>例：毎週月曜 9:50（会議10分前）・アクション → 週次ミーティングセット。これだけで完了！</p>
+        <strong>セットの編集でアラームをONにして時刻を設定</strong>
+        <p>例：「週次ミーティングセット」を編集 → 🔔 アラームをON → 毎週月曜 9:50（会議10分前）。これだけで完了！</p>
       </div>
     </div>
   </div>
