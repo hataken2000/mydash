@@ -2667,25 +2667,11 @@ function deleteSelected() {
 const SHORTCUT_BASE = 'https://hataken2000.github.io/mydash/';
 
 function shortcutUrl(item) {
-  const p = new URLSearchParams();
-  if (item.type === 'bookmark' || (item.type === 'tool' && item.url)) {
-    p.set('exec', 'url'); p.set('u', item.url || ''); p.set('t', item.title);
-  } else if (item.type === 'memo') {
-    p.set('exec', 'memo'); p.set('t', item.title || ''); p.set('b', item.desc || '');
-  } else if (item.type === 'task') {
-    p.set('exec', 'task'); p.set('t', item.title); p.set('b', item.desc || '');
-  } else if (item.type === 'other') {
-    p.set('exec', 'memo'); p.set('t', item.title); p.set('b', item.desc || item.url || '');
-  } else if (item.type === 'set') {
-    const urls = (item.setItems || [])
-      .map(si => db.items.find(i => i.id === si.itemId))
-      .filter(i => i?.url).map(i => i.url);
-    if (!urls.length) return null;
-    p.set('exec', 'urls'); p.set('u', urls.join('|')); p.set('t', item.title);
-  } else {
-    return null;
+  // IDベース：Gist同期済みのデータから検索するため内容埋め込み不要
+  if (['bookmark','tool','memo','task','other','set'].includes(item.type)) {
+    return `${SHORTCUT_BASE}?exec=item&id=${encodeURIComponent(item.id)}`;
   }
-  return SHORTCUT_BASE + '?' + p.toString();
+  return null;
 }
 
 function copyShortcutUrl(id) {
@@ -2706,17 +2692,32 @@ function handleShortcutExec() {
   const p = new URLSearchParams(location.search);
   const exec = p.get('exec');
   if (!exec) return;
-  const title = p.get('t') || '';
-  const body  = p.get('b') || '';
-  const urls  = (p.get('u') || '').split('|').filter(Boolean);
-  if (exec === 'url' && urls.length === 1) {
-    // 単一URLはそのままリダイレクト
-    location.href = urls[0];
-  } else if (exec === 'urls' || (exec === 'url' && urls.length > 1)) {
-    // 複数URLはタップできるリンクのパネルを表示（Safariのwindow.openブロック回避）
-    showShortcutUrlPanel(title, urls);
-  } else if (exec === 'memo' || exec === 'task') {
-    showShortcutPopup(exec, title, body);
+
+  // DOM確定後に表示（render完了を待つ）
+  setTimeout(() => {
+    if (exec === 'item') {
+      const id = p.get('id');
+      const item = db.items.find(i => i.id === id);
+      if (!item) {
+        toast('アイテムが見つかりません。Gistから最新データを読み込んでください', '⚠️');
+        return;
+      }
+      execShortcutItem(item);
+    }
+  }, 300);
+}
+
+function execShortcutItem(item) {
+  if (item.type === 'bookmark' || (item.type === 'tool' && item.url) || (item.type === 'other' && item.url)) {
+    showShortcutUrlPanel(item.title, [item.url]);
+  } else if (item.type === 'set') {
+    const urls = (item.setItems || [])
+      .map(si => db.items.find(i => i.id === si.itemId))
+      .filter(i => i?.url).map(i => i.url);
+    if (!urls.length) { toast('このセットにURLアイテムがありません', '⚠️'); return; }
+    showShortcutUrlPanel(item.title, urls);
+  } else if (item.type === 'memo' || item.type === 'task' || item.type === 'other') {
+    showShortcutPopup(item.type, item.title, item.desc || '');
   }
 }
 
