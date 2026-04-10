@@ -3179,9 +3179,13 @@ async function launchSet(id) {
       }));
       toast(`${urls.length}件をChromeで開きました`, '✅');
     } else if (!SERVER_BASE) {
-      // オンライン版: ユーザージェスチャー内で直接タブ開き（awaitなし）
-      urls.forEach(u => window.open(u, '_blank'));
-      toast(`${urls.length}件をタブで開きました`, '✅');
+      // オンライン版: 1件ならそのまま開く、複数はパネルで表示（Safari複数window.open制約回避）
+      if (urls.length === 1) {
+        window.open(urls[0], '_blank');
+        toast('タブで開きました', '✅');
+      } else {
+        showShortcutUrlPanel(set.title, urls);
+      }
     } else {
       try {
         const r = await fetch(`${SERVER_BASE}/open-chrome`, {
