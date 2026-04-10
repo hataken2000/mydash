@@ -3178,6 +3178,10 @@ async function launchSet(id) {
         detail: { urls, title: set.title }
       }));
       toast(`${urls.length}件をChromeで開きました`, '✅');
+    } else if (!SERVER_BASE) {
+      // オンライン版: ユーザージェスチャー内で直接タブ開き（awaitなし）
+      urls.forEach(u => window.open(u, '_blank'));
+      toast(`${urls.length}件をタブで開きました`, '✅');
     } else {
       try {
         const r = await fetch(`${SERVER_BASE}/open-chrome`, {
@@ -3193,7 +3197,6 @@ async function launchSet(id) {
           toast(`Chrome起動失敗: ${j.error || 'unknown'}`, '❌');
         }
       } catch (_) {
-        // サーバーも拡張機能もない場合は直接タブで開く
         urls.forEach(u => window.open(u, '_blank'));
         toast(`${urls.length}件をタブで開きました`, '✅');
         updateServerStatus(false);
