@@ -2095,6 +2095,7 @@ function cardClick(e, id) {
   if (!item) return;
   if (item.type === 'set') { editItem(id); return; }
   if (item.type === 'slack') { sendSlackMessage(id); return; }
+  if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   if (item.appName) { openWithServer(item.appName); return; }
   if (item.url) { window.open(item.url, '_blank'); return; }
   editItem(id);
@@ -2569,6 +2570,7 @@ function iconCardClick(event, id) {
   if (!item) return;
   if (item.type === 'set') { launchSet(id); return; }
   if (item.type === 'slack') { sendSlackMessage(id); return; }
+  if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   cardClick(event, id);
 }
 
@@ -2815,6 +2817,115 @@ function showShortcutPopup(type, title, body) {
       <button onclick="document.getElementById('shortcut-popup').remove()" style="margin-top:22px;width:100%;padding:13px;background:${t.accent};color:white;border:none;border-radius:10px;font-size:16px;cursor:pointer;font-weight:600">閉じる</button>
     </div>`;
   document.body.appendChild(el);
+}
+
+// ═══════════════════════════════════════════
+// クイック編集パネル（メモ・タスク用）
+// ═══════════════════════════════════════════
+function showQuickEdit(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  const t = _shortcutTheme();
+  const isTask = item.type === 'task';
+
+  const statusHtml = isTask ? (() => {
+    const clrs = { todo:'#6b7280', doing:'#f59e0b', done:'#10b981' };
+    const lbls = { todo:'未着手', doing:'進行中', done:'完了' };
+    const cur = item.status || 'todo';
+    const btns = ['todo','doing','done'].map(s => {
+      const active = s === cur;
+      return `<button id="qe-s-${s}" onclick="qeSetStatus('${id}','${s}')"
+        style="flex:1;padding:9px 4px;border-radius:8px;border:2px solid ${active?clrs[s]:t.border};
+        background:${active?clrs[s]+'33':'transparent'};color:${active?clrs[s]:t.textMuted};
+        font-size:13px;cursor:pointer;font-weight:${active?'700':'400'}">${lbls[s]}</button>`;
+    }).join('');
+    return `<div style="margin-bottom:16px">
+      <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">ステータス</div>
+      <div style="display:flex;gap:8px">${btns}</div>
+    </div>`;
+  })() : '';
+
+  const dueHtml = isTask ? `
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">期日</div>
+      <input type="date" id="qe-due" onblur="_qeSave('${id}')"
+        style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
+        background:${t.btnBg};color:${t.text};font-size:14px;box-sizing:border-box">
+    </div>` : '';
+
+  const el = document.createElement('div');
+  el.id = 'quick-edit-popup';
+  el.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
+  el.innerHTML = `
+    <div onclick="event.stopPropagation()" style="background:${t.cardBg};border-radius:16px;padding:24px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
+      <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">タイトル</div>
+      <input type="text" id="qe-title" onblur="_qeSave('${id}')"
+        style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
+        background:${t.btnBg};color:${t.text};font-size:16px;font-weight:600;
+        margin-bottom:16px;box-sizing:border-box">
+      ${statusHtml}
+      ${dueHtml}
+      <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">内容</div>
+      <textarea id="qe-desc" onblur="_qeSave('${id}')"
+        style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
+        background:${t.btnBg};color:${t.text};font-size:14px;line-height:1.7;
+        min-height:110px;resize:vertical;box-sizing:border-box"></textarea>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button onclick="closeQuickEdit('${id}')"
+          style="flex:1;padding:12px;background:${t.btnBg};color:${t.textMuted};
+          border:1px solid ${t.btnBorder};border-radius:10px;font-size:14px;cursor:pointer">閉じる</button>
+        <button onclick="closeQuickEdit('${id}');editItem('${id}')"
+          style="padding:12px 16px;background:${t.linkBg};color:${t.linkColor};
+          border:1px solid ${t.border};border-radius:10px;font-size:14px;cursor:pointer">✏️ 詳細編集</button>
+      </div>
+    </div>`;
+  el.addEventListener('click', () => closeQuickEdit(id));
+  document.body.appendChild(el);
+
+  // 値をセット（HTMLエスケープ問題を避けるためJSで代入）
+  document.getElementById('qe-title').value = item.title || '';
+  document.getElementById('qe-desc').value = item.desc || '';
+  if (isTask && document.getElementById('qe-due')) {
+    document.getElementById('qe-due').value = item.dueDate || '';
+  }
+  setTimeout(() => document.getElementById('qe-title')?.focus(), 50);
+}
+
+function _qeSave(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  const titleEl = document.getElementById('qe-title');
+  const descEl  = document.getElementById('qe-desc');
+  const dueEl   = document.getElementById('qe-due');
+  if (titleEl && titleEl.value.trim()) item.title = titleEl.value.trim();
+  if (descEl)  item.desc    = descEl.value;
+  if (dueEl)   item.dueDate = dueEl.value;
+  save();
+}
+
+function qeSetStatus(id, status) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  item.status = status;
+  save();
+  const t = _shortcutTheme();
+  const clrs = { todo:'#6b7280', doing:'#f59e0b', done:'#10b981' };
+  ['todo','doing','done'].forEach(s => {
+    const btn = document.getElementById(`qe-s-${s}`);
+    if (!btn) return;
+    const active = s === status;
+    btn.style.borderColor  = active ? clrs[s] : t.border;
+    btn.style.background   = active ? clrs[s]+'33' : 'transparent';
+    btn.style.color        = active ? clrs[s] : t.textMuted;
+    btn.style.fontWeight   = active ? '700' : '400';
+  });
+}
+
+function closeQuickEdit(id) {
+  _qeSave(id);
+  const el = document.getElementById('quick-edit-popup');
+  if (el) el.remove();
+  render();
 }
 
 function confirmDelete(id) {
