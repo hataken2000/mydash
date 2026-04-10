@@ -1810,7 +1810,7 @@ function gridCard(item) {
   const shortcutBtn = ['memo','task','other','set','bookmark','tool'].includes(item.type)
     ? `<div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>` : '';
 
-  return `<div class="grid-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+  return `<div class="grid-card${item.appName ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
       style="border-left:4px solid ${tc}"
       onclick="cardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')">
@@ -1919,7 +1919,7 @@ function listCard(item) {
     </div>`;
   }
   const selChkL = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
-  return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+  return `<div class="list-card ${taskCardClass(item)}${item.appName ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
       onclick="cardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')">
     ${selChkL}
@@ -2614,7 +2614,7 @@ function iconCardClick(event, id) {
 function iconCard(item) {
   const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:14px;height:14px;accent-color:var(--set);cursor:pointer"></div>` : '';
   const titleSuffix = item.type === 'set' ? ' ▶ クリックで起動' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
-  return `<div class="icon-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+  return `<div class="icon-card${item.appName ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
       onclick="iconCardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')"
       title="${esc(item.title)}${titleSuffix}" style="position:relative">
