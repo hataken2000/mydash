@@ -3193,7 +3193,9 @@ async function launchSet(id) {
           toast(`Chrome起動失敗: ${j.error || 'unknown'}`, '❌');
         }
       } catch (_) {
-        toast('サーバーが起動していません。mydash-server.js を起動してください。', '⚠️');
+        // サーバーも拡張機能もない場合は直接タブで開く
+        urls.forEach(u => window.open(u, '_blank'));
+        toast(`${urls.length}件をタブで開きました`, '✅');
         updateServerStatus(false);
       }
     }
