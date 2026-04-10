@@ -169,6 +169,9 @@ body {
 .si-label { overflow: hidden; text-overflow: ellipsis; flex: 1; }
 .cat-rename-btn { display:none; background:none; border:none; cursor:pointer; font-size:11px; padding:0 2px; color:var(--text-muted); flex-shrink:0; line-height:1; }
 .sidebar-item:hover .cat-rename-btn { display:inline; }
+.type-add-btn { display:none; background:none; border:none; cursor:pointer; font-size:15px; padding:0 3px; color:var(--text-muted); flex-shrink:0; line-height:1; opacity:0.7; border-radius:4px; }
+.type-add-btn:hover { opacity:1; color:var(--accent); background:rgba(124,131,253,0.15); }
+.sidebar-item:hover .type-add-btn { display:inline-flex; align-items:center; justify-content:center; }
 .count-badge {
   margin-left: auto;
   background: var(--border);
@@ -952,14 +955,17 @@ body.hide-server .launch-btn { display: none !important; }
   <div class="sidebar-section">種類</div>
   <div class="sidebar-item" data-filter="bookmark" onclick="setFilter('bookmark')">
     <span class="si-icon">🔖</span><span class="si-label">ブックマーク</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('bookmark')" title="ブックマーク追加">＋</button>
     <span class="count-badge" id="cnt-bookmark">0</span>
   </div>
   <div class="sidebar-item" data-filter="tool" onclick="setFilter('tool')">
     <span class="si-icon">🔧</span><span class="si-label">ツール/アプリ</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('tool')" title="ツール/アプリ追加">＋</button>
     <span class="count-badge" id="cnt-tool">0</span>
   </div>
   <div class="sidebar-item" data-filter="task" onclick="setFilter('task')">
     <span class="si-icon">✅</span><span class="si-label">タスク</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('task')" title="タスク追加">＋</button>
     <span class="due-alert-badge" id="cnt-task-due" style="display:none"></span>
     <span class="count-badge" id="cnt-task">0</span>
   </div>
@@ -971,14 +977,17 @@ body.hide-server .launch-btn { display: none !important; }
   </div>
   <div class="sidebar-item" data-filter="memo" onclick="setFilter('memo')">
     <span class="si-icon">📝</span><span class="si-label">メモ</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('memo')" title="メモ追加">＋</button>
     <span class="count-badge" id="cnt-memo">0</span>
   </div>
   <div class="sidebar-item" data-filter="other" onclick="setFilter('other')">
     <span class="si-icon">📦</span><span class="si-label">その他</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('other')" title="その他追加">＋</button>
     <span class="count-badge" id="cnt-other">0</span>
   </div>
   <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
     <span class="si-icon">🚀</span><span class="si-label">セット</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('set')" title="セット追加">＋</button>
     <span class="count-badge" id="cnt-set">0</span>
   </div>
   <div id="set-subfilter-section" style="display:none">
@@ -987,6 +996,7 @@ body.hide-server .launch-btn { display: none !important; }
   </div>
   <div class="sidebar-item" data-filter="slack" onclick="setFilter('slack')">
     <span class="si-icon">💬</span><span class="si-label">Slack送信</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('slack')" title="Slack送信追加">＋</button>
     <span class="count-badge" id="cnt-slack">0</span>
   </div>
 
@@ -2049,7 +2059,7 @@ function updateCounts() {
     const count = visibleItems.filter(i => i.type === t).length;
     document.getElementById(`cnt-${t}`).textContent = count;
     const sidebarEl = document.querySelector(`.sidebar-item[data-filter="${t}"]`);
-    if (sidebarEl) sidebarEl.style.display = (!showServer && count === 0) ? 'none' : '';
+    if (sidebarEl) sidebarEl.style.display = '';
   });
 
   // 期限切れ・今日締切タスクの警告バッジ
@@ -2267,13 +2277,13 @@ function updateServerStatus(online) {
 // ═══════════════════════════════════════════
 // Modal
 // ═══════════════════════════════════════════
-function openModal() {
+function openModal(type = 'bookmark') {
   state.editId = null;
   state.tags = [];
   document.getElementById('modal-title').textContent = '新規追加';
   document.getElementById('btn-delete').style.display = 'none';
   resetForm();
-  selectType('bookmark');
+  selectType(type);
   document.getElementById('modal').style.display = 'flex';
   setTimeout(() => document.getElementById('f-title').focus(), 50);
 }
