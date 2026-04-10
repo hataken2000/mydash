@@ -73,8 +73,10 @@ body {
   color: var(--text);
   display: flex;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   overflow-x: hidden;
+  overscroll-behavior: none;
   font-size: 14px;
   touch-action: manipulation;
 }
@@ -845,7 +847,7 @@ body {
 }
 
 @media (max-width: 520px) {
-  .sort-select { display: none; }
+  .sort-select { padding: 4px 2px; font-size: 11px; max-width: 68px; }
   .add-text { display: none; }
 }
 body.hide-server .server-feature { display: none !important; }
@@ -1631,16 +1633,26 @@ function renderMemo(text) {
   // ![alt](url) → サムネイル画像（クリックでURL先へ）
   s = s.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
     '<a href="$2" target="_blank" rel="noopener" onclick="event.stopPropagation()"><img src="$2" alt="$1" class="memo-img" onerror="this.parentNode.style.display=\'none\'"></a>');
-  // [文字](URL) → リンク（Maps URLは地図カード）
+  // [文字](URL) → リンク（Maps URLはiframe埋め込みまたは地図カード）
   s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, (_, label, url) => {
-    if (/maps\.google\.com|maps\.app\.goo\.gl|goo\.gl\/maps|google\.com\/maps/.test(url)) {
+    if (/maps\.google\.com|google\.com\/maps/.test(url)) {
+      let embedUrl = url;
+      try { const u = new URL(url); u.searchParams.set('output', 'embed'); embedUrl = u.toString(); } catch(e) {}
+      return `<div class="memo-map-embed"><a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-embed-label">📍 ${label}</a><iframe src="${embedUrl}" loading="lazy" allowfullscreen></iframe></div>`;
+    }
+    if (/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)) {
       return `<a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-link">📍 ${label}</a>`;
     }
     return `<a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${label}</a>`;
   });
-  // bare URL → リンク（Maps=地図カード、画像拡張子=サムネイル、href/src内は除外）
+  // bare URL → リンク（Maps=iframe埋め込みまたは地図カード、画像拡張子=サムネイル、href/src内は除外）
   s = s.replace(/((?<!href="|src=")(https?:\/\/[^\s<>"]+))/g, (match, url) => {
-    if (/maps\.google\.com|maps\.app\.goo\.gl|goo\.gl\/maps|google\.com\/maps/.test(url)) {
+    if (/maps\.google\.com|google\.com\/maps/.test(url)) {
+      let embedUrl = url;
+      try { const u = new URL(url); u.searchParams.set('output', 'embed'); embedUrl = u.toString(); } catch(e) {}
+      return `<div class="memo-map-embed"><a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-embed-label">📍 Google マップ</a><iframe src="${embedUrl}" loading="lazy" allowfullscreen></iframe></div>`;
+    }
+    if (/maps\.app\.goo\.gl|goo\.gl\/maps/.test(url)) {
       return `<a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-link">📍 ${url}</a>`;
     }
     const path = url.split('?')[0].split('#')[0];
@@ -2451,6 +2463,10 @@ function selectType(type) {
   document.getElementById('f-url-group').style.display = hasUrl ? '' : 'none';
   document.getElementById('f-url-label').textContent   = isSlack ? 'チャンネルURL' : 'URL / パス';
   document.getElementById('f-url').placeholder         = isSlack ? 'https://app.slack.com/client/...' : 'https://...';
+  if (isSlack && !state.editId) {
+    const lastUrl = localStorage.getItem('mydash_last_slack_url') || '';
+    if (lastUrl) document.getElementById('f-url').value = lastUrl;
+  }
   document.getElementById('f-slack-msg-group').style.display = isSlack ? '' : 'none';
   document.getElementById('f-appname-group').style.display = isTool ? '' : 'none';
   document.getElementById('f-task-row').style.display = isTask ? '' : 'none';
@@ -2607,6 +2623,7 @@ function saveItem() {
   }
   if (state.type === 'slack') {
     data.slackMessage = document.getElementById('f-slack-msg').value.trim();
+    if (data.url) localStorage.setItem('mydash_last_slack_url', data.url);
   }
 
   if (state.editId) {
