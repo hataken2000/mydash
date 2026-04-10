@@ -5,6 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MyDash</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<link rel="apple-touch-icon" id="apple-touch-icon-link">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MyDash">
+<script>
+(function(){
+  const c = document.createElement('canvas');
+  c.width = c.height = 180;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0f1117';
+  const r = 36;
+  ctx.beginPath();
+  ctx.moveTo(r,0); ctx.lineTo(180-r,0);
+  ctx.quadraticCurveTo(180,0,180,r);
+  ctx.lineTo(180,180-r);
+  ctx.quadraticCurveTo(180,180,180-r,180);
+  ctx.lineTo(r,180); ctx.quadraticCurveTo(0,180,0,180-r);
+  ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
+  ctx.fill();
+  ctx.font = '110px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('⚡', 90, 95);
+  document.getElementById('apple-touch-icon-link').href = c.toDataURL('image/png');
+})();
+</script>
 <style>
 :root {
   --bg: #0f1117;
@@ -1919,7 +1944,7 @@ function updateCounts() {
   }
 
   // タブタイトルに件数を反映
-  document.title = dueCount > 0 ? `(${dueCount}) MyDash` : 'MyDash';
+  document.title = 'MyDash';
 
   updateAlarmBadge();
 }
