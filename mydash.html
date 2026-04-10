@@ -1785,13 +1785,15 @@ function filteredItems() {
 }
 
 function render() {
+  const contentEl = document.getElementById('content');
+  const savedScroll = contentEl ? contentEl.scrollTop : 0;
   updateCounts();
   updateCatList();
   updateSelectBar();
   updateTaskFilterRow();
   updateSetFilterRow();
   const items = filteredItems();
-  const el = document.getElementById('content');
+  const el = contentEl;
   el.classList.toggle('select-mode', state.selectMode);
 
   if (!items.length) {
@@ -1832,6 +1834,7 @@ function render() {
     el.innerHTML = `<div class="list-view">${items.map(listCard).join('')}</div>`;
   }
   initDragSort();
+  requestAnimationFrame(() => { if (contentEl) contentEl.scrollTop = savedScroll; });
 }
 
 function typeColor(item) {
@@ -3006,7 +3009,7 @@ function showQuickEdit(id) {
       <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">内容</div>
       <div id="qe-desc-preview" class="memo-body"
         onclick="_qeShowEdit('${id}')" title="クリックして編集"
-        style="min-height:80px;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
+        style="min-height:80px;max-height:220px;overflow-y:auto;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
         background:${t.btnBg};cursor:text;line-height:1.7;font-size:14px;color:${t.text}"></div>
       <textarea id="qe-desc"
         onblur="_qeShowPreview('${id}')"
@@ -4117,7 +4120,7 @@ function scheduleGistAutoSync() {
   const gistId = localStorage.getItem('mydash_gist_id') || '';
   if (!token || !gistId) return;
   clearTimeout(_gistAutoSyncTimer);
-  _gistAutoSyncTimer = setTimeout(gistAutoUpload, 4000);
+  _gistAutoSyncTimer = setTimeout(gistAutoUpload, 2000);
 }
 
 async function gistAutoUpload() {
