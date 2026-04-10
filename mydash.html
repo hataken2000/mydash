@@ -1789,13 +1789,17 @@ function render() {
   initDragSort();
 }
 
-function gridCard(item) {
+function typeColor(item) {
   const isLight = document.body.classList.contains('light');
-  const tc = isLight
+  return isLight
     ? ({ bookmark:'var(--bookmark)', tool:'var(--tool)', task:'var(--task)',
          memo:'var(--memo)', other:'var(--other)', set:'var(--set)', slack:'var(--slack)' }[item.type] || 'var(--border)')
     : ({ bookmark:'rgba(79,195,247,0.45)', tool:'rgba(129,199,132,0.45)', task:'rgba(255,183,77,0.45)',
          memo:'rgba(244,143,177,0.45)', other:'rgba(206,147,216,0.45)', set:'rgba(128,203,196,0.45)', slack:'rgba(74,185,95,0.45)' }[item.type] || 'var(--border)');
+}
+
+function gridCard(item) {
+  const tc = typeColor(item);
   const expanded = state.expandedCards.has(item.id);
   const starClass = item.starred ? ' starred' : '';
   const starIcon  = item.starred ? '⭐' : '☆';
@@ -1870,10 +1874,11 @@ function gridCard(item) {
 }
 
 function listCard(item) {
+  const tc = typeColor(item);
   if (item.type === 'slack') {
     const selChkS = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--slack);cursor:pointer;flex-shrink:0"></div>` : '';
     return `<div class="list-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-        style="border-left:3px solid var(--slack)"
+        style="border-left:4px solid ${tc}"
         onclick="cardClick(event,'${item.id}')"
         oncontextmenu="showCtx(event,'${item.id}')">
       ${selChkS}
@@ -1899,6 +1904,7 @@ function listCard(item) {
     const preview = setItems.map(i => esc(i.title)).join('、') || '（アイテムなし）';
     const selChkLS = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
     return `<div class="list-card set-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+        style="border-left:4px solid ${tc}"
         onclick="cardClick(event,'${item.id}')"
         oncontextmenu="showCtx(event,'${item.id}')">
       ${selChkLS}
@@ -1927,7 +1933,7 @@ function listCard(item) {
   const selChkLM = state.selectMode ? `<div onclick="event.stopPropagation()" style="flex-shrink:0;padding-top:2px"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer"></div>` : '';
   if (item.type === 'memo' && item.desc) {
     return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-        style="flex-direction:column;align-items:stretch"
+        style="flex-direction:column;align-items:stretch;border-left:4px solid ${tc}"
         onclick="cardClick(event,'${item.id}')"
         oncontextmenu="showCtx(event,'${item.id}')">
       <div style="display:flex;align-items:flex-start;gap:12px">
@@ -1961,6 +1967,7 @@ function listCard(item) {
   }
   const selChkL = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
   return `<div class="list-card ${taskCardClass(item)}${item.appName ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+      style="border-left:4px solid ${tc}"
       onclick="cardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')">
     ${selChkL}
@@ -2658,12 +2665,13 @@ function iconCardClick(event, id) {
 }
 
 function iconCard(item) {
+  const tc = typeColor(item);
   const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:14px;height:14px;accent-color:var(--set);cursor:pointer"></div>` : '';
   const titleSuffix = item.type === 'set' ? ' ▶ クリックで起動' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
   return `<div class="icon-card${item.appName ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
       onclick="iconCardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')"
-      title="${esc(item.title)}${titleSuffix}" style="position:relative">
+      title="${esc(item.title)}${titleSuffix}" style="position:relative;border-top:3px solid ${tc}">
     ${selChkI}
     <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
   </div>`;
@@ -4174,7 +4182,7 @@ function getItemOrder() {
 
 let _dragSrcId = null;
 function initDragSort() {
-  if (document.getElementById('sort-select').value !== 'manual') return;
+  const isManual = document.getElementById('sort-select').value === 'manual';
   const cards = document.querySelectorAll('[data-id]');
 
   function clearIndicators() {
@@ -4198,29 +4206,32 @@ function initDragSort() {
       e.dataTransfer.effectAllowed = 'move';
     });
     card.addEventListener('dragend', clearIndicators);
-    card.addEventListener('dragover', e => {
-      e.preventDefault();
-      if (card.dataset.id === _dragSrcId) return;
-      clearIndicators();
-      card.classList.add(insertPos(card, e) === 'before' ? 'drag-insert-before' : 'drag-insert-after');
-    });
-    card.addEventListener('dragleave', () => {
-      card.classList.remove('drag-insert-before','drag-insert-after');
-    });
-    card.addEventListener('drop', e => {
-      e.preventDefault();
-      const targetId = card.dataset.id;
-      if (!_dragSrcId || _dragSrcId === targetId) { clearIndicators(); return; }
-      const before = card.classList.contains('drag-insert-before');
-      clearIndicators();
-      const order = getItemOrder();
-      order.splice(order.indexOf(_dragSrcId), 1);
-      const tgtIdx = order.indexOf(targetId);
-      order.splice(before ? tgtIdx : tgtIdx + 1, 0, _dragSrcId);
-      db.itemOrder = order;
-      save();
-      render();
-    });
+
+    if (isManual) {
+      card.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (card.dataset.id === _dragSrcId) return;
+        clearIndicators();
+        card.classList.add(insertPos(card, e) === 'before' ? 'drag-insert-before' : 'drag-insert-after');
+      });
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-insert-before','drag-insert-after');
+      });
+      card.addEventListener('drop', e => {
+        e.preventDefault();
+        const targetId = card.dataset.id;
+        if (!_dragSrcId || _dragSrcId === targetId) { clearIndicators(); return; }
+        const before = card.classList.contains('drag-insert-before');
+        clearIndicators();
+        const order = getItemOrder();
+        order.splice(order.indexOf(_dragSrcId), 1);
+        const tgtIdx = order.indexOf(targetId);
+        order.splice(before ? tgtIdx : tgtIdx + 1, 0, _dragSrcId);
+        db.itemOrder = order;
+        save();
+        render();
+      });
+    }
   });
 }
 
