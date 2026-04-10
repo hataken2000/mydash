@@ -70,7 +70,9 @@ db（localStorage: 'mydash_v1'）→ load() → state → filteredItems() → re
 - **「まとめて」と言われたタイミングでNotionと合わせて更新する**
   - 更新対象: 未着手タスク / 設計判断の変化
   - 更新不要: コミット履歴・一時メモ・コードを読めば分かる詳細
-- **200行を超えたらハタケに知らせて整理する**
+- **200行を超えたらハタケに知らせ、詳細をNotionリファレンスに退避する**
+  - Notion詳細リファレンス: https://www.notion.so/33ef6127f54c814eb9b9f29ec466ab71
+  - 「Notionのリファレンス見て」と言えばfetchできる
 
 ---
 
