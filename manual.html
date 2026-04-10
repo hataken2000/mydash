@@ -209,6 +209,9 @@ code {
   <div class="toc-section">機能</div>
   <a href="#alarm">アラーム</a>
   <a href="#set">セット</a>
+  <a href="#slack">Slack送信</a>
+  <a href="#quickedit">クイック編集</a>
+  <a href="#shortcut-url">スマホショートカット連携</a>
   <a href="#calendar">カレンダー連携</a>
   <a href="#dock">Dockインポート</a>
   <a href="#data">データ管理</a>
@@ -353,6 +356,11 @@ code {
       <div class="name"><span class="badge badge-set">セット</span></div>
       <div class="desc">複数アイテムを一括起動。会議資料・朝のルーティンなどに。</div>
     </div>
+    <div class="type-card">
+      <div class="icon">💬</div>
+      <div class="name"><span class="badge" style="background:rgba(74,185,95,0.14);color:#4ab95f">Slack送信</span></div>
+      <div class="desc">Slackの特定チャンネルに定型文をワンクリック送信。Chrome拡張と連携して動作。</div>
+    </div>
   </div>
 
   <!-- ── 追加・編集・削除 ── -->
@@ -380,11 +388,19 @@ code {
   <p><strong>カードをクリック</strong>で編集ダイアログを開く。右クリックでコンテキストメニュー（編集・開く・削除）も使える。</p>
 
   <h3>タスクのステータス切り替え</h3>
-  <p>リスト表示時、ステータスバッジ（📋 未着手 など）を直接クリックすると編集ダイアログを開かずに切り替えできる。</p>
+  <p>ステータスバッジ（📋 未着手 など）を直接クリックすると編集ダイアログを開かずに切り替えできる。</p>
 
-  <h3>メモの展開とインライン編集</h3>
-  <p>リスト表示時、メモカードの下部「▼」ボタンで本文を展開できる。展開した状態はリロード後も保持される。</p>
-  <p>展開した本文エリアをクリックするとその場で直接編集できる。<kbd>⌘+Enter</kbd> またはエリア外クリックで保存。タイトル・タグ・アイコンの変更は編集ダイアログで行う。</p>
+  <h3>カードの展開（▼ボタン）</h3>
+  <p>グリッド表示のカード下部に <strong>▼</strong> ボタンがあるアイテムは、タップ/クリックで詳細を展開できる。展開状態はリロード後も保持される。</p>
+  <div class="card-grid" style="grid-template-columns:1fr 1fr">
+    <div class="card"><strong>メモ</strong><p style="margin:4px 0 0">本文全文をその場で確認</p></div>
+    <div class="card"><strong>セット</strong><p style="margin:4px 0 0">含まれるアイテム一覧・起動ボタン・アラーム情報</p></div>
+    <div class="card"><strong>Slack送信</strong><p style="margin:4px 0 0">メッセージ全文・送信ボタン</p></div>
+    <div class="card"><strong>その他</strong><p style="margin:4px 0 0">説明文（descが設定されているとき）</p></div>
+  </div>
+
+  <h3>メモのインライン編集（リスト表示）</h3>
+  <p>リスト表示でメモカードを展開し、本文エリアをクリックするとその場で直接編集できる。<kbd>⌘+Enter</kbd> またはエリア外クリックで保存。</p>
 
   <h3>アイテムの非表示</h3>
   <p>セット専用など通常は見せたくないアイテムを非表示にできる。選択モードで対象アイテムを選び「🙈 非表示にする」ボタンを押す。非表示アイテムは通常時は一覧に出ない。</p>
@@ -561,6 +577,150 @@ code {
   <div class="tip">
     <span class="tip-icon">💡</span>
     <span>セット起動にはローカルサーバー（MyDash.app）が起動している必要がある。</span>
+  </div>
+
+  <!-- ── Slack送信 ── -->
+  <h2 id="slack">Slack送信</h2>
+  <p>Slackの特定チャンネルに定型文をワンクリックで送信する機能。Chrome拡張（MyDash Slack Sender）と組み合わせて動作する。</p>
+
+  <h3>アイテムの作成</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>「＋ 追加」→ 種類「💬 Slack送信」を選択</strong>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>タイトル・SlackチャンネルURL・送信するメッセージを入力して保存</strong>
+        <p>URLはSlackのチャンネルURL（ブラウザ版: https://app.slack.com/client/...）</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>カードの「💬 送信」ボタンを押すと自動送信</strong>
+        <p>グリッドビューではカードを展開すると送信ボタンが表示される</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Chrome拡張のセットアップ（初回のみ）</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Chromeで <code>chrome://extensions</code> を開く</strong>
+        <p>右上の「デベロッパーモード」をONにする</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>「パッケージ化されていない拡張機能を読み込む」→ <code>slack-extension</code> フォルダを選択</strong>
+        <p>MyDashのフォルダ内にある <code>slack-extension/</code> を選択する</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>拡張機能が追加されたらセットアップ完了</strong>
+        <p>MyDashをリロードすると拡張機能が認識され、Slack送信ボタンが動作するようになる</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">💡</span>
+    <span>拡張機能なしでも送信ボタンは表示されるが、実際の送信は行われない。Chrome専用機能のためSafariでは動作しない。</span>
+  </div>
+
+  <!-- ── クイック編集 ── -->
+  <h2 id="quickedit">クイック編集</h2>
+  <p>タスク・メモアイテムをタップ/クリックすると、フル編集ダイアログではなくコンパクトなクイック編集パネルが開く。よく使う項目だけを素早く編集できる。</p>
+
+  <div class="card-grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <strong>📝 メモ</strong>
+      <p style="margin:4px 0 0">タイトル・説明の編集。別の項目をタップするか閉じると自動保存。</p>
+    </div>
+    <div class="card">
+      <strong>✅ タスク</strong>
+      <p style="margin:4px 0 0">タイトル・説明・ステータス（未着手/進行中/完了）・期日の編集。自動保存。</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">💡</span>
+    <span>アイコン・カテゴリ・タグなど詳細設定の変更は、ホバー時に表示される ✏️ ボタンからフル編集ダイアログを開いて行う。</span>
+  </div>
+
+  <!-- ── スマホショートカット連携 ── -->
+  <h2 id="shortcut-url">スマホショートカット連携</h2>
+  <p>iOSのショートカットアプリと連携することで、ホーム画面タップや位置情報・時刻トリガーでMyDashのアイテムを直接起動できる。</p>
+
+  <h3>ショートカットURLの取得</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>グリッドビューのカードにカーソルを当てると 📱 ボタンが表示される</strong>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>📱 ボタンをクリック → URLがクリップボードにコピーされる</strong>
+        <p>コピーされたURLは <code>https://hataken2000.github.io/mydash/mydash.html#exec=item&amp;id=…</code> の形式</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>iOSショートカットの作成</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>ショートカットアプリ → 「＋」で新規ショートカットを作成</strong>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>アクション「URLを開く」を追加し、コピーしたURLを貼り付け</strong>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>ショートカットをホーム画面に追加（任意）</strong>
+        <p>共有ボタン →「ホーム画面に追加」でアイコンとして設置できる</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>オートメーションで自動実行</h3>
+  <p>ショートカットアプリの「オートメーション」タブでトリガーを設定すると、条件に応じて自動実行できる。</p>
+  <div class="card-grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <strong>⏰ 時刻トリガー</strong>
+      <p style="margin:4px 0 0">「毎朝9時に今日のタスクを開く」「会議15分前にセットを起動」など</p>
+    </div>
+    <div class="card">
+      <strong>📍 位置情報トリガー</strong>
+      <p style="margin:4px 0 0">「会社に到着したらブックマークを開く」「自宅に帰ったらメモを表示」など</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">💡</span>
+    <span>セットのショートカットURLを使うと、スマホからURLリストをパネル表示して各リンクを開ける。ローカルサーバーなしで複数URLをまとめて確認できる。</span>
+  </div>
+  <div class="warn">
+    <span>⚠️</span>
+    <span>iOSのバックグラウンドでの位置情報検知には制限がある。オートメーション実行時に確認ダイアログが表示される場合がある（iOS設定で「自動実行を許可」にすると省略可能）。</span>
   </div>
 
   <!-- ── カレンダー連携 ── -->
@@ -761,7 +921,7 @@ code {
   </table>
 
   <div style="margin-top:48px;padding-top:24px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center">
-    ⚡ MyDash v1.3
+    ⚡ MyDash v1.4
   </div>
 
 </main>
