@@ -606,19 +606,21 @@ body {
   opacity: 0; transition: opacity 0.12s;
   line-height: 1; z-index: 1;
   background: none; border: none; padding: 2px;
+  color: var(--text-muted);
 }
 .grid-card:hover .star-btn { opacity: 0.5; }
 .grid-card:hover .star-btn.starred,
-.star-btn.starred { opacity: 1; }
+.star-btn.starred { opacity: 1; color: inherit; }
 .list-star-btn {
   position: absolute; top: 6px; left: 8px; z-index: 2;
   font-size: 15px; cursor: pointer;
   transition: opacity 0.12s;
   background: none; border: none; padding: 0 2px;
+  color: var(--text-muted);
 }
 .list-card:not(:hover) .list-star-btn:not(.starred) { opacity: 0; }
 .list-card:hover .list-star-btn:not(.starred) { opacity: 0.6; }
-.list-star-btn.starred { opacity: 1; }
+.list-star-btn.starred { opacity: 1; color: inherit; }
 .select-mode .list-star-btn { display: none; }
 .select-mode .star-btn { display: none; }
 
@@ -2997,8 +2999,9 @@ function showQuickEdit(id) {
   const el = document.createElement('div');
   el.id = 'quick-edit-popup';
   el.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
+  document.body.style.overflow = 'hidden';
   el.innerHTML = `
-    <div onclick="event.stopPropagation()" style="background:${t.cardBg};border-radius:16px;padding:24px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
+    <div onclick="event.stopPropagation()" style="background:${t.cardBg};border-radius:16px;padding:24px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5);max-height:90vh;overflow-y:auto;overscroll-behavior:contain">
       <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">タイトル</div>
       <input type="text" id="qe-title" onblur="_qeSave('${id}')"
         style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
@@ -3099,6 +3102,7 @@ function closeQuickEdit(id) {
   _qeSave(id);
   const el = document.getElementById('quick-edit-popup');
   if (el) el.remove();
+  document.body.style.overflow = '';
   render();
 }
 
