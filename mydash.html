@@ -306,6 +306,7 @@ body {
   transition: all 0.14s;
   position: relative; text-align: center;
   user-select: none;
+  min-height: 130px;
 }
 .grid-card.selected, .list-card.selected, .icon-card.selected {
   border-color: var(--set); background: rgba(38,198,218,0.08);
@@ -694,6 +695,27 @@ body {
   background: none; border: none; padding: 2px 0; font-family: inherit;
 }
 .memo-toggle:hover { text-decoration: underline; }
+
+/* ── Card footer & expand ────────────────────── */
+.card-footer {
+  display: flex; align-items: center; gap: 4px;
+  width: 100%; justify-content: center; flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 6px; margin-top: auto;
+}
+.card-expand-btn {
+  background: none; border: none;
+  color: var(--text-muted); font-size: 10px;
+  cursor: pointer; padding: 1px 5px; border-radius: 4px;
+  transition: color 0.12s, background 0.12s;
+  font-family: inherit; margin-left: auto; flex-shrink: 0;
+}
+.card-expand-btn:hover { color: var(--accent); background: var(--card-hover); }
+.card-expand-body {
+  width: 100%; font-size: 11.5px; color: var(--text-muted);
+  text-align: left; border-top: 1px solid var(--border);
+  padding-top: 8px; word-break: break-word;
+}
 
 /* ── Tag dropdown & filter chips ──────────────── */
 .tag-dropdown {
@@ -1439,6 +1461,7 @@ let state = {
   type: 'bookmark',
   ctxId: null,
   expandedMemos: new Set(),
+  expandedCards: new Set(),
   editingMemoId: null,
   setItems: [], // セット型: [{ itemId, notionTodayPage }]
   selectMode: false,
@@ -1469,6 +1492,7 @@ function load() {
   if (!db.settings.view) db.settings.view = 'grid';
   if (!db.settings.sort) db.settings.sort = 'manual';
   state.expandedMemos = new Set(Array.isArray(db.expandedMemos) ? db.expandedMemos : []);
+  state.expandedCards = new Set(Array.isArray(db.expandedCards) ? db.expandedCards : []);
 }
 
 function save() {
@@ -1723,88 +1747,82 @@ function render() {
 }
 
 function gridCard(item) {
-  if (item.type === 'slack') {
-    const starClass = item.starred ? ' starred' : '';
-    const selChk = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--slack);cursor:pointer"></div>` : '';
-    const msgPreview = (item.slackMessage || '').slice(0, 55) + ((item.slackMessage || '').length > 55 ? '…' : '');
-    return `<div class="grid-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-        style="border-color:rgba(74,185,95,0.3)"
-        onclick="cardClick(event,'${item.id}')"
-        oncontextmenu="showCtx(event,'${item.id}')">
-      ${selChk}
-      <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
-      <div class="card-actions">
-        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
-        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
-      </div>
-      <div class="card-icon icon-bg-slack">${iconHtml(item,'lg')}</div>
-      <div class="card-title">${esc(item.title)}</div>
-      ${msgPreview ? `<div class="set-preview">${esc(msgPreview)}</div>` : ''}
-      <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();sendSlackMessage('${item.id}')">💬 送信</button>
-      <div style="display:flex;gap:4px;align-items:center;justify-content:center">
-        ${typeBadge(item)}
-      </div>
-      <div class="card-date">${relativeDate(item.createdAt)}</div>
-    </div>`;
-  }
-  if (item.type === 'set') {
-    const setItems = (item.setItems || [])
-      .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
-    const preview = setItems.length
-      ? setItems.slice(0, 3).map(i => esc(i.title)).join('・') + (setItems.length > 3 ? ` 他${setItems.length - 3}件` : '')
-      : '（アイテムなし）';
-    const starClass = item.starred ? ' starred' : '';
-    const selChkSet = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer"></div>` : '';
-    return `<div class="grid-card set-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-        onclick="cardClick(event,'${item.id}')"
-        oncontextmenu="showCtx(event,'${item.id}')">
-      ${selChkSet}
-      <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
-      <div class="card-actions">
-        <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
-        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
-        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
-      </div>
-      <div class="card-icon icon-bg-set">${iconHtml(item,'lg')}</div>
-      <div class="card-title">${esc(item.title)}</div>
-      <div class="set-preview">${preview}</div>
-      ${item.alarm?.enabled ? `<div style="font-size:11px;color:var(--set);margin-top:2px">🔔 ${alarmSchedDesc({schedule:item.alarm.schedule})}</div>` : ''}
-      <button class="launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
-      <div style="display:flex;gap:4px;align-items:center;justify-content:center">
-        ${typeBadge(item)}
-      </div>
-      <div class="card-date">${relativeDate(item.createdAt)}</div>
-    </div>`;
-  }
-  const pri = item.type === 'task' && item.priority
-    ? priorityIconHtml(item.priority) : '';
+  const isLight = document.body.classList.contains('light');
+  const tc = isLight
+    ? ({ bookmark:'var(--bookmark)', tool:'var(--tool)', task:'var(--task)',
+         memo:'var(--memo)', other:'var(--other)', set:'var(--set)', slack:'var(--slack)' }[item.type] || 'var(--border)')
+    : ({ bookmark:'rgba(79,195,247,0.45)', tool:'rgba(129,199,132,0.45)', task:'rgba(255,183,77,0.45)',
+         memo:'rgba(244,143,177,0.45)', other:'rgba(206,147,216,0.45)', set:'rgba(128,203,196,0.45)', slack:'rgba(74,185,95,0.45)' }[item.type] || 'var(--border)');
+  const expanded = state.expandedCards.has(item.id);
   const starClass = item.starred ? ' starred' : '';
   const starIcon  = item.starred ? '⭐' : '☆';
-  const memoExpanded = state.expandedMemos.has(item.id);
-  const memoToggle = (item.type === 'memo' && item.desc)
-    ? `<button class="memo-toggle" style="align-self:stretch;text-align:center;padding:4px 0;border-top:1px solid var(--border)" onclick="event.stopPropagation();toggleMemoExpand('${item.id}')">${memoExpanded ? '▲ 閉じる' : '▼ 展開'}</button>` : '';
-  const memoBody = (item.type === 'memo' && item.desc && memoExpanded)
-    ? `<div class="memo-body">${renderMemo(item.desc)}</div>` : '';
-  const selChk = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer"></div>` : '';
-  return `<div class="grid-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+  const selChk = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:${tc};cursor:pointer"></div>` : '';
+
+  // 展開コンテンツがあるか
+  const hasExpand = !!(
+    (item.type === 'memo' && item.desc) ||
+    item.type === 'set' ||
+    (item.type === 'slack' && item.slackMessage) ||
+    (['bookmark','tool','task','other'].includes(item.type) && item.desc)
+  );
+  const expandBtn = hasExpand
+    ? `<button class="card-expand-btn" onclick="event.stopPropagation();toggleCardExpand('${item.id}')">${expanded ? '▲' : '▼'}</button>`
+    : '';
+
+  // 展開コンテンツ本体
+  let expandBody = '';
+  if (expanded && hasExpand) {
+    if (item.type === 'memo') {
+      expandBody = `<div class="card-expand-body">${renderMemo(item.desc)}</div>`;
+    } else if (item.type === 'set') {
+      const setItems = (item.setItems || [])
+        .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
+      const preview = setItems.length
+        ? setItems.map(i => `<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">・${esc(i.title)}</div>`).join('')
+        : '<div>（アイテムなし）</div>';
+      const alarmHtml = item.alarm?.enabled
+        ? `<div style="color:${tc};margin-top:4px;font-size:11px">🔔 ${alarmSchedDesc({schedule:item.alarm.schedule})}</div>` : '';
+      expandBody = `<div class="card-expand-body">
+        ${preview}${alarmHtml}
+        <button class="launch-btn" style="width:100%;margin-top:8px" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
+      </div>`;
+    } else if (item.type === 'slack') {
+      const msg = item.slackMessage || '';
+      expandBody = `<div class="card-expand-body">
+        ${msg ? `<div style="margin-bottom:8px;white-space:pre-wrap;word-break:break-word">${esc(msg)}</div>` : ''}
+        <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border:1px solid rgba(74,185,95,0.4);width:100%" onclick="event.stopPropagation();sendSlackMessage('${item.id}')">💬 送信</button>
+      </div>`;
+    } else if (item.desc) {
+      expandBody = `<div class="card-expand-body">${esc(item.desc)}</div>`;
+    }
+  }
+
+  // フッター：タイプバッジ + 優先度 + 期日 + 展開ボタン
+  const pri = item.type === 'task' && item.priority ? priorityIconHtml(item.priority) : '';
+  const footer = `<div class="card-footer">
+    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1;justify-content:center">${typeBadge(item)}${pri}${dueBadge(item)}</div>
+    ${expandBtn}
+  </div>`;
+
+  // ショートカットURLボタンを出すタイプ
+  const shortcutBtn = ['memo','task','other','set','bookmark','tool'].includes(item.type)
+    ? `<div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>` : '';
+
+  return `<div class="grid-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+      style="border-left:4px solid ${tc}"
       onclick="cardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')">
     ${selChk}
     <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${starIcon}</button>
     <div class="card-actions">
-      <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
+      ${shortcutBtn}
       <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
       <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
     </div>
-    ${(item.type === 'memo' && !item.icon) ? '' : `<div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>`}
+    <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
     <div class="card-title">${esc(item.title)}</div>
-    ${memoToggle}
-    ${memoBody}
-    <div style="display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap">
-      ${typeBadge(item)} ${pri}
-    </div>
-    ${dueBadge(item)}
-    <div class="card-date">${relativeDate(item.createdAt)}</div>
+    ${footer}
+    ${expandBody}
   </div>`;
 }
 
@@ -2520,6 +2538,17 @@ function toggleMemoExpand(id) {
     state.expandedMemos.add(id);
   }
   db.expandedMemos = [...state.expandedMemos];
+  save();
+  render();
+}
+
+function toggleCardExpand(id) {
+  if (state.expandedCards.has(id)) {
+    state.expandedCards.delete(id);
+  } else {
+    state.expandedCards.add(id);
+  }
+  db.expandedCards = [...state.expandedCards];
   save();
   render();
 }
