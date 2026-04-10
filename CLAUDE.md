@@ -63,6 +63,10 @@ db（localStorage: 'mydash_v1'）→ load() → state → filteredItems() → re
 
 **カテゴリセクション間のスペース:** `.cat-section + .cat-section { margin-top: 24px }` で管理。`:first-child` は使わない（常に0になるバグがあったため）。
 
+**renderMemo のリッチ対応:** `![alt](url)` または画像拡張子URL直貼り → サムネイル。Google Maps URL → 📍カード。`〒XXX-XXXX 住所` → iframeで地図埋め込み（自動認識）。処理順: 画像→リンク→bare URL（Maps/画像判定）→住所→Markdown記法→改行。
+
+**クイック編集の内容欄:** プレビュー表示（`renderMemo`）＋クリックで編集切り替え。`_qeShowEdit()` / `_qeShowPreview()` で制御。WYSIWYGは見送り（ライブラリ必要・スマホ厳しい）。
+
 ---
 
 ## このファイル（CLAUDE.md）の運用ルール

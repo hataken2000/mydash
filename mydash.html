@@ -3003,10 +3003,16 @@ function showQuickEdit(id) {
       ${statusHtml}
       ${dueHtml}
       <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">内容</div>
-      <textarea id="qe-desc" onblur="_qeSave('${id}')"
-        style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
+      <div id="qe-desc-preview" class="memo-body"
+        onclick="_qeShowEdit('${id}')" title="クリックして編集"
+        style="min-height:80px;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
+        background:${t.btnBg};cursor:text;line-height:1.7;font-size:14px;color:${t.text}"></div>
+      <textarea id="qe-desc"
+        onblur="_qeShowPreview('${id}')"
+        onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();_qeShowPreview('${id}')}"
+        style="display:none;width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--accent);
         background:${t.btnBg};color:${t.text};font-size:14px;line-height:1.7;
-        min-height:110px;resize:vertical;box-sizing:border-box"></textarea>
+        min-height:110px;resize:vertical;box-sizing:border-box;outline:none"></textarea>
       <div style="display:flex;gap:10px;margin-top:16px">
         <button onclick="closeQuickEdit('${id}')"
           style="flex:1;padding:12px;background:${t.btnBg};color:${t.textMuted};
@@ -3022,10 +3028,37 @@ function showQuickEdit(id) {
   // 値をセット（HTMLエスケープ問題を避けるためJSで代入）
   document.getElementById('qe-title').value = item.title || '';
   document.getElementById('qe-desc').value = item.desc || '';
+  if (item.desc) {
+    document.getElementById('qe-desc-preview').innerHTML = renderMemo(item.desc);
+  } else {
+    _qeShowEdit(id);
+  }
   if (isTask && document.getElementById('qe-due')) {
     document.getElementById('qe-due').value = item.dueDate || '';
   }
   setTimeout(() => document.getElementById('qe-title')?.focus(), 50);
+}
+
+function _qeShowEdit(id) {
+  const preview = document.getElementById('qe-desc-preview');
+  const ta = document.getElementById('qe-desc');
+  if (!preview || !ta) return;
+  preview.style.display = 'none';
+  ta.style.display = 'block';
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+}
+
+function _qeShowPreview(id) {
+  const preview = document.getElementById('qe-desc-preview');
+  const ta = document.getElementById('qe-desc');
+  if (!preview || !ta) return;
+  ta.style.display = 'none';
+  preview.innerHTML = ta.value
+    ? renderMemo(ta.value)
+    : '<span style="color:var(--text-muted);font-size:12px">クリックして編集</span>';
+  preview.style.display = 'block';
+  _qeSave(id);
 }
 
 function _qeSave(id) {
