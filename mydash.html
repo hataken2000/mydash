@@ -2723,35 +2723,52 @@ function execShortcutItem(item) {
   }
 }
 
+function _shortcutTheme() {
+  const light = document.body.classList.contains('light');
+  return {
+    cardBg:    light ? '#ffffff'  : '#1e2130',
+    text:      light ? '#1a1d27'  : '#e8eaf6',
+    textMuted: light ? '#6b7280'  : '#8b90aa',
+    border:    light ? '#dde2f0'  : '#2d3250',
+    linkBg:    light ? '#f0f4ff'  : '#252840',
+    linkColor: light ? '#2563eb'  : '#00afcc',
+    btnBg:     light ? '#f3f4f6'  : '#252840',
+    btnBorder: light ? '#e5e7eb'  : '#2d3250',
+    accent:    '#00afcc',
+  };
+}
+
 function showShortcutUrlPanel(title, urls) {
+  const t = _shortcutTheme();
   const el = document.createElement('div');
   el.id = 'shortcut-popup';
   el.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
   const linkItems = urls.map(u => {
     const label = u.replace(/^https?:\/\//, '').replace(/\/$/, '');
-    return `<a href="${esc(u)}" target="_blank" style="display:block;padding:14px 16px;background:#f0f4ff;border:1px solid #c5d0e8;border-radius:10px;color:#2563eb;text-decoration:none;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:10px">${esc(label)}</a>`;
+    return `<a href="${esc(u)}" target="_blank" style="display:block;padding:14px 16px;background:${t.linkBg};border:1px solid ${t.border};border-radius:10px;color:${t.linkColor};text-decoration:none;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:10px">${esc(label)}</a>`;
   }).join('');
   el.innerHTML = `
-    <div style="background:#ffffff;border-radius:16px;padding:28px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
+    <div style="background:${t.cardBg};border-radius:16px;padding:28px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
       <div style="font-size:28px;margin-bottom:10px">🚀</div>
-      ${title ? `<div style="font-size:18px;font-weight:700;color:#111827;margin-bottom:16px">${esc(title)}</div>` : ''}
+      ${title ? `<div style="font-size:18px;font-weight:700;color:${t.text};margin-bottom:16px">${esc(title)}</div>` : ''}
       <div style="max-height:55vh;overflow-y:auto">${linkItems}</div>
-      <button onclick="document.getElementById('shortcut-popup').remove()" style="margin-top:16px;width:100%;padding:13px;background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;border-radius:10px;font-size:15px;cursor:pointer">閉じる</button>
+      <button onclick="document.getElementById('shortcut-popup').remove()" style="margin-top:16px;width:100%;padding:13px;background:${t.btnBg};color:${t.textMuted};border:1px solid ${t.btnBorder};border-radius:10px;font-size:15px;cursor:pointer">閉じる</button>
     </div>`;
   document.body.appendChild(el);
 }
 
 function showShortcutPopup(type, title, body) {
+  const t = _shortcutTheme();
   const icon = type === 'task' ? '✅' : '📝';
   const el = document.createElement('div');
   el.id = 'shortcut-popup';
   el.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
   el.innerHTML = `
-    <div style="background:#ffffff;border-radius:16px;padding:28px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
+    <div style="background:${t.cardBg};border-radius:16px;padding:28px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
       <div style="font-size:30px;margin-bottom:12px">${icon}</div>
-      <div style="font-size:19px;font-weight:700;color:#111827;margin-bottom:${body ? '14' : '0'}px">${esc(title)}</div>
-      ${body ? `<div style="font-size:14px;color:#374151;white-space:pre-wrap;line-height:1.8;max-height:60vh;overflow-y:auto">${esc(body)}</div>` : ''}
-      <button onclick="document.getElementById('shortcut-popup').remove()" style="margin-top:22px;width:100%;padding:13px;background:#2563eb;color:white;border:none;border-radius:10px;font-size:16px;cursor:pointer;font-weight:600">閉じる</button>
+      <div style="font-size:19px;font-weight:700;color:${t.text};margin-bottom:${body ? '14' : '0'}px">${esc(title)}</div>
+      ${body ? `<div style="font-size:14px;color:${t.textMuted};white-space:pre-wrap;line-height:1.8;max-height:60vh;overflow-y:auto">${esc(body)}</div>` : ''}
+      <button onclick="document.getElementById('shortcut-popup').remove()" style="margin-top:22px;width:100%;padding:13px;background:${t.accent};color:white;border:none;border-radius:10px;font-size:16px;cursor:pointer;font-weight:600">閉じる</button>
     </div>`;
   document.body.appendChild(el);
 }
