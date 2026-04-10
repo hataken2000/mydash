@@ -1950,7 +1950,7 @@ function updateCounts() {
     const count = visibleItems.filter(i => i.type === t).length;
     document.getElementById(`cnt-${t}`).textContent = count;
     const sidebarEl = document.querySelector(`.sidebar-item[data-filter="${t}"]`);
-    if (sidebarEl) sidebarEl.style.display = count === 0 ? 'none' : '';
+    if (sidebarEl) sidebarEl.style.display = (!showServer && count === 0) ? 'none' : '';
   });
 
   // 期限切れ・今日締切タスクの警告バッジ
