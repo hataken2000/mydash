@@ -1542,6 +1542,7 @@ function load() {
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
   rebuildIndex();
+  scheduleGistAutoSync();
 }
 
 let itemMap = new Map();
@@ -4106,6 +4107,96 @@ async function gistDownload() {
   }
 }
 
+// ── Gist自動同期 ────────────────────────────────
+let _gistAutoSyncTimer = null;
+let _gistSyncing = false;
+
+function scheduleGistAutoSync() {
+  if (_gistSyncing) return;
+  const token = localStorage.getItem('mydash_github_token') || '';
+  const gistId = localStorage.getItem('mydash_gist_id') || '';
+  if (!token || !gistId) return;
+  clearTimeout(_gistAutoSyncTimer);
+  _gistAutoSyncTimer = setTimeout(gistAutoUpload, 4000);
+}
+
+async function gistAutoUpload() {
+  const token = localStorage.getItem('mydash_github_token') || '';
+  const gistId = localStorage.getItem('mydash_gist_id') || '';
+  if (!token || !gistId) return;
+  try {
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files: { 'mydash-data.json': { content: JSON.stringify(db) } } })
+    });
+    if (res.ok) localStorage.setItem('mydash_gist_last_sync', new Date().toISOString());
+  } catch(e) {
+    console.warn('[MyDash] Gist auto-upload failed:', e.message);
+  }
+}
+
+async function gistAutoDownload() {
+  const token = localStorage.getItem('mydash_github_token') || '';
+  const gistId = localStorage.getItem('mydash_gist_id') || '';
+  if (!token || !gistId) return;
+  _gistSyncing = true;
+  try {
+    // ローカルの最終更新時刻
+    const lastSync = localStorage.getItem('mydash_gist_last_sync') || '';
+    const localLatest = db.items.reduce((m, i) => {
+      const t = i.updatedAt || i.createdAt || '';
+      return t > m ? t : m;
+    }, '');
+
+    // ローカルにlastSync以降の変更があれば先にアップロード
+    if (localLatest > lastSync) {
+      await gistAutoUpload();
+      return;
+    }
+
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const raw = data.files['mydash-data.json']?.content;
+    if (!raw) return;
+    const remote = JSON.parse(raw);
+
+    const localMap = new Map(db.items.map(i => [i.id, i]));
+    const remoteMap = new Map((remote.items || []).map(i => [i.id, i]));
+    const allIds = new Set([...localMap.keys(), ...remoteMap.keys()]);
+    const merged = [];
+    allIds.forEach(id => {
+      const l = localMap.get(id);
+      const r = remoteMap.get(id);
+      if (l && r) {
+        merged.push((l.updatedAt || l.createdAt || '') >= (r.updatedAt || r.createdAt || '') ? l : r);
+      } else {
+        merged.push(l || r);
+      }
+    });
+
+    const remoteOrder = remote.itemOrder || [];
+    const localOnlyIds = merged.map(i => i.id).filter(id => !remoteOrder.includes(id));
+
+    if (JSON.stringify(merged) === JSON.stringify(db.items) &&
+        JSON.stringify([...remoteOrder, ...localOnlyIds]) === JSON.stringify(db.itemOrder)) return;
+
+    db.items = merged;
+    db.itemOrder = [...remoteOrder, ...localOnlyIds];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    rebuildIndex();
+    render();
+    toast('☁️ Gistから同期しました');
+  } catch(e) {
+    console.warn('[MyDash] Gist auto-download failed:', e.message);
+  } finally {
+    _gistSyncing = false;
+  }
+}
+
 // ── Dockインポート ──────────────────────────────
 async function openDockImportModal() {
   document.getElementById('dock-import-modal').style.display = 'flex';
@@ -4916,6 +5007,7 @@ startAlarmChecker();
 updateAlarmBadge();
 runCalSync(false); // ページ読み込み時に自動同期チェック
 handleShortcutExec(); // iPhoneショートカットURLパラメータの処理
+gistAutoDownload(); // 起動時にGistから自動同期
 
 window.addEventListener('resize', () => {
   if (window.innerWidth > 768) {
