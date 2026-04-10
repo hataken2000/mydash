@@ -1942,10 +1942,15 @@ function listCard(item) {
 }
 
 function updateCounts() {
-  document.getElementById('cnt-all').textContent = db.items.length;
-  document.getElementById('cnt-starred').textContent = db.items.filter(i => i.starred).length;
+  const showServer = db.settings?.showServerFeatures !== false;
+  const visibleItems = showServer ? db.items : db.items.filter(i => !i.appName);
+  document.getElementById('cnt-all').textContent = visibleItems.length;
+  document.getElementById('cnt-starred').textContent = visibleItems.filter(i => i.starred).length;
   ['bookmark','tool','task','memo','other','set','slack'].forEach(t => {
-    document.getElementById(`cnt-${t}`).textContent = db.items.filter(i => i.type === t).length;
+    const count = visibleItems.filter(i => i.type === t).length;
+    document.getElementById(`cnt-${t}`).textContent = count;
+    const sidebarEl = document.querySelector(`.sidebar-item[data-filter="${t}"]`);
+    if (sidebarEl) sidebarEl.style.display = count === 0 ? 'none' : '';
   });
 
   // 期限切れ・今日締切タスクの警告バッジ
