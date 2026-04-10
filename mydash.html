@@ -2713,11 +2713,12 @@ function execShortcutItem(item) {
   if (item.type === 'bookmark' || (item.type === 'tool' && item.url) || (item.type === 'other' && item.url)) {
     showShortcutUrlPanel(item.title, [item.url]);
   } else if (item.type === 'set') {
-    const urls = (item.setItems || [])
+    const urlItems = (item.setItems || [])
       .map(si => db.items.find(i => i.id === si.itemId))
-      .filter(i => i?.url).map(i => i.url);
-    if (!urls.length) { toast('このセットにURLアイテムがありません', '⚠️'); return; }
-    showShortcutUrlPanel(item.title, urls);
+      .filter(i => i?.url)
+      .map(i => ({ title: i.title, icon: i.icon || '', url: i.url, type: i.type }));
+    if (!urlItems.length) { toast('このセットにURLアイテムがありません', '⚠️'); return; }
+    showShortcutUrlPanel(item.title, urlItems);
   } else if (item.type === 'memo' || item.type === 'task' || item.type === 'other') {
     showShortcutPopup(item.type, item.title, item.desc || '');
   }
@@ -2738,14 +2739,32 @@ function _shortcutTheme() {
   };
 }
 
-function showShortcutUrlPanel(title, urls) {
+function showShortcutUrlPanel(title, items) {
+  // items: URL文字列 or {title, icon, url, type} オブジェクトどちらでも可
   const t = _shortcutTheme();
   const el = document.createElement('div');
   el.id = 'shortcut-popup';
   el.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
-  const linkItems = urls.map(u => {
-    const label = u.replace(/^https?:\/\//, '').replace(/\/$/, '');
-    return `<a href="${esc(u)}" target="_blank" style="display:block;padding:14px 16px;background:${t.linkBg};border:1px solid ${t.border};border-radius:10px;color:${t.linkColor};text-decoration:none;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:10px">${esc(label)}</a>`;
+  const linkItems = items.map(item => {
+    const isObj = typeof item === 'object' && item !== null;
+    const url = isObj ? item.url : item;
+    const label = isObj ? item.title : url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    let iconPart = '';
+    if (isObj) {
+      if (item.icon && /^https?:|^\/|^data:/.test(item.icon)) {
+        iconPart = `<img src="${esc(item.icon)}" style="width:22px;height:22px;object-fit:contain;border-radius:4px;flex-shrink:0" onerror="this.style.display='none'">`;
+      } else if (item.icon) {
+        iconPart = `<span style="font-size:18px;line-height:1;flex-shrink:0">${esc(item.icon)}</span>`;
+      } else {
+        try {
+          const domain = new URL(url).hostname;
+          iconPart = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=32" style="width:22px;height:22px;object-fit:contain;border-radius:4px;flex-shrink:0" onerror="this.style.display='none'">`;
+        } catch {}
+      }
+    }
+    return `<a href="${esc(url)}" target="_blank" style="display:flex;align-items:center;gap:10px;padding:13px 14px;background:${t.linkBg};border:1px solid ${t.border};border-radius:10px;color:${t.linkColor};text-decoration:none;font-size:14px;margin-bottom:10px;overflow:hidden">
+      ${iconPart}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(label)}</span>
+    </a>`;
   }).join('');
   el.innerHTML = `
     <div style="background:${t.cardBg};border-radius:16px;padding:28px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
@@ -3153,6 +3172,7 @@ async function launchSet(id) {
   toast('起動中…', '🚀');
 
   const urls = [];
+  const urlItems = [];
   const appNames = [];
 
   for (const si of setItems) {
@@ -3162,6 +3182,7 @@ async function launchSet(id) {
       appNames.push(item.appName);
     } else if (item.url) {
       urls.push(item.url);
+      urlItems.push({ title: item.title, icon: item.icon || '', url: item.url, type: item.type });
     }
   }
 
@@ -3180,11 +3201,11 @@ async function launchSet(id) {
       toast(`${urls.length}件をChromeで開きました`, '✅');
     } else if (!SERVER_BASE) {
       // オンライン版: 1件ならそのまま開く、複数はパネルで表示（Safari複数window.open制約回避）
-      if (urls.length === 1) {
-        window.open(urls[0], '_blank');
+      if (urlItems.length === 1) {
+        window.open(urlItems[0].url, '_blank');
         toast('タブで開きました', '✅');
       } else {
-        showShortcutUrlPanel(set.title, urls);
+        showShortcutUrlPanel(set.title, urlItems);
       }
     } else {
       try {
