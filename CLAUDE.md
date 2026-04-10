@@ -67,6 +67,8 @@ db（localStorage: 'mydash_v1'）→ load() → state → filteredItems() → re
 
 ## このファイル（CLAUDE.md）の運用ルール
 
+- **「やることみて」と言われたら、Notionのやりたいことメモをfetchして確認する**
+  - URL: https://www.notion.so/kidsstar/334f6127f54c804c955ec2694d1e899a
 - **「まとめて」と言われたタイミングでNotionと合わせて更新する**
   - 更新対象: 未着手タスク / 設計判断の変化
   - 更新不要: コミット履歴・一時メモ・コードを読めば分かる詳細

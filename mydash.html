@@ -729,6 +729,30 @@ body {
   background: none; border: none; padding: 2px 0; font-family: inherit;
 }
 .memo-toggle:hover { text-decoration: underline; }
+.memo-img {
+  max-height: 80px; max-width: 140px; border-radius: 4px;
+  vertical-align: middle; cursor: pointer; margin: 2px 2px 2px 0;
+  object-fit: cover; border: 1px solid var(--border);
+}
+.memo-map-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(0,175,204,0.1); border: 1px solid rgba(0,175,204,0.3);
+  border-radius: 6px; padding: 2px 8px; color: var(--accent);
+  text-decoration: none; font-size: 11px; vertical-align: middle; margin: 1px 0;
+}
+.memo-map-link:hover { background: rgba(0,175,204,0.2); text-decoration: none !important; }
+.memo-map-embed {
+  display: block; margin: 4px 0;
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid rgba(0,175,204,0.3);
+}
+.memo-map-embed-label {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px; background: rgba(0,175,204,0.1);
+  color: var(--accent); font-size: 11px; text-decoration: none;
+}
+.memo-map-embed-label:hover { background: rgba(0,175,204,0.2); }
+.memo-map-embed iframe { display: block; width: 100%; height: 150px; border: 0; }
 
 /* ── Card footer & expand ────────────────────── */
 .card-footer {
@@ -1590,10 +1614,27 @@ function relativeDate(iso) {
 function renderMemo(text) {
   if (!text) return '';
   let s = esc(text);
-  // [文字](URL) → リンク（bare URLより先に処理）
-  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" onclick="event.stopPropagation()">$1</a>');
-  // bare URL → リンク
-  s = s.replace(/((?<!href=")(https?:\/\/[^\s<>"]+))/g, '<a href="$1" target="_blank" rel="noopener" onclick="event.stopPropagation()">$1</a>');
+  // ![alt](url) → サムネイル画像（クリックでURL先へ）
+  s = s.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener" onclick="event.stopPropagation()"><img src="$2" alt="$1" class="memo-img" onerror="this.parentNode.style.display=\'none\'"></a>');
+  // [文字](URL) → リンク（Maps URLは地図カード）
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, (_, label, url) => {
+    if (/maps\.google\.com|maps\.app\.goo\.gl|goo\.gl\/maps|google\.com\/maps/.test(url)) {
+      return `<a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-link">📍 ${label}</a>`;
+    }
+    return `<a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${label}</a>`;
+  });
+  // bare URL → リンク（Maps=地図カード、画像拡張子=サムネイル、href/src内は除外）
+  s = s.replace(/((?<!href="|src=")(https?:\/\/[^\s<>"]+))/g, (match, url) => {
+    if (/maps\.google\.com|maps\.app\.goo\.gl|goo\.gl\/maps|google\.com\/maps/.test(url)) {
+      return `<a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-link">📍 ${url}</a>`;
+    }
+    const path = url.split('?')[0].split('#')[0];
+    if (/\.(jpe?g|png|gif|webp|svg|bmp)$/i.test(path)) {
+      return `<a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><img src="${url}" class="memo-img" onerror="this.parentNode.style.display='none'"></a>`;
+    }
+    return `<a href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${url}</a>`;
+  });
   // **太字**
   s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   // *斜体*
@@ -1608,6 +1649,12 @@ function renderMemo(text) {
   s = s.replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:6px 0">');
   // - / * リスト
   s = s.replace(/^[-*] (.+)$/gm, '• $1');
+  // 〒郵便番号 + 住所 → 地図埋め込み（自動）
+  s = s.replace(/〒\d{3}-\d{4}[^\n<>]*/g, (match) => {
+    const addr = match.trim();
+    const query = encodeURIComponent(addr);
+    return `<div class="memo-map-embed"><a href="https://maps.google.com/maps?q=${query}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-embed-label">📍 ${addr}</a><iframe src="https://maps.google.com/maps?q=${query}&output=embed" loading="lazy" allowfullscreen></iframe></div>`;
+  });
   // 改行 → <br>
   s = s.replace(/\n/g, '<br>');
   return s;
