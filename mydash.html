@@ -146,14 +146,14 @@ body {
 
 /* ── カテゴリセクションヘッダー ── */
 .cat-section { width: 100%; }
+.cat-section + .cat-section { margin-top: 24px; }
 .cat-section-header {
   display: flex; align-items: center; gap: 8px;
   font-size: 11.5px; font-weight: 700; color: var(--text-muted);
-  padding: 4px 2px 8px; margin-top: 12px;
+  padding: 4px 2px 8px;
   border-bottom: 1px solid var(--border);
   text-transform: uppercase; letter-spacing: 0.8px;
 }
-.cat-section-header:first-child { margin-top: 0; }
 .cat-section .grid-view { margin-top: 10px; }
 .cat-section .list-view { margin-top: 6px; }
 .cat-section .icon-view { margin-top: 10px; }
@@ -366,6 +366,7 @@ body {
   position: relative;
 }
 .item-hidden { opacity: 0.4; border-style: dashed !important; }
+.item-hidden .icon-card { border-style: dashed !important; }
 .list-card:hover { border-color: var(--accent); background: var(--card-hover); }
 .list-icon {
   width: 36px; height: 36px;
@@ -665,20 +666,28 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
   gap: 10px;
 }
+.icon-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
 .icon-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 14px 8px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; aspect-ratio: 1;
+  cursor: pointer; aspect-ratio: 1; width: 100%;
   transition: all 0.14s; position: relative;
 }
 .icon-card:hover {
   border-color: var(--accent); background: var(--card-hover);
   transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.35);
 }
-.icon-card .card-icon { width: 64px; height: 64px; border-radius: 16px; font-size: 36px; }
+.icon-card .card-icon { width: 56px; height: 56px; border-radius: 14px; font-size: 32px; }
+.icon-title {
+  font-size: 11px; color: var(--text);
+  text-align: center; width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 
 /* ── Status clickable ──────────────────────────── */
 .status-clickable { cursor: pointer; transition: all 0.12s; }
@@ -2668,12 +2677,15 @@ function iconCard(item) {
   const tc = typeColor(item);
   const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:14px;height:14px;accent-color:var(--set);cursor:pointer"></div>` : '';
   const titleSuffix = item.type === 'set' ? ' ▶ クリックで起動' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
-  return `<div class="icon-card${item.appName ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-      onclick="iconCardClick(event,'${item.id}')"
-      oncontextmenu="showCtx(event,'${item.id}')"
-      title="${esc(item.title)}${titleSuffix}" style="position:relative;border-top:3px solid ${tc}">
-    ${selChkI}
-    <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
+  return `<div class="icon-wrap${item.appName ? ' server-feature' : ''}${item.hidden?' item-hidden':''}">
+    <div class="icon-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}"
+        onclick="iconCardClick(event,'${item.id}')"
+        oncontextmenu="showCtx(event,'${item.id}')"
+        title="${esc(item.title)}${titleSuffix}" style="border-top:3px solid ${tc}">
+      ${selChkI}
+      <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
+    </div>
+    <div class="icon-title">${esc(item.title)}</div>
   </div>`;
 }
 
