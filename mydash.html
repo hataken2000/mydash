@@ -1268,7 +1268,7 @@ body.hide-server .launch-btn { display: none !important; }
     <button id="select-alarm-on-btn" onclick="setSelectedAlarm(true)" disabled style="display:none;opacity:0.4;background:transparent;border:1px solid var(--set);border-radius:var(--radius-sm);color:var(--set);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:url(icons/bell.svg);mask-image:url(icons/bell.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>ON</button>
     <button id="select-alarm-off-btn" onclick="setSelectedAlarm(false)" disabled style="display:none;opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:url(icons/bell.svg);mask-image:url(icons/bell.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px;opacity:0.5"></span>OFF</button>
     <button id="select-del-btn" onclick="deleteSelected()" disabled style="opacity:0.4;background:transparent;border:1px solid var(--danger);border-radius:var(--radius-sm);color:var(--danger);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:url(icons/trash.svg);mask-image:url(icons/trash.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>削除</button>
-    <button onclick="toggleSelectMode()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:5px 8px">キャンセル</button>
+    <button onclick="toggleSelectMode()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:5px 8px"><span class="app-icon" style="-webkit-mask-image:url(icons/close.svg);mask-image:url(icons/close.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>キャンセル</button>
   </div>
   <!-- Content -->
   <div class="content" id="content"></div>
@@ -2956,7 +2956,8 @@ function updateSelectBar() {
   const delBtn = document.getElementById('select-del-btn');
   delBtn.disabled = count === 0;
   delBtn.style.opacity = count ? '1' : '0.4';
-  delBtn.textContent = count ? `🗑️ 削除（${count}件）` : '🗑️ 削除';
+  const trashIcon = '<span class="app-icon" style="-webkit-mask-image:url(icons/trash.svg);mask-image:url(icons/trash.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>';
+  delBtn.innerHTML = count ? `${trashIcon}削除（${count}件）` : `${trashIcon}削除`;
   const showBtn = document.getElementById('select-show-btn');
   const hideBtn = document.getElementById('select-hide-btn');
   showBtn.disabled = count === 0; showBtn.style.opacity = count ? '1' : '0.4';
@@ -4974,16 +4975,17 @@ function updateAlarmActionBtns() {
   const all = document.querySelectorAll('.alarm-check');
   const checked = document.querySelectorAll('.alarm-check:checked');
   const count = checked.length;
-  const setBtn = (id, label) => {
+  const iconHtml = (svg) => `<span class="app-icon" style="-webkit-mask-image:url(icons/${svg}.svg);mask-image:url(icons/${svg}.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>`;
+  const setBtn = (id, icon, label) => {
     const btn = document.getElementById(id);
     if (!btn) return;
     btn.disabled = count === 0;
     btn.style.opacity = count ? '1' : '0.4';
-    if (label) btn.textContent = count ? `${label}（${count}件）` : label;
+    btn.innerHTML = count ? `${iconHtml(icon)}${label}（${count}件）` : `${iconHtml(icon)}${label}`;
   };
-  setBtn('alarm-del-sel-btn', '🗑️ 選択削除');
-  setBtn('alarm-off-sel-btn', '⏸ 無効化');
-  setBtn('alarm-on-sel-btn', '▶ 有効化');
+  setBtn('alarm-del-sel-btn', 'trash', '選択削除');
+  setBtn('alarm-off-sel-btn', 'pause', '無効化');
+  setBtn('alarm-on-sel-btn', 'play-circle', '有効化');
   // 全選択チェックの状態を同期
   const allChk = document.getElementById('alarm-check-all');
   if (!allChk) return;
@@ -5126,7 +5128,7 @@ function openAlarmForm(id) {
     </div>`;
 
   document.getElementById('alarm-modal-footer').innerHTML = `
-    ${id?`<button class="btn-danger" onclick="deleteAlarm('${id}')">🗑️ 削除</button>`:''}
+    ${id?`<button class="btn-danger" onclick="deleteAlarm('${id}')"><span class="app-icon" style="-webkit-mask-image:url(icons/trash.svg);mask-image:url(icons/trash.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>削除</button>`:''}
     <button class="btn-secondary" onclick="renderAlarmList()">← 戻る</button>
     <button class="btn-primary" onclick="saveAlarm()">保存</button>`;
 
