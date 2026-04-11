@@ -170,6 +170,18 @@ body {
 .cat-section .icon-view { margin-top: 10px; }
 .si-label { overflow: hidden; text-overflow: ellipsis; flex: 1; }
 .cat-rename-btn { display:none; background:none; border:none; cursor:pointer; font-size:11px; padding:0 2px; color:var(--text-muted); flex-shrink:0; line-height:1; }
+/* ── Quick Search ─────────────────────────── */
+#quick-search-modal { display:none; }
+#quick-search-modal.open { display:flex; }
+.qs-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; cursor:pointer; }
+.qs-item:hover, .qs-item.qs-active { background:rgba(124,131,253,0.12); }
+.qs-item-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.qs-item-title { font-size:13.5px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.qs-item-type { font-size:11px; color:var(--text-muted); flex-shrink:0; }
+kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; padding:2px 7px; font-size:12px; font-family:inherit; white-space:nowrap; }
+/* ── Shortcuts Modal ──────────────────────── */
+#shortcuts-modal { display:none; }
+#shortcuts-modal.open { display:flex; }
 .sidebar-item:hover .cat-rename-btn { display:inline; }
 .type-add-btn { display:none; background:none; border:none; cursor:pointer; font-size:15px; padding:0 3px; color:var(--text-muted); flex-shrink:0; line-height:1; opacity:0.7; border-radius:4px; }
 .type-add-btn:hover { opacity:1; color:var(--accent); background:rgba(124,131,253,0.15); }
@@ -1064,6 +1076,7 @@ body.hide-server .launch-btn { display: none !important; }
           <div style="display:flex;gap:6px">
             <button id="theme-dark-btn" onclick="setDarkMode(true)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit">🌙 ダーク</button>
             <button id="theme-light-btn" onclick="setDarkMode(false)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit">☀️ ライト</button>
+            <button id="theme-auto-btn" onclick="setDarkMode('auto')" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit">🖥️ 自動</button>
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:12px;color:var(--text-muted);flex-shrink:0">アクセント</span>
@@ -1399,6 +1412,51 @@ body.hide-server .launch-btn { display: none !important; }
 
 <div id="toasts"></div>
 
+<!-- ⌘K クイック検索モーダル -->
+<div id="quick-search-modal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding-top:80px" onclick="if(event.target===this)closeQuickSearch()">
+  <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:14px;width:min(560px,92vw);box-shadow:0 24px 64px rgba(0,0,0,0.5);overflow:hidden">
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <span style="color:var(--text-muted);font-size:18px">🔍</span>
+      <input id="qs-input" type="text" placeholder="アイテムを検索…" oninput="onQsInput()" onkeydown="onQsKeydown(event)"
+        style="flex:1;background:none;border:none;outline:none;color:var(--text);font-size:15px;font-family:inherit">
+      <kbd style="font-size:11px;color:var(--text-muted);background:var(--border);border-radius:4px;padding:2px 6px">Esc</kbd>
+    </div>
+    <div id="qs-results" style="max-height:360px;overflow-y:auto;padding:6px"></div>
+  </div>
+</div>
+
+<!-- ショートカット一覧モーダル -->
+<div id="shortcuts-modal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center" onclick="if(event.target===this)closeShortcutsModal()">
+  <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:14px;width:min(480px,90vw);max-height:80vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <span style="font-weight:700;font-size:15px">⌨️ ショートカット一覧</span>
+      <button onclick="closeShortcutsModal()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1">✕</button>
+    </div>
+    <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;font-size:13px">
+      <div style="font-weight:700;color:var(--text-muted);font-size:11px;letter-spacing:1px">グローバル</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:center">
+        <kbd class="sc-key">⌘N</kbd><span>新規追加</span>
+        <kbd class="sc-key">⌘K</kbd><span>クイック検索</span>
+        <kbd class="sc-key">⌘,</kbd><span>設定を開く</span>
+        <kbd class="sc-key">?</kbd><span>このヘルプを表示</span>
+        <kbd class="sc-key">Esc</kbd><span>モーダルを閉じる</span>
+      </div>
+      <div style="font-weight:700;color:var(--text-muted);font-size:11px;letter-spacing:1px;margin-top:6px">表示切り替え</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:center">
+        <kbd class="sc-key">G</kbd><span>グリッド表示</span>
+        <kbd class="sc-key">L</kbd><span>リスト表示</span>
+        <kbd class="sc-key">I</kbd><span>アイコン表示</span>
+        <kbd class="sc-key">0〜6</kbd><span>フィルター切り替え（0=すべて）</span>
+      </div>
+      <div style="font-weight:700;color:var(--text-muted);font-size:11px;letter-spacing:1px;margin-top:6px">編集中</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:center">
+        <kbd class="sc-key">⌘Enter</kbd><span>メモ・クイック編集を保存</span>
+        <kbd class="sc-key">⌘Z</kbd><span>テキスト入力をundo（ブラウザ標準）</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Calendar Import Modal -->
 <div class="modal-overlay" id="cal-import-modal" style="display:none" onclick="if(event.target===this)closeCalImportModal()">
   <div class="modal" style="max-width:540px" onclick="event.stopPropagation()">
@@ -1542,7 +1600,7 @@ function load() {
   if (!db.settings) db.settings = {};
   if (db.settings.confirmOnClose === undefined) db.settings.confirmOnClose = false;
   if (db.settings.accentColor === undefined) db.settings.accentColor = '#00afcc';
-  if (db.settings.darkMode === undefined) db.settings.darkMode = true;
+  if (db.settings.darkMode === undefined) db.settings.darkMode = 'auto';
   if (db.settings.alarmAutoLaunch === undefined) db.settings.alarmAutoLaunch = true;
   if (db.settings.alarmOffsetMin === undefined) db.settings.alarmOffsetMin = 0;
   if (db.settings.alarmMuted === undefined) db.settings.alarmMuted = false;
@@ -1936,6 +1994,7 @@ function gridCard(item) {
     <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${starIcon}</button>
     <div class="card-actions">
       ${shortcutBtn}
+      <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
       <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
       <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
     </div>
@@ -1965,6 +2024,7 @@ function listCard(item) {
         <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();sendSlackMessage('${item.id}')">💬 送信</button>
         <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
         <div class="list-actions">
+          <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
           <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
           <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
         </div>
@@ -1992,6 +2052,7 @@ function listCard(item) {
         <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
         <div class="list-actions">
           <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
+          <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
           <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
           <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
         </div>
@@ -2021,6 +2082,7 @@ function listCard(item) {
               <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
               <div class="list-actions">
                 <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
+                <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
                 <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
                 <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
               </div>
@@ -2055,6 +2117,7 @@ function listCard(item) {
       <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
       <div class="list-actions">
         <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
+        <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
         <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
         <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
       </div>
@@ -2405,10 +2468,14 @@ function savePriorityIcons() {
 
 function applyTheme() {
   const s = db.settings;
-  // ダーク/ライト
-  document.body.classList.toggle('light', !s.darkMode);
-  document.getElementById('theme-dark-btn').style.borderColor = s.darkMode ? 'var(--accent)' : 'var(--border)';
-  document.getElementById('theme-light-btn').style.borderColor = !s.darkMode ? 'var(--accent)' : 'var(--border)';
+  // ダーク/ライト（autoはOSに追従）
+  const isDark = s.darkMode === 'auto'
+    ? window.matchMedia('(prefers-color-scheme: dark)').matches
+    : s.darkMode;
+  document.body.classList.toggle('light', !isDark);
+  document.getElementById('theme-dark-btn').style.borderColor = s.darkMode === true ? 'var(--accent)' : 'var(--border)';
+  document.getElementById('theme-light-btn').style.borderColor = s.darkMode === false ? 'var(--accent)' : 'var(--border)';
+  document.getElementById('theme-auto-btn').style.borderColor = s.darkMode === 'auto' ? 'var(--accent)' : 'var(--border)';
   // アクセントカラー
   const color = s.accentColor || '#00afcc';
   document.documentElement.style.setProperty('--accent', color);
@@ -3134,14 +3201,49 @@ function closeQuickEdit(id) {
   render();
 }
 
+function toastUndo(msg, icon, onUndo) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.style.cssText = 'display:flex;align-items:center;gap:10px;padding-right:6px';
+  const undoBtn = document.createElement('button');
+  undoBtn.textContent = '元に戻す';
+  undoBtn.style.cssText = 'background:var(--accent);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;white-space:nowrap;font-family:inherit';
+  el.innerHTML = `<span>${icon}  ${msg}</span>`;
+  el.appendChild(undoBtn);
+  document.getElementById('toasts').appendChild(el);
+  const timer = setTimeout(() => el.remove(), 6000);
+  undoBtn.onclick = () => { clearTimeout(timer); el.remove(); onUndo(); };
+}
+
+function duplicateItem(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  const newItem = { ...item, id: genId(), title: item.title + ' (コピー)', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+  const idx = db.items.findIndex(i => i.id === id);
+  db.items.splice(idx + 1, 0, newItem);
+  if (!db.itemOrder) db.itemOrder = [];
+  const orderIdx = db.itemOrder.indexOf(id);
+  if (orderIdx >= 0) db.itemOrder.splice(orderIdx + 1, 0, newItem.id);
+  else db.itemOrder.unshift(newItem.id);
+  save(); render();
+  toast('複製しました', '📋');
+}
+
 function confirmDelete(id) {
   const item = db.items.find(i => i.id === id);
   if (!item) return;
-  const alarmNote = (item.type === 'set' && item.alarm) ? '\n（このセットのアラームも一緒に削除されます）' : '';
-  if (confirm(`「${item.title}」を削除しますか？${alarmNote}`)) {
-    db.items = db.items.filter(i => i.id !== id);
-    save(); render(); updateAlarmBadge(); toast('削除しました', '🗑️');
-  }
+  const idx = db.items.findIndex(i => i.id === id);
+  const orderIdx = db.itemOrder ? db.itemOrder.indexOf(id) : -1;
+  const savedItem = JSON.parse(JSON.stringify(item));
+  db.items = db.items.filter(i => i.id !== id);
+  if (db.itemOrder) db.itemOrder = db.itemOrder.filter(i => i !== id);
+  save(); render(); updateAlarmBadge();
+  toastUndo('削除しました', '🗑️', () => {
+    db.items.splice(Math.min(idx, db.items.length), 0, savedItem);
+    if (db.itemOrder && orderIdx >= 0) db.itemOrder.splice(Math.min(orderIdx, db.itemOrder.length), 0, savedItem.id);
+    save(); render(); updateAlarmBadge();
+    toast('元に戻しました', '↩️');
+  });
 }
 
 // ═══════════════════════════════════════════
@@ -4997,13 +5099,79 @@ document.addEventListener('click', e => {
   if (!e.target.closest('.ctx-menu')) hideCtx();
 });
 
+// ═══════════════════════════════════════════
+// Quick Search (⌘K)
+// ═══════════════════════════════════════════
+let _qsActiveIdx = -1;
+
+function openQuickSearch() {
+  const modal = document.getElementById('quick-search-modal');
+  modal.classList.add('open');
+  const input = document.getElementById('qs-input');
+  input.value = '';
+  onQsInput();
+  setTimeout(() => input.focus(), 50);
+}
+
+function closeQuickSearch() {
+  document.getElementById('quick-search-modal').classList.remove('open');
+}
+
+function onQsInput() {
+  const q = document.getElementById('qs-input').value.trim().toLowerCase();
+  const results = document.getElementById('qs-results');
+  _qsActiveIdx = -1;
+  const items = q
+    ? db.items.filter(i => i.title.toLowerCase().includes(q) || (i.desc||'').toLowerCase().includes(q)).slice(0,12)
+    : db.items.slice(0,12);
+  if (items.length === 0) { results.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px">見つかりません</div>'; return; }
+  results.innerHTML = items.map((item, idx) => {
+    const typeDef = TYPE_DEF[item.type] || {};
+    return `<div class="qs-item" data-id="${item.id}" onclick="qsSelectItem('${item.id}')">
+      <div class="qs-item-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
+      <span class="qs-item-title">${esc(item.title)}</span>
+      <span class="qs-item-type">${typeDef.label||item.type}</span>
+    </div>`;
+  }).join('');
+}
+
+function onQsKeydown(e) {
+  const items = document.querySelectorAll('#qs-results .qs-item');
+  if (e.key === 'ArrowDown') { e.preventDefault(); _qsActiveIdx = Math.min(_qsActiveIdx+1, items.length-1); items.forEach((el,i) => el.classList.toggle('qs-active', i===_qsActiveIdx)); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); _qsActiveIdx = Math.max(_qsActiveIdx-1, 0); items.forEach((el,i) => el.classList.toggle('qs-active', i===_qsActiveIdx)); }
+  else if (e.key === 'Enter') { if (_qsActiveIdx >= 0 && items[_qsActiveIdx]) { const id = items[_qsActiveIdx].dataset.id; qsSelectItem(id); } }
+  else if (e.key === 'Escape') { closeQuickSearch(); }
+}
+
+function qsSelectItem(id) {
+  closeQuickSearch();
+  cardClick({ target: document.querySelector(`[data-id="${id}"]`) || document.body }, id);
+}
+
+// ═══════════════════════════════════════════
+// Shortcuts Modal (?)
+// ═══════════════════════════════════════════
+function showShortcutsModal() {
+  document.getElementById('shortcuts-modal').classList.add('open');
+}
+function closeShortcutsModal() {
+  document.getElementById('shortcuts-modal').classList.remove('open');
+}
+
+// OS設定変更を監視してautoモード時に追従
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (db.settings.darkMode === 'auto') applyTheme();
+});
+
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !e.isComposing) closeModal();
+  if (e.key === 'Escape' && !e.isComposing) {
+    if (document.getElementById('quick-search-modal').classList.contains('open')) { closeQuickSearch(); return; }
+    if (document.getElementById('shortcuts-modal').classList.contains('open')) { closeShortcutsModal(); return; }
+    closeModal();
+  }
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
     e.preventDefault();
-    _inputModeIdx = 0; applyInputMode();
-    document.getElementById('search-input').focus();
-    document.getElementById('search-input').select();
+    openQuickSearch();
   }
   if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
     e.preventDefault();
@@ -5017,6 +5185,8 @@ document.addEventListener('keydown', e => {
   const inInput = ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName);
   if (inInput || e.metaKey || e.ctrlKey || e.altKey || e.isComposing) return;
 
+  // ショートカット一覧
+  if (e.key === '?') { e.preventDefault(); showShortcutsModal(); return; }
   // 表示切り替え
   if (e.key === 'g' || e.key === 'G') { e.preventDefault(); setView('grid'); return; }
   if (e.key === 'l' || e.key === 'L') { e.preventDefault(); setView('list'); return; }
