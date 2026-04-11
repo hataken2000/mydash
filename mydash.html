@@ -834,7 +834,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .card-expand-btn {
   background: none; border: none;
   color: var(--text-muted); font-size: 10px;
-  cursor: pointer; padding: 1px 5px; border-radius: 4px;
+  cursor: pointer; padding: 4px 10px; border-radius: 4px;
   transition: color 0.12s, background 0.12s;
   font-family: inherit; margin-left: auto; flex-shrink: 0;
 }
@@ -2013,7 +2013,7 @@ function gridCard(item) {
   let expandBody = '';
   if (expanded && hasExpand) {
     if (item.type === 'memo') {
-      expandBody = `<div class="card-expand-body">${renderMemo(item.desc)}</div>`;
+      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">${renderMemo(item.desc)}</div>`;
     } else if (item.type === 'set') {
       const setItems = (item.setItems || [])
         .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
@@ -2022,18 +2022,18 @@ function gridCard(item) {
         : '<div>（アイテムなし）</div>';
       const alarmHtml = item.alarm?.enabled
         ? `<div style="color:${tc};margin-top:4px;font-size:11px">🔔 ${alarmSchedDesc({schedule:item.alarm.schedule})}</div>` : '';
-      expandBody = `<div class="card-expand-body">
+      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
         ${preview}${alarmHtml}
         <button class="launch-btn" style="width:100%;margin-top:8px" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
       </div>`;
     } else if (item.type === 'slack') {
       const msg = item.slackMessage || '';
-      expandBody = `<div class="card-expand-body">
+      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
         ${msg ? `<div style="margin-bottom:8px;white-space:pre-wrap;word-break:break-word">${esc(msg)}</div>` : ''}
         <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border:1px solid rgba(74,185,95,0.4);width:100%" onclick="event.stopPropagation();sendSlackMessage('${item.id}')">💬 送信</button>
       </div>`;
     } else if (item.desc) {
-      expandBody = `<div class="card-expand-body">${esc(item.desc)}</div>`;
+      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">${esc(item.desc)}</div>`;
     }
   }
 
