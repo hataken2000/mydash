@@ -266,6 +266,12 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .view-btn.active .app-icon { background-color: white; }
 .hamburger-btn .app-icon { background-color: var(--icon-inactive); }
 .hamburger-btn:hover .app-icon { background-color: var(--icon-active); }
+.sidebar-item .app-icon { background-color: var(--icon-inactive); }
+.sidebar-item.active .app-icon { background-color: var(--icon-active); }
+.sidebar-item:hover .app-icon { background-color: var(--text); }
+.action-btn .app-icon { background-color: var(--text-muted); width:15px; height:15px; }
+.action-btn:hover .app-icon { background-color: var(--text); }
+.action-btn.danger:hover .app-icon { background-color: var(--danger); }
 
 /* ── Toolbar ──────────────────────────────── */
 .toolbar {
@@ -514,12 +520,17 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .modal-title { font-size: 17px; font-weight: 700; }
 .modal-close {
   background: none; border: none; color: var(--text-muted);
-  cursor: pointer; font-size: 18px;
+  cursor: pointer; font-size: 0;
   width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 6px; transition: all 0.12s;
+  -webkit-mask-image: url(icons/close.svg); mask-image: url(icons/close.svg);
+  -webkit-mask-size: 14px; mask-size: 14px;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  background-color: var(--text-muted);
 }
-.modal-close:hover { background: var(--card-bg); color: var(--text); }
+.modal-close:hover { background-color: var(--text); }
 .modal-body { padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; min-height: 0; overflow-y: auto; }
 .modal-footer {
   padding: 14px 22px;
@@ -655,7 +666,9 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 }
 .grid-card:hover .star-btn { opacity: 0.5; }
 .grid-card:hover .star-btn.starred,
-.star-btn.starred { opacity: 1; color: inherit; }
+.star-btn.starred { opacity: 1; }
+.star-btn .app-icon { background-color: var(--text-muted); }
+.star-btn.starred .app-icon { background-color: #ffd700; }
 .list-star-btn {
   position: absolute; top: 6px; left: 8px; z-index: 2;
   font-size: 15px; cursor: pointer;
@@ -665,7 +678,9 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 }
 .list-card:not(:hover) .list-star-btn:not(.starred) { opacity: 0; }
 .list-card:hover .list-star-btn:not(.starred) { opacity: 0.6; }
-.list-star-btn.starred { opacity: 1; color: inherit; }
+.list-star-btn.starred { opacity: 1; }
+.list-star-btn .app-icon { background-color: var(--text-muted); }
+.list-star-btn.starred .app-icon { background-color: #ffd700; }
 .select-mode .list-star-btn { display: none; }
 .select-mode .star-btn { display: none; }
 
@@ -990,27 +1005,27 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-section">すべて</div>
   <div class="sidebar-item active" data-filter="all" onclick="setFilter('all')">
-    <span class="si-icon">🗂️</span><span class="si-label">すべて</span>
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/all.svg);mask-image:url(icons/all.svg)"></span></span><span class="si-label">すべて</span>
     <span class="count-badge" id="cnt-all">0</span>
   </div>
   <div class="sidebar-item" data-filter="starred" onclick="setFilter('starred')">
-    <span class="si-icon">⭐</span><span class="si-label">お気に入り</span>
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/star-filled.svg);mask-image:url(icons/star-filled.svg)"></span></span><span class="si-label">お気に入り</span>
     <span class="count-badge" id="cnt-starred">0</span>
   </div>
 
   <div class="sidebar-section">種類</div>
   <div class="sidebar-item" data-filter="bookmark" onclick="setFilter('bookmark')">
-    <span class="si-icon">🔖</span><span class="si-label">ブックマーク</span>
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/bookmark.svg);mask-image:url(icons/bookmark.svg)"></span></span><span class="si-label">ブックマーク</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('bookmark')" title="ブックマーク追加">＋</button>
     <span class="count-badge" id="cnt-bookmark">0</span>
   </div>
   <div class="sidebar-item" data-filter="tool" onclick="setFilter('tool')">
-    <span class="si-icon">🔧</span><span class="si-label">ツール/アプリ</span>
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/tool.svg);mask-image:url(icons/tool.svg)"></span></span><span class="si-label">ツール/アプリ</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('tool')" title="ツール/アプリ追加">＋</button>
     <span class="count-badge" id="cnt-tool">0</span>
   </div>
   <div class="sidebar-item" data-filter="task" onclick="setFilter('task')">
-    <span class="si-icon">✅</span><span class="si-label">タスク</span>
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/task.svg);mask-image:url(icons/task.svg)"></span></span><span class="si-label">タスク</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('task')" title="タスク追加">＋</button>
     <span class="due-alert-badge" id="cnt-task-due" style="display:none"></span>
     <span class="count-badge" id="cnt-task">0</span>
@@ -1022,17 +1037,17 @@ body.hide-server .launch-btn { display: none !important; }
     <div class="sidebar-subitem"        data-tsf="doing"   onclick="setTaskSubFilter('doing')">⚡ 進行中</div>
   </div>
   <div class="sidebar-item" data-filter="memo" onclick="setFilter('memo')">
-    <span class="si-icon">📝</span><span class="si-label">メモ</span>
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/memo.svg);mask-image:url(icons/memo.svg)"></span></span><span class="si-label">メモ</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('memo')" title="メモ追加">＋</button>
     <span class="count-badge" id="cnt-memo">0</span>
   </div>
   <div class="sidebar-item" data-filter="other" onclick="setFilter('other')">
-    <span class="si-icon">📦</span><span class="si-label">その他</span>
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/box.svg);mask-image:url(icons/box.svg)"></span></span><span class="si-label">その他</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('other')" title="その他追加">＋</button>
     <span class="count-badge" id="cnt-other">0</span>
   </div>
   <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
-    <span class="si-icon">🚀</span><span class="si-label">セット</span>
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/set.svg);mask-image:url(icons/set.svg)"></span></span><span class="si-label">セット</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('set')" title="セット追加">＋</button>
     <span class="count-badge" id="cnt-set">0</span>
   </div>
@@ -1041,7 +1056,7 @@ body.hide-server .launch-btn { display: none !important; }
     <div class="sidebar-subitem"        data-ssf="alarm" onclick="setSetSubFilter('alarm')">🔔 アラームあり</div>
   </div>
   <div class="sidebar-item" data-filter="slack" onclick="setFilter('slack')">
-    <span class="si-icon">💬</span><span class="si-label">Slack送信</span>
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/slack.svg);mask-image:url(icons/slack.svg)"></span></span><span class="si-label">Slack送信</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('slack')" title="Slack送信追加">＋</button>
     <span class="count-badge" id="cnt-slack">0</span>
   </div>
@@ -1050,8 +1065,8 @@ body.hide-server .launch-btn { display: none !important; }
   <div id="cat-list"></div>
 
   <div class="sidebar-footer">
-    <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600">⚙️ 設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.6.0</div>
+    <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:url(icons/settings.svg);mask-image:url(icons/settings.svg);width:14px;height:14px"></span>設定</button>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.9.0</div>
   </div>
 </aside>
 
@@ -1106,9 +1121,9 @@ body.hide-server .launch-btn { display: none !important; }
         <div class="settings-section-title">🎨 外観</div>
         <div class="settings-section-body">
           <div style="display:flex;gap:6px">
-            <button id="theme-dark-btn" onclick="setDarkMode(true)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit">🌙 ダーク</button>
-            <button id="theme-light-btn" onclick="setDarkMode(false)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit">☀️ ライト</button>
-            <button id="theme-auto-btn" onclick="setDarkMode('auto')" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit">🖥️ 自動</button>
+            <button id="theme-dark-btn" onclick="setDarkMode(true)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:url(icons/moon.svg);mask-image:url(icons/moon.svg);width:13px;height:13px"></span>ダーク</button>
+            <button id="theme-light-btn" onclick="setDarkMode(false)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:url(icons/sun.svg);mask-image:url(icons/sun.svg);width:13px;height:13px"></span>ライト</button>
+            <button id="theme-auto-btn" onclick="setDarkMode('auto')" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:url(icons/monitor.svg);mask-image:url(icons/monitor.svg);width:13px;height:13px"></span>自動</button>
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:12px;color:var(--text-muted);flex-shrink:0">アクセント</span>
@@ -1207,13 +1222,13 @@ body.hide-server .launch-btn { display: none !important; }
     <button class="hamburger-btn" onclick="toggleSidebar()" title="メニュー"><span class="app-icon" style="-webkit-mask-image:url(icons/hamburger.svg);mask-image:url(icons/hamburger.svg)"></span></button>
     <div class="toolbar-title" id="toolbar-title">すべて</div>
     <div class="input-mode-wrap">
-      <button class="input-mode-btn" id="input-mode-btn" onclick="cycleInputMode()" title="モード切り替え（検索 / メモ / タスク）">🔍</button>
+      <button class="input-mode-btn" id="input-mode-btn" onclick="cycleInputMode()" title="モード切り替え（検索 / メモ / タスク）"><span class="app-icon" style="-webkit-mask-image:url(icons/search.svg);mask-image:url(icons/search.svg);width:15px;height:15px"></span></button>
       <div class="search-wrap">
         <input type="text" id="search-input" placeholder="検索…" oninput="onSearchInput(this)" onblur="hideTagDropdown()" onkeydown="onInputKeydown(event)">
         <button id="search-clear" onclick="clearSearch()" title="検索をリセット" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:15px;padding:0;line-height:1">×</button>
       </div>
     </div>
-    <button class="add-btn" onclick="openModal()" title="新規追加 (⌘N)">＋ <span class="add-text">追加</span></button>
+    <button class="add-btn" onclick="openModal()" title="新規追加 (⌘N)"><span class="app-icon" style="-webkit-mask-image:url(icons/plus.svg);mask-image:url(icons/plus.svg);width:14px;height:14px;background-color:white"></span><span class="add-text">追加</span></button>
   </div>
   <div class="toolbar toolbar-row2">
     <select class="sort-select" id="sort-select" onchange="onSortChange()">
@@ -1978,7 +1993,7 @@ function gridCard(item) {
   const tc = typeColor(item);
   const expanded = state.expandedCards.has(item.id);
   const starClass = item.starred ? ' starred' : '';
-  const starIcon  = item.starred ? '⭐' : '☆';
+  const starIcon  = `<span class="app-icon" style="-webkit-mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);width:14px;height:14px"></span>`;
   const selChk = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:${tc};cursor:pointer"></div>` : '';
 
   // 展開コンテンツがあるか
@@ -2039,9 +2054,9 @@ function gridCard(item) {
     <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${starIcon}</button>
     <div class="card-actions">
       ${shortcutBtn}
-      <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
-      <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
-      <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除">🗑️</div>
+      <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:url(icons/duplicate.svg);mask-image:url(icons/duplicate.svg)"></span></div>
+      <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:url(icons/edit.svg);mask-image:url(icons/edit.svg)"></span></div>
+      <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:url(icons/trash.svg);mask-image:url(icons/trash.svg)"></span></div>
     </div>
     <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
     <div class="card-title">${esc(item.title)}</div>
@@ -2067,7 +2082,7 @@ function listCard(item) {
       <div class="list-meta">
         ${typeBadge(item)}
         <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();sendSlackMessage('${item.id}')">💬 送信</button>
-        <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+        <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);width:14px;height:14px"></span></button>
         <div class="list-actions">
           <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
           <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集">✏️</div>
@@ -2094,7 +2109,7 @@ function listCard(item) {
       <div class="list-meta">
         ${typeBadge(item)}
         <button class="launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
-        <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+        <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);width:14px;height:14px"></span></button>
         <div class="list-actions">
           <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
           <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
@@ -2124,7 +2139,7 @@ function listCard(item) {
             <div class="list-meta">
               ${typeBadge(item)} ${cat}
               <span class="list-date">${relativeDate(item.createdAt)}</span>
-              <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+              <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);width:14px;height:14px"></span></button>
               <div class="list-actions">
                 <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
                 <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
@@ -2159,7 +2174,7 @@ function listCard(item) {
     <div class="list-meta">
       ${pri} ${typeBadge(item)} ${dueBadge(item)} ${cat}
       <span class="list-date">${relativeDate(item.createdAt)}</span>
-      <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${item.starred ? '⭐' : '☆'}</button>
+      <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);mask-image:url(icons/${item.starred ? 'star-filled' : 'star'}.svg);width:14px;height:14px"></span></button>
       <div class="list-actions">
         <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL">📱</div>
         <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製">📋</div>
