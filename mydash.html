@@ -249,13 +249,21 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 
 /* ── Toolbar ──────────────────────────────── */
 .toolbar {
-  padding: 13px 20px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   gap: 10px;
   border-bottom: 1px solid var(--border);
   background: var(--sidebar-bg);
   flex-shrink: 0;
+}
+.toolbar-row2 {
+  padding: 7px 20px;
+  border-top: none;
+}
+.toolbar-row2 .sort-select { flex: 1; }
+.toolbar:not(.toolbar-row2) {
+  border-bottom: none;
 }
 .toolbar-title {
   font-size: 16px;
@@ -859,7 +867,6 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 }
 
 @media (max-width: 520px) {
-  .sort-select { padding: 4px 2px; font-size: 11px; max-width: 68px; }
   .add-text { display: none; }
 }
 body.hide-server .server-feature { display: none !important; }
@@ -1019,7 +1026,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600">⚙️ 設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.4.0</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.6.0</div>
   </div>
 </aside>
 
@@ -1172,6 +1179,9 @@ body.hide-server .launch-btn { display: none !important; }
         <button id="search-clear" onclick="clearSearch()" title="検索をリセット" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:15px;padding:0;line-height:1">×</button>
       </div>
     </div>
+    <button class="add-btn" onclick="openModal()" title="新規追加 (⌘N)">＋ <span class="add-text">追加</span></button>
+  </div>
+  <div class="toolbar toolbar-row2">
     <select class="sort-select" id="sort-select" onchange="onSortChange()">
       <option value="manual">手動</option>
       <option value="newest">新しい順</option>
@@ -1186,7 +1196,6 @@ body.hide-server .launch-btn { display: none !important; }
     <button class="view-btn" id="btn-list" onclick="setView('list')" title="リスト表示">☰</button>
     <button class="view-btn" id="btn-icon" onclick="setView('icon')" title="アイコンのみ表示">⊡</button>
     <button class="view-btn" id="btn-select" onclick="toggleSelectMode()" title="選択モード">☑</button>
-    <button class="add-btn" onclick="openModal()" title="新規追加 (⌘N)">＋ <span class="add-text">追加</span></button>
   </div>
   <!-- Filter tag chips -->
   <div class="filter-tags-row" id="filter-tags-row" style="display:none"></div>
