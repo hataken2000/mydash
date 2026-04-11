@@ -576,7 +576,9 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 }
 .type-option:hover { border-color: var(--accent); color: var(--text); }
 .type-option.selected { background: rgba(124,131,253,0.14); border-color: var(--accent); color: var(--text); }
-.type-option .to-icon { font-size: 18px; }
+.type-option .to-icon { font-size: 18px; display:flex; align-items:center; justify-content:center; width:20px; height:20px; }
+.type-option .app-icon { background-color: var(--icon-inactive); }
+.type-option.selected .app-icon { background-color: var(--icon-active); }
 
 /* Icon row */
 .icon-row { display: flex; align-items: center; gap: 12px; }
@@ -1066,7 +1068,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:url(icons/settings.svg);mask-image:url(icons/settings.svg);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.9.0</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.0</div>
   </div>
 </aside>
 
@@ -1106,13 +1108,13 @@ body.hide-server .launch-btn { display: none !important; }
       <div>
         <div class="settings-section-title">📁 データ</div>
         <div class="settings-section-body">
-          <button class="io-btn" onclick="exportJSON()">📤 JSONエクスポート</button>
-          <label class="io-btn" style="cursor:pointer">
-            📥 JSONインポート
+          <button class="io-btn" onclick="exportJSON()" style="display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:url(icons/upload.svg);mask-image:url(icons/upload.svg);width:13px;height:13px"></span>JSONエクスポート</button>
+          <label class="io-btn" style="cursor:pointer;display:flex;align-items:center;gap:5px;justify-content:center">
+            <span class="app-icon" style="-webkit-mask-image:url(icons/download.svg);mask-image:url(icons/download.svg);width:13px;height:13px"></span>JSONインポート
             <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
           </label>
-          <button class="io-btn server-feature" onclick="closeSettingsModal();openCalImportModal()" style="border-color:rgba(128,203,196,0.35);color:var(--set)">📅 カレンダーインポート</button>
-          <button class="io-btn server-feature" onclick="closeSettingsModal();openDockImportModal()" style="border-color:rgba(129,199,132,0.35);color:var(--tool)">🖥 Dockインポート</button>
+          <button class="io-btn server-feature" onclick="closeSettingsModal();openCalImportModal()" style="border-color:rgba(128,203,196,0.35);color:var(--set);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:url(icons/calendar.svg);mask-image:url(icons/calendar.svg);width:13px;height:13px;background-color:var(--set)"></span>カレンダーインポート</button>
+          <button class="io-btn server-feature" onclick="closeSettingsModal();openDockImportModal()" style="border-color:rgba(129,199,132,0.35);color:var(--tool);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:url(icons/monitor.svg);mask-image:url(icons/monitor.svg);width:13px;height:13px;background-color:var(--tool)"></span>Dockインポート</button>
         </div>
       </div>
 
@@ -1184,8 +1186,8 @@ body.hide-server .launch-btn { display: none !important; }
               style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:3px 6px;font-size:11px;font-family:monospace;min-width:0">
           </div>
           <div style="display:flex;gap:6px">
-            <button class="io-btn" style="flex:1;justify-content:center" onclick="gistUpload()">⬆️ Gistに保存</button>
-            <button class="io-btn" style="flex:1;justify-content:center" onclick="gistDownload()">⬇️ Gistから読込</button>
+            <button class="io-btn" style="flex:1;justify-content:center;display:flex;align-items:center;gap:5px" onclick="gistUpload()"><span class="app-icon" style="-webkit-mask-image:url(icons/upload.svg);mask-image:url(icons/upload.svg);width:13px;height:13px"></span>Gistに保存</button>
+            <button class="io-btn" style="flex:1;justify-content:center;display:flex;align-items:center;gap:5px" onclick="gistDownload()"><span class="app-icon" style="-webkit-mask-image:url(icons/download.svg);mask-image:url(icons/download.svg);width:13px;height:13px"></span>Gistから読込</button>
           </div>
           <div id="gist-status" style="font-size:11px;color:var(--text-muted);text-align:center;min-height:14px"></div>
         </div>
@@ -1279,25 +1281,25 @@ body.hide-server .launch-btn { display: none !important; }
         <div class="form-label">種類</div>
         <div class="type-selector">
           <div class="type-option selected" data-type="bookmark" onclick="selectType('bookmark')">
-            <span class="to-icon">🔖</span>ブックマーク
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/bookmark.svg);mask-image:url(icons/bookmark.svg)"></span></span>ブックマーク
           </div>
           <div class="type-option" data-type="tool" onclick="selectType('tool')">
-            <span class="to-icon">🔧</span>ツール/アプリ
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/tool.svg);mask-image:url(icons/tool.svg)"></span></span>ツール/アプリ
           </div>
           <div class="type-option" data-type="task" onclick="selectType('task')">
-            <span class="to-icon">✅</span>タスク
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/task.svg);mask-image:url(icons/task.svg)"></span></span>タスク
           </div>
           <div class="type-option" data-type="memo" onclick="selectType('memo')">
-            <span class="to-icon">📝</span>メモ
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/memo.svg);mask-image:url(icons/memo.svg)"></span></span>メモ
           </div>
           <div class="type-option" data-type="other" onclick="selectType('other')">
-            <span class="to-icon">📦</span>その他
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/box.svg);mask-image:url(icons/box.svg)"></span></span>その他
           </div>
           <div class="type-option" data-type="set" onclick="selectType('set')">
-            <span class="to-icon">🚀</span>セット
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/set.svg);mask-image:url(icons/set.svg)"></span></span>セット
           </div>
           <div class="type-option" data-type="slack" onclick="selectType('slack')">
-            <span class="to-icon">💬</span>Slack送信
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/slack.svg);mask-image:url(icons/slack.svg)"></span></span>Slack送信
           </div>
         </div>
       </div>
@@ -1357,9 +1359,9 @@ body.hide-server .launch-btn { display: none !important; }
         <div class="form-group" id="f-status-group">
           <div class="form-label">ステータス</div>
           <div class="status-btn-group" id="status-btn-group">
-            <button type="button" class="status-btn active s-todo" data-status="todo" onclick="pickStatus('todo')">📋 未着手</button>
-            <button type="button" class="status-btn s-doing" data-status="doing" onclick="pickStatus('doing')">⚡ 進行中</button>
-            <button type="button" class="status-btn s-done" data-status="done" onclick="pickStatus('done')">✅ 完了</button>
+            <button type="button" class="status-btn active s-todo" data-status="todo" onclick="pickStatus('todo')" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:url(icons/clipboard.svg);mask-image:url(icons/clipboard.svg);width:13px;height:13px"></span>未着手</button>
+            <button type="button" class="status-btn s-doing" data-status="doing" onclick="pickStatus('doing')" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:url(icons/lightning.svg);mask-image:url(icons/lightning.svg);width:13px;height:13px"></span>進行中</button>
+            <button type="button" class="status-btn s-done" data-status="done" onclick="pickStatus('done')" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:url(icons/task.svg);mask-image:url(icons/task.svg);width:13px;height:13px"></span>完了</button>
           </div>
           <input type="hidden" id="f-status" value="todo">
         </div>
@@ -1454,7 +1456,7 @@ body.hide-server .launch-btn { display: none !important; }
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-danger" id="btn-delete" style="display:none" onclick="deleteItem()">🗑️ 削除</button>
+      <button class="btn-danger" id="btn-delete" style="display:none;align-items:center;gap:5px" onclick="deleteItem()"><span class="app-icon" style="-webkit-mask-image:url(icons/trash.svg);mask-image:url(icons/trash.svg);width:13px;height:13px;background-color:white"></span>削除</button>
       <button class="btn-secondary" onclick="closeModal()">キャンセル</button>
       <button class="btn-primary" onclick="saveItem()">保存</button>
     </div>
@@ -1463,9 +1465,9 @@ body.hide-server .launch-btn { display: none !important; }
 
 <!-- Context menu -->
 <div class="ctx-menu" id="ctx-menu" style="display:none">
-  <div class="ctx-item" onclick="ctxEdit()">✏️ 編集</div>
-  <div class="ctx-item" onclick="ctxOpen()">🔗 開く</div>
-  <div class="ctx-item danger" onclick="ctxDelete()">🗑️ 削除</div>
+  <div class="ctx-item" onclick="ctxEdit()"><span class="app-icon" style="-webkit-mask-image:url(icons/edit.svg);mask-image:url(icons/edit.svg);width:14px;height:14px;background-color:var(--text-muted)"></span>編集</div>
+  <div class="ctx-item" onclick="ctxOpen()"><span class="app-icon" style="-webkit-mask-image:url(icons/external.svg);mask-image:url(icons/external.svg);width:14px;height:14px;background-color:var(--text-muted)"></span>開く</div>
+  <div class="ctx-item danger" onclick="ctxDelete()"><span class="app-icon" style="-webkit-mask-image:url(icons/trash.svg);mask-image:url(icons/trash.svg);width:14px;height:14px;background-color:var(--danger)"></span>削除</div>
 </div>
 
 <div id="toasts"></div>
@@ -1474,7 +1476,7 @@ body.hide-server .launch-btn { display: none !important; }
 <div id="quick-search-modal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding-top:80px" onclick="if(event.target===this)closeQuickSearch()">
   <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:14px;width:min(560px,92vw);box-shadow:0 24px 64px rgba(0,0,0,0.5);overflow:hidden">
     <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
-      <span style="color:var(--text-muted);font-size:18px">🔍</span>
+      <span class="app-icon" style="-webkit-mask-image:url(icons/search.svg);mask-image:url(icons/search.svg);width:18px;height:18px;flex-shrink:0"></span>
       <input id="qs-input" type="text" placeholder="アイテムを検索…" oninput="onQsInput()" onkeydown="onQsKeydown(event)"
         style="flex:1;background:none;border:none;outline:none;color:var(--text);font-size:15px;font-family:inherit">
       <kbd style="font-size:11px;color:var(--text-muted);background:var(--border);border-radius:4px;padding:2px 6px">Esc</kbd>
@@ -1530,12 +1532,12 @@ body.hide-server .launch-btn { display: none !important; }
 <!-- Alarm Notification Popup -->
 <div class="alarm-popup-overlay" id="alarm-popup-overlay" style="display:none">
   <div class="alarm-popup">
-    <div class="alarm-popup-icon">🔔</div>
+    <div class="alarm-popup-icon"><span class="app-icon" style="-webkit-mask-image:url(icons/bell.svg);mask-image:url(icons/bell.svg);width:42px;height:42px;background-color:var(--icon-active)"></span></div>
     <div class="alarm-popup-name" id="alarm-popup-name">アラーム</div>
     <div class="alarm-popup-time" id="alarm-popup-time"></div>
     <div class="alarm-popup-btns">
-      <button class="btn-primary" id="alarm-popup-execute" onclick="executeCurrentAlarm()">▶ 実行</button>
-      <button class="btn-secondary" onclick="snoozeAlarm()">⏰ 5分後</button>
+      <button class="btn-primary" id="alarm-popup-execute" onclick="executeCurrentAlarm()" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:url(icons/play-circle.svg);mask-image:url(icons/play-circle.svg);width:14px;height:14px;background-color:white"></span>実行</button>
+      <button class="btn-secondary" onclick="snoozeAlarm()" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:url(icons/alarm.svg);mask-image:url(icons/alarm.svg);width:14px;height:14px"></span>5分後</button>
       <button class="btn-secondary" onclick="closeAlarmPopup()">閉じる</button>
     </div>
   </div>
@@ -1560,7 +1562,7 @@ body.hide-server .launch-btn { display: none !important; }
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeSlackModal()">キャンセル</button>
-      <button class="btn-primary" onclick="execSlackSend()" style="background:var(--slack)">💬 送信</button>
+      <button class="btn-primary" onclick="execSlackSend()" style="background:var(--slack);display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:url(icons/slack.svg);mask-image:url(icons/slack.svg);width:14px;height:14px;background-color:white"></span>送信</button>
     </div>
   </div>
 </div>
