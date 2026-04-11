@@ -3482,9 +3482,32 @@ function toggleSetItem(itemId, checked) {
 // ═══════════════════════════════════════════
 let _slackSendTarget = null;
 
+function _toSlackDeepLink(url) {
+  // https://app.slack.com/client/TEAM_ID/CHANNEL_ID → slack://channel?team=TEAM_ID&id=CHANNEL_ID
+  const m = (url || '').match(/slack\.com\/client\/([A-Z0-9]+)\/([A-Z0-9]+)/i);
+  if (m) return `slack://channel?team=${m[1]}&id=${m[2]}`;
+  return url || '';
+}
+
 function sendSlackMessage(id) {
   const item = db.items.find(i => i.id === id);
   if (!item) return;
+
+  // スマホ: クリップボードにコピー → Slackアプリをdeep linkで開く
+  if (navigator.maxTouchPoints > 0 && window.innerWidth < 1024) {
+    const msg = item.slackMessage || '';
+    if (msg) {
+      navigator.clipboard.writeText(msg).catch(() => {});
+      toast('メッセージをコピー！Slackアプリで貼り付けてね 💬', '📋');
+    } else {
+      toast('Slackを開きます', '💬');
+    }
+    const deepLink = _toSlackDeepLink(item.url);
+    if (deepLink) setTimeout(() => window.open(deepLink, '_blank'), 400);
+    return;
+  }
+
+  // PC: 確認モーダル → Chrome拡張で送信
   _slackSendTarget = { url: item.url, message: item.slackMessage || '' };
   document.getElementById('slack-confirm-url').textContent = item.url || '（URLなし）';
   document.getElementById('slack-confirm-msg').textContent = item.slackMessage || '（メッセージなし）';
