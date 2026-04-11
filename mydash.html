@@ -5268,7 +5268,7 @@ window.addEventListener('resize', () => {
     const sidebar = document.getElementById('sidebar');
     if (!sidebar) return;
     const isOpen = sidebar.classList.contains('open');
-    if (!isOpen && sx < 30 && dx > 0) toggleSidebar();   // 左端から右スワイプ → 開く
+    if (!isOpen && sx < window.innerWidth / 3 && dx > 0) toggleSidebar(); // 左1/3から右スワイプ → 開く
     if (isOpen && dx < 0) toggleSidebar();                // 開いている状態で左スワイプ → 閉じる
   }, { passive: true });
 })();
