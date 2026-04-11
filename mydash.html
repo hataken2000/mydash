@@ -425,8 +425,17 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   overflow: hidden;
   position: relative;
 }
-.item-hidden { opacity: 0.4; border-style: dashed !important; }
-.item-hidden .icon-card { border-style: dashed !important; }
+.item-hidden { opacity: 0.4; }
+.grid-card.item-hidden, .list-card.item-hidden {
+  border-top-style: dashed !important;
+  border-right-style: dashed !important;
+  border-bottom-style: dashed !important;
+}
+.item-hidden .icon-card {
+  border-right-style: dashed !important;
+  border-bottom-style: dashed !important;
+  border-left-style: dashed !important;
+}
 .list-card:hover { border-color: var(--accent); background: var(--card-hover); }
 .list-icon {
   width: 36px; height: 36px;
@@ -3209,7 +3218,7 @@ function showQuickEdit(id) {
           border:1px solid ${t.btnBorder};border-radius:10px;font-size:14px;cursor:pointer">閉じる</button>
         <button onclick="closeQuickEdit('${id}');editItem('${id}')"
           style="padding:12px 16px;background:${t.linkBg};color:${t.linkColor};
-          border:1px solid ${t.border};border-radius:10px;font-size:14px;cursor:pointer">✏️ 詳細編集</button>
+          border:1px solid ${t.border};border-radius:10px;font-size:14px;cursor:pointer"><span class="app-icon" style="-webkit-mask-image:url(icons/edit.svg);mask-image:url(icons/edit.svg);background-color:currentColor;width:14px;height:14px;vertical-align:middle;margin-right:4px"></span>詳細編集</button>
       </div>
     </div>`;
   el.addEventListener('click', () => closeQuickEdit(id));
@@ -4924,14 +4933,14 @@ function renderAlarmList() {
           <div class="alarm-row-name">${esc(a.name)}</div>
           <div class="alarm-row-sched">${alarmSchedDesc(a)}${a.action?.type==='set' && a.action.targetId ? ` · 🚀 自動起動: ${esc((db.items.find(i=>i.id===a.action.targetId)||{}).title||'?')}` : ''}</div>
         </div>
-        ${a.action?.type==='url' && a.action.url ? `<button class="action-btn" onclick="event.stopPropagation();window.open('${esc(a.action.url)}','_blank')" title="URLを開く">🔗</button>` : ''}
-        ${a.action?.type==='set' && a.action.targetId ? `<button class="action-btn" onclick="event.stopPropagation();launchSet('${a.action.targetId}');closeAlarmModal()" title="セットを今すぐ起動">▶</button>` : ''}
+        ${a.action?.type==='url' && a.action.url ? `<button class="action-btn" onclick="event.stopPropagation();window.open('${esc(a.action.url)}','_blank')" title="URLを開く"><span class="app-icon" style="-webkit-mask-image:url(icons/link.svg);mask-image:url(icons/link.svg)"></span></button>` : ''}
+        ${a.action?.type==='set' && a.action.targetId ? `<button class="action-btn" onclick="event.stopPropagation();launchSet('${a.action.targetId}');closeAlarmModal()" title="セットを今すぐ起動"><span class="app-icon" style="-webkit-mask-image:url(icons/play-circle.svg);mask-image:url(icons/play-circle.svg)"></span></button>` : ''}
         <label class="alarm-toggle" title="${a.enabled?'ON':'OFF'}">
           <input type="checkbox" ${a.enabled?'checked':''} onchange="toggleAlarmEnabled('${a.id}',this.checked)">
           <span class="alarm-toggle-slider"></span>
         </label>
-        <button class="action-btn" onclick="openAlarmForm('${a.id}')" title="編集">✏️</button>
-        <button class="action-btn danger" onclick="deleteAlarm('${a.id}')" title="削除">🗑️</button>
+        <button class="action-btn" onclick="openAlarmForm('${a.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:url(icons/edit.svg);mask-image:url(icons/edit.svg)"></span></button>
+        <button class="action-btn danger" onclick="deleteAlarm('${a.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:url(icons/trash.svg);mask-image:url(icons/trash.svg)"></span></button>
       </div>`).join('')}</div>`;
     }
     if (setAlarms.length) {
@@ -4944,21 +4953,21 @@ function renderAlarmList() {
           <div class="alarm-row-name">${esc(item.title)}</div>
           <div class="alarm-row-sched">${alarmSchedDesc({schedule:item.alarm.schedule})}</div>
         </div>
-        <button class="action-btn" onclick="event.stopPropagation();launchSet('${item.id}');closeAlarmModal()" title="今すぐ起動">▶</button>
+        <button class="action-btn" onclick="event.stopPropagation();launchSet('${item.id}');closeAlarmModal()" title="今すぐ起動"><span class="app-icon" style="-webkit-mask-image:url(icons/play-circle.svg);mask-image:url(icons/play-circle.svg)"></span></button>
         <label class="alarm-toggle" title="${item.alarm.enabled?'ON':'OFF'}">
           <input type="checkbox" ${item.alarm.enabled?'checked':''} onchange="toggleSetAlarmEnabled('${item.id}',this.checked)">
           <span class="alarm-toggle-slider"></span>
         </label>
-        <button class="action-btn" onclick="editItem('${item.id}');closeAlarmModal()" title="セットを編集">✏️</button>
-        <button class="action-btn danger" onclick="deleteSetWithAlarm('${item.id}')" title="削除">🗑️</button>
+        <button class="action-btn" onclick="editItem('${item.id}');closeAlarmModal()" title="セットを編集"><span class="app-icon" style="-webkit-mask-image:url(icons/edit.svg);mask-image:url(icons/edit.svg)"></span></button>
+        <button class="action-btn danger" onclick="deleteSetWithAlarm('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:url(icons/trash.svg);mask-image:url(icons/trash.svg)"></span></button>
       </div>`).join('')}</div>`;
     }
     body.innerHTML = html;
   }
   footer.innerHTML = `
-    <button class="btn-danger" id="alarm-del-sel-btn" onclick="deleteSelectedAlarms()" disabled style="opacity:0.4;margin-right:auto">🗑️ 選択削除</button>
-    <button class="btn-secondary" id="alarm-off-sel-btn" onclick="toggleSelectedAlarms(false)" disabled style="opacity:0.4">⏸ 無効化</button>
-    <button class="btn-secondary" id="alarm-on-sel-btn" onclick="toggleSelectedAlarms(true)" disabled style="opacity:0.4">▶ 有効化</button>`;
+    <button class="btn-danger" id="alarm-del-sel-btn" onclick="deleteSelectedAlarms()" disabled style="opacity:0.4;margin-right:auto"><span class="app-icon" style="-webkit-mask-image:url(icons/trash.svg);mask-image:url(icons/trash.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>選択削除</button>
+    <button class="btn-secondary" id="alarm-off-sel-btn" onclick="toggleSelectedAlarms(false)" disabled style="opacity:0.4"><span class="app-icon" style="-webkit-mask-image:url(icons/pause.svg);mask-image:url(icons/pause.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>無効化</button>
+    <button class="btn-secondary" id="alarm-on-sel-btn" onclick="toggleSelectedAlarms(true)" disabled style="opacity:0.4"><span class="app-icon" style="-webkit-mask-image:url(icons/play-circle.svg);mask-image:url(icons/play-circle.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>有効化</button>`;
 }
 
 function updateAlarmActionBtns() {
