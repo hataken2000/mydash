@@ -4241,7 +4241,7 @@ function groupICSEvents(events) {
   return {recurring, single};
 }
 
-let _icsGroups=null, _icsSelR=new Set(), _icsSelS=new Set(), _icsMeetR=new Set();
+let _icsGroups=null, _icsSelR=new Set(), _icsSelS=new Set(), _icsMeetR=new Set(), _icsDescR=new Set();
 
 function openCalImportModal() {
   renderCalStep1();
@@ -4893,6 +4893,7 @@ async function fetchCalendar() {
     _icsSelR  = new Set(_icsGroups.recurring.map((_,i)=>i));
     _icsSelS  = new Set(_icsGroups.single.map((_,i)=>i));
     _icsMeetR = new Set(_icsGroups.recurring.map((_,i)=>i).filter(i => extractMeetUrl(_icsGroups.recurring[i].description||'',_icsGroups.recurring[i].location||'')));
+    _icsDescR = new Set(_icsGroups.recurring.map((_,i)=>i).filter(i => (_icsGroups.recurring[i].description||'').trim()));
     clearInterval(ani);
     renderCalStep2();
   } catch(e) {
@@ -4913,12 +4914,14 @@ function renderCalStep2() {
     html+=`<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">`;
     recurring.forEach((ev,i)=>{
       const hasMeet = !!extractMeetUrl(ev.description||'', ev.location||'');
+      const hasDesc = !!(ev.description||'').trim();
       const meetBadge = hasMeet ? `<label onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:3px;flex-shrink:0;cursor:pointer;font-size:10px;color:var(--set);background:rgba(128,203,196,0.15);border:1px solid rgba(128,203,196,0.35);border-radius:4px;padding:1px 5px;white-space:nowrap"><input type="checkbox" checked onchange="if(this.checked)_icsMeetR.add(${i});else _icsMeetR.delete(${i})" style="accent-color:var(--set);width:10px;height:10px;margin:0"><img src="https://www.google.com/s2/favicons?domain=meet.google.com&sz=64" style="width:10px;height:10px;object-fit:contain;vertical-align:middle">Meet</label>` : '';
+      const descBadge = hasDesc ? `<label onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:3px;flex-shrink:0;cursor:pointer;font-size:10px;color:var(--memo);background:rgba(244,143,177,0.12);border:1px solid rgba(244,143,177,0.35);border-radius:4px;padding:1px 5px;white-space:nowrap"><input type="checkbox" checked onchange="if(this.checked)_icsDescR.add(${i});else _icsDescR.delete(${i})" style="accent-color:var(--memo);width:10px;height:10px;margin:0">📝メモ</label>` : '';
       html+=`<div class="set-item-row" style="gap:4px">
         <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;min-width:0">
           <input type="checkbox" checked onchange="if(this.checked)_icsSelR.add(${i});else _icsSelR.delete(${i})" style="accent-color:var(--set);flex-shrink:0">
           <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(ev.summary)}</span>
-          ${meetBadge}
+          ${meetBadge}${descBadge}
           <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${rruleDesc(ev.rrule,ev.dtStart)}</span>
         </label>
         <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
@@ -4973,6 +4976,16 @@ function importCalendarEvents() {
         createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
       });
       setItems.push({ itemId: bmId, notionTodayPage: false });
+    }
+    if (_icsDescR.has(i) && (ev.description||'').trim()) {
+      const memoId = genId();
+      db.items.push({
+        id: memoId, type: 'memo', title: ev.summary,
+        desc: (ev.description||'').trim(),
+        url: '', icon: '📝', category: 'カレンダー', tags: [], starred: false, hidden: true,
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+      });
+      setItems.push({ itemId: memoId, notionTodayPage: false });
     }
     // 繰り返しイベント → アラーム内蔵セットとして作成
     db.items.push({
