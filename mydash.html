@@ -4241,7 +4241,7 @@ function groupICSEvents(events) {
   return {recurring, single};
 }
 
-let _icsGroups=null, _icsSelR=new Set(), _icsSelS=new Set();
+let _icsGroups=null, _icsSelR=new Set(), _icsSelS=new Set(), _icsMeetR=new Set();
 
 function openCalImportModal() {
   renderCalStep1();
@@ -4890,8 +4890,9 @@ async function fetchCalendar() {
     await new Promise(r => setTimeout(r, 50)); // UIを更新してから解析
     const events = parseICS(icsText);
     _icsGroups = groupICSEvents(events);
-    _icsSelR = new Set(_icsGroups.recurring.map((_,i)=>i));
-    _icsSelS = new Set(_icsGroups.single.map((_,i)=>i));
+    _icsSelR  = new Set(_icsGroups.recurring.map((_,i)=>i));
+    _icsSelS  = new Set(_icsGroups.single.map((_,i)=>i));
+    _icsMeetR = new Set(_icsGroups.recurring.map((_,i)=>i).filter(i => extractMeetUrl(_icsGroups.recurring[i].description||'',_icsGroups.recurring[i].location||'')));
     clearInterval(ani);
     renderCalStep2();
   } catch(e) {
@@ -4912,7 +4913,7 @@ function renderCalStep2() {
     html+=`<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">`;
     recurring.forEach((ev,i)=>{
       const hasMeet = !!extractMeetUrl(ev.description||'', ev.location||'');
-      const meetBadge = hasMeet ? `<span style="font-size:10px;color:var(--set);background:rgba(128,203,196,0.15);border:1px solid rgba(128,203,196,0.35);border-radius:4px;padding:1px 5px;flex-shrink:0;white-space:nowrap"><img src="https://www.google.com/s2/favicons?domain=meet.google.com&sz=64" style="width:10px;height:10px;object-fit:contain;vertical-align:middle;margin-right:2px">Meet</span>` : '';
+      const meetBadge = hasMeet ? `<label onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:3px;flex-shrink:0;cursor:pointer;font-size:10px;color:var(--set);background:rgba(128,203,196,0.15);border:1px solid rgba(128,203,196,0.35);border-radius:4px;padding:1px 5px;white-space:nowrap"><input type="checkbox" checked onchange="if(this.checked)_icsMeetR.add(${i});else _icsMeetR.delete(${i})" style="accent-color:var(--set);width:10px;height:10px;margin:0"><img src="https://www.google.com/s2/favicons?domain=meet.google.com&sz=64" style="width:10px;height:10px;object-fit:contain;vertical-align:middle">Meet</label>` : '';
       html+=`<div class="set-item-row" style="gap:4px">
         <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;min-width:0">
           <input type="checkbox" checked onchange="if(this.checked)_icsSelR.add(${i});else _icsSelR.delete(${i})" style="accent-color:var(--set);flex-shrink:0">
@@ -4959,8 +4960,8 @@ function importCalendarEvents() {
   let count=0;
   for (const i of _icsSelR) {
     const ev=recurring[i]; if(!ev) continue;
-    // Meet URLを自動抽出
-    const meetUrl = extractMeetUrl(ev.description || '', ev.location || '');
+    // Meet URLを自動抽出（トグルONのときのみ）
+    const meetUrl = _icsMeetR.has(i) ? extractMeetUrl(ev.description || '', ev.location || '') : null;
     const setItems = [];
     if (meetUrl) {
       const bmId = genId();
