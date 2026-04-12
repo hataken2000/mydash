@@ -3710,11 +3710,11 @@ function renderSetItemsList() {
   const el = document.getElementById('f-set-items-list');
   if (!el) return;
 
-  // bookmark / tool / その他 URL持ちアイテム（セット以外）
-  const candidates = db.items.filter(i => i.type !== 'set' && (i.url || i.appName));
+  // セット以外の全アイテム
+  const candidates = db.items.filter(i => i.type !== 'set');
 
   if (!candidates.length) {
-    el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:6px">URLまたはアプリを持つアイテムがありません</div>';
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:6px">アイテムがありません</div>';
     return;
   }
 
@@ -3727,7 +3727,10 @@ function renderSetItemsList() {
           ? `<img src="${esc(item.icon)}" style="width:16px;height:16px;object-fit:contain;border-radius:3px;flex-shrink:0">`
           : `<span style="flex-shrink:0">${item.icon}</span>`)
       : `<span style="flex-shrink:0">${fallback}</span>`;
-    const sub = item.type === 'tool' && item.appName ? item.appName : (item.url || '');
+    const sub = item.type === 'tool' && item.appName ? item.appName
+              : item.url ? item.url
+              : item.desc ? item.desc.slice(0, 40)
+              : '';
 
     return `<label class="set-item-row" style="cursor:pointer">
       <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleSetItem('${item.id}', this.checked)">
