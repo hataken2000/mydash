@@ -114,10 +114,6 @@ body.light {
   --text: #1a1d27;
   --text-muted: #6b7280;
 }
-body.light .set-card { background: rgba(128,203,196,0.10) !important; border-color: rgba(128,203,196,0.4) !important; }
-body.light .set-card:hover { background: rgba(128,203,196,0.18) !important; }
-body.light .memo-card { background: rgba(244,143,177,0.10) !important; border-color: rgba(196,154,78,0.3) !important; }
-body.light .memo-card:hover { background: rgba(244,143,177,0.18) !important; }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
@@ -753,17 +749,8 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   padding: 1px 5px;
 }
 
-/* ── Task card status backgrounds ───────────── */
-.task-todo-card  { background: rgba(139,144,170,0.10); border-color: rgba(139,144,170,0.22); }
-.task-doing-card { background: rgba(255,183,77,0.07);  border-color: rgba(255,183,77,0.25); }
-.task-done-card  { background: rgba(102,187,106,0.07); border-color: rgba(102,187,106,0.22); }
-.task-todo-card:hover  { background: rgba(139,144,170,0.18) !important; }
-.task-doing-card:hover { background: rgba(255,183,77,0.15)  !important; }
-.task-done-card:hover  { background: rgba(102,187,106,0.15) !important; }
 
 /* ── Set card ────────────────────────────────── */
-.set-card { background: #161e1e; border-color: rgba(128,203,196,0.3); }
-.set-card:hover { background: #1c2828 !important; border-color: rgba(128,203,196,0.5) !important; }
 .set-preview { font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.5; }
 .launch-btn {
   background: var(--set); border: none; border-radius: var(--radius-sm);
@@ -781,9 +768,6 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 }
 .set-item-row:has(input:checked) { border-color: rgba(128,203,196,0.4); }
 .set-item-row input[type=checkbox] { accent-color: var(--set); cursor: pointer; flex-shrink: 0; }
-/* ── Memo card warm background ───────────────── */
-.memo-card { background: #201e18; border-color: rgba(196,154,78,0.3); }
-.memo-card:hover { background: #272319 !important; border-color: rgba(244,143,177,0.5) !important; }
 
 /* ── Due date badge ──────────────────────────── */
 .due-badge {
