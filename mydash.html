@@ -4219,6 +4219,8 @@ function groupICSEvents(events) {
     const summary = (ev.SUMMARY||'（タイトルなし）').trim();
     if (ngSet.has(summary)) continue; // NGリストに含まれるイベントをスキップ
     const dtStart = parseICSDate(ev.DTSTART);
+    const description = ev.DESCRIPTION || '';
+    const location    = ev.LOCATION    || '';
     if (ev.RRULE) {
       // UNTIL が過去なら終了済みイベントとしてスキップ
       const rrule = parseRRule(ev.RRULE);
@@ -4228,10 +4230,10 @@ function groupICSEvents(events) {
       }
       // タイトルでまとめる（同名イベントは1件に）
       if (!recurringMap.has(summary)) {
-        recurringMap.set(summary, {summary, dtStart, rrule});
+        recurringMap.set(summary, {summary, dtStart, rrule, description, location});
       }
     } else if (dtStart && dtStart>=now && dtStart<=future) {
-      single.push({summary, dtStart});
+      single.push({summary, dtStart, description, location});
     }
   }
   const recurring = [...recurringMap.values()];
@@ -4909,10 +4911,13 @@ function renderCalStep2() {
     html+=`<div style="font-size:10.5px;font-weight:700;color:var(--set);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">🔔 繰り返し → アラームとして追加（${recurring.length}件）</div>`;
     html+=`<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">`;
     recurring.forEach((ev,i)=>{
+      const hasMeet = !!extractMeetUrl(ev.description||'', ev.location||'');
+      const meetBadge = hasMeet ? `<span style="font-size:10px;color:var(--set);background:rgba(128,203,196,0.15);border:1px solid rgba(128,203,196,0.35);border-radius:4px;padding:1px 5px;flex-shrink:0;white-space:nowrap"><img src="https://www.google.com/s2/favicons?domain=meet.google.com&sz=64" style="width:10px;height:10px;object-fit:contain;vertical-align:middle;margin-right:2px">Meet</span>` : '';
       html+=`<div class="set-item-row" style="gap:4px">
         <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;min-width:0">
           <input type="checkbox" checked onchange="if(this.checked)_icsSelR.add(${i});else _icsSelR.delete(${i})" style="accent-color:var(--set);flex-shrink:0">
           <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(ev.summary)}</span>
+          ${meetBadge}
           <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${rruleDesc(ev.rrule,ev.dtStart)}</span>
         </label>
         <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
@@ -4943,17 +4948,36 @@ function renderCalStep2() {
     <button class="btn-primary" onclick="importCalendarEvents()">✅ インポート</button>`;
 }
 
+function extractMeetUrl(description, location) {
+  const m = (description + '\n' + location).match(/https:\/\/meet\.google\.com\/[a-z0-9-]+/i);
+  return m ? m[0] : null;
+}
+
 function importCalendarEvents() {
   const {recurring,single} = _icsGroups;
   if (!Array.isArray(db.alarms)) db.alarms=[];
   let count=0;
   for (const i of _icsSelR) {
     const ev=recurring[i]; if(!ev) continue;
+    // Meet URLを自動抽出
+    const meetUrl = extractMeetUrl(ev.description || '', ev.location || '');
+    const setItems = [];
+    if (meetUrl) {
+      const bmId = genId();
+      db.items.push({
+        id: bmId, type: 'bookmark', title: `Meet：${ev.summary}`,
+        url: meetUrl,
+        icon: 'https://www.google.com/s2/favicons?domain=meet.google.com&sz=64',
+        desc: 'Meet', category: 'カレンダー', tags: [], starred: false, hidden: true,
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+      });
+      setItems.push({ itemId: bmId, notionTodayPage: false });
+    }
     // 繰り返しイベント → アラーム内蔵セットとして作成
     db.items.push({
       id: genId(), type: 'set', title: ev.summary, desc: '', url: '', icon: '📅',
       category: 'カレンダー', tags: [], starred: false,
-      setItems: [],
+      setItems,
       alarm: { enabled: true, schedule: rruleToSchedule(ev.rrule, ev.dtStart), lastFired: null },
       createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
     });
