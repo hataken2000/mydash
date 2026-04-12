@@ -1026,6 +1026,23 @@ body.hide-server .launch-btn { display: none !important; }
 .alarm-popup-time { font-size: 12px; color: var(--text-muted); margin-bottom: 22px; }
 .alarm-popup-btns { display: flex; gap: 10px; justify-content: center; }
 
+/* ── Set Quick Panel ─────────────────────── */
+.sqp-items { display: flex; flex-direction: column; gap: 4px; margin: 12px 0; }
+.sqp-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+  text-decoration: none; color: var(--text); font-size: 13px;
+}
+.sqp-item:hover { background: var(--hover); }
+.sqp-item .sqp-icon { flex-shrink: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.sqp-item .sqp-icon img { width: 20px; height: 20px; object-fit: contain; border-radius: 3px; }
+.sqp-item .sqp-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sqp-item .sqp-type { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+.sqp-alarm { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+.sqp-desc { font-size: 13px; color: var(--text-muted); margin: 8px 0 4px; white-space: pre-wrap; word-break: break-word; max-height: 80px; overflow-y: auto; }
+
 /* ── Alarm Modal List ────────────────────── */
 .alarm-list { display: flex; flex-direction: column; gap: 6px; }
 .alarm-row {
@@ -1149,7 +1166,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.4</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.5</div>
   </div>
 </aside>
 
@@ -1282,10 +1299,6 @@ body.hide-server .launch-btn { display: none !important; }
           <label class="io-btn" style="cursor:pointer;justify-content:space-between" title="編集ダイアログを外クリックで閉じる前に確認する">
             🔒 編集中の確認
             <input type="checkbox" id="confirm-close-toggle" onchange="toggleConfirmOnClose(this)" style="accent-color:var(--accent);width:auto;cursor:pointer">
-          </label>
-          <label class="io-btn server-feature" style="cursor:pointer;justify-content:space-between" title="アラーム発火時にセットを自動起動する">
-            🚀 セット自動起動（アラーム）
-            <input type="checkbox" id="alarm-auto-launch-toggle" onchange="toggleAlarmAutoLaunch(this)" style="accent-color:var(--accent);width:auto;cursor:pointer">
           </label>
           <div class="io-btn" style="justify-content:space-between;gap:10px" title="全アラームの発火時刻を一括でずらす（負=前・正=後）">
             <span style="white-space:nowrap">⏱ アラーム時刻ずらし（分）</span>
@@ -1624,6 +1637,18 @@ body.hide-server .launch-btn { display: none !important; }
   </div>
 </div>
 
+<!-- Set Quick Panel -->
+<div class="modal-overlay" id="set-quick-panel" style="display:none" onclick="if(event.target===this)closeSetQuickPanel()">
+  <div class="modal" style="max-width:480px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="sqp-title" style="display:flex;align-items:center;gap:8px"></div>
+      <button class="modal-close" onclick="closeSetQuickPanel()">✕</button>
+    </div>
+    <div class="modal-body" id="sqp-body"></div>
+    <div class="modal-footer" id="sqp-footer"></div>
+  </div>
+</div>
+
 <!-- Slack Confirm Modal -->
 <div class="modal-overlay" id="slack-modal" style="display:none" onclick="if(event.target===this)closeSlackModal()">
   <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
@@ -1742,7 +1767,6 @@ function load() {
   if (db.settings.confirmOnClose === undefined) db.settings.confirmOnClose = false;
   if (db.settings.accentColor === undefined) db.settings.accentColor = '#00afcc';
   if (db.settings.darkMode === undefined) db.settings.darkMode = 'auto';
-  if (db.settings.alarmAutoLaunch === undefined) db.settings.alarmAutoLaunch = true;
   if (db.settings.alarmOffsetMin === undefined) db.settings.alarmOffsetMin = 0;
   if (db.settings.alarmMuted === undefined) db.settings.alarmMuted = false;
   if (db.settings.showServerFeatures === undefined) db.settings.showServerFeatures = (SERVER_BASE !== null);
@@ -2105,7 +2129,6 @@ function gridCard(item) {
         ? `<div style="color:${tc};margin-top:4px;font-size:11px"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:11px;height:11px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>${alarmSchedDesc({schedule:item.alarm.schedule})}  </div>` : '';
       expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
         ${preview}${alarmHtml}
-        <button class="launch-btn" style="width:100%;margin-top:8px" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
       </div>`;
     } else if (item.type === 'slack') {
       const msg = item.slackMessage || '';
@@ -2191,7 +2214,6 @@ function listCard(item) {
       </div>
       <div class="list-meta">
         ${typeBadge(item)}
-        <button class="launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
         <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
         <div class="list-actions">
           <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
@@ -2444,7 +2466,7 @@ function cardClick(e, id) {
   if (state.selectMode) { toggleItemSelect(id, !state.selectedIds.has(id)); return; }
   const item = db.items.find(i => i.id === id);
   if (!item) return;
-  if (item.type === 'set') { editItem(id); return; }
+  if (item.type === 'set') { showSetQuickPanel(id); return; }
   if (item.type === 'slack') { sendSlackMessage(id); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   if (item.appName) { openWithServer(item.appName); return; }
@@ -2533,10 +2555,6 @@ function toggleConfirmOnClose(el) {
   save();
 }
 
-function toggleAlarmAutoLaunch(el) {
-  db.settings.alarmAutoLaunch = el.checked;
-  save();
-}
 
 function setAlarmOffset(el) {
   db.settings.alarmOffsetMin = parseInt(el.value) || 0;
@@ -2971,7 +2989,7 @@ function iconCardClick(event, id) {
   if (state.selectMode) { toggleItemSelect(id, !state.selectedIds.has(id)); return; }
   const item = db.items.find(i => i.id === id);
   if (!item) return;
-  if (item.type === 'set') { launchSet(id); return; }
+  if (item.type === 'set') { showSetQuickPanel(id); return; }
   if (item.type === 'slack') { sendSlackMessage(id); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   cardClick(event, id);
@@ -2980,7 +2998,7 @@ function iconCardClick(event, id) {
 function iconCard(item) {
   const tc = typeColor(item);
   const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:14px;height:14px;accent-color:var(--set);cursor:pointer"></div>` : '';
-  const titleSuffix = item.type === 'set' ? ' ▶ クリックで起動' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
+  const titleSuffix = item.type === 'set' ? ' ▶ クリックでパネルを開く' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
   return `<div class="icon-wrap${item.appName ? ' server-feature' : ''}${item.hidden?' item-hidden':''}">
     <div class="icon-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}"
         onclick="iconCardClick(event,'${item.id}')"
@@ -3603,7 +3621,7 @@ function showCtx(e, id) {
 }
 function hideCtx() { document.getElementById('ctx-menu').style.display = 'none'; }
 function ctxEdit()   { editItem(state.ctxId); hideCtx(); }
-function ctxOpen()   { const it = db.items.find(i => i.id === state.ctxId); if (it?.type === 'set') { launchSet(state.ctxId); } else if (it?.url) { window.open(it.url,'_blank'); } hideCtx(); }
+function ctxOpen()   { const it = db.items.find(i => i.id === state.ctxId); if (it?.type === 'set') { hideCtx(); showSetQuickPanel(state.ctxId); } else if (it?.url) { window.open(it.url,'_blank'); hideCtx(); } else { hideCtx(); } }
 function ctxDelete() { confirmDelete(state.ctxId); hideCtx(); }
 
 // ═══════════════════════════════════════════
@@ -3802,6 +3820,67 @@ function execSlackSend() {
 }
 
 // セットを起動: Chrome新ウィンドウで開く
+function showSetQuickPanel(id) {
+  const set = db.items.find(i => i.id === id);
+  if (!set || set.type !== 'set') return;
+  const tc = typeColor(set);
+
+  // タイトル
+  document.getElementById('sqp-title').innerHTML =
+    `<span style="color:${tc}">${iconHtml(set,'sm')}</span>${esc(set.title)}`;
+
+  // ボディ
+  const setItems = (set.setItems || []).map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
+  const itemsHtml = setItems.map(item => {
+    const itemTc = typeColor(item);
+    if (item.type === 'tool' && item.appName) {
+      return `<div class="sqp-item" onclick="closeSetQuickPanel();openWithServer('${esc(item.appName)}')">
+        <span class="sqp-icon">${iconHtml(item,'sm')}</span>
+        <span class="sqp-title">${esc(item.title)}</span>
+        <span class="sqp-type" style="color:${itemTc}">アプリ</span>
+      </div>`;
+    } else if (item.url) {
+      return `<a class="sqp-item" href="${esc(item.url)}" target="_blank" onclick="closeSetQuickPanel()">
+        <span class="sqp-icon">${iconHtml(item,'sm')}</span>
+        <span class="sqp-title">${esc(item.title)}</span>
+        <span class="sqp-type" style="color:${itemTc}">${esc(item.type)}</span>
+      </a>`;
+    } else if (item.type === 'memo' || item.type === 'task') {
+      return `<div class="sqp-item" onclick="closeSetQuickPanel();showQuickEdit('${item.id}')">
+        <span class="sqp-icon">${iconHtml(item,'sm')}</span>
+        <span class="sqp-title">${esc(item.title)}</span>
+        <span class="sqp-type" style="color:${itemTc}">${esc(item.type)}</span>
+      </div>`;
+    } else {
+      return `<div class="sqp-item" style="cursor:default">
+        <span class="sqp-icon">${iconHtml(item,'sm')}</span>
+        <span class="sqp-title">${esc(item.title)}</span>
+        <span class="sqp-type" style="color:${itemTc}">${esc(item.type)}</span>
+      </div>`;
+    }
+  }).join('');
+
+  const alarmHtml = set.alarm?.enabled
+    ? `<div class="sqp-alarm"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:12px;height:12px"></span>${alarmSchedDesc({schedule:set.alarm.schedule})}</div>`
+    : '';
+  const descHtml = set.desc ? `<div class="sqp-desc">${esc(set.desc)}</div>` : '';
+
+  document.getElementById('sqp-body').innerHTML =
+    `${descHtml}${alarmHtml}<div class="sqp-items">${itemsHtml || '<div style="color:var(--text-muted);font-size:13px">（アイテムなし）</div>'}</div>`;
+
+  // フッター
+  document.getElementById('sqp-footer').innerHTML =
+    `<button class="btn-secondary" onclick="closeSetQuickPanel()">閉じる</button>
+     <button class="btn-secondary" onclick="closeSetQuickPanel();editItem('${id}')">詳細編集</button>
+     <button class="btn-primary" onclick="closeSetQuickPanel();launchSet('${id}')" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>▶ 起動</button>`;
+
+  document.getElementById('set-quick-panel').style.display = 'flex';
+}
+
+function closeSetQuickPanel() {
+  document.getElementById('set-quick-panel').style.display = 'none';
+}
+
 async function launchSet(id) {
   const set = db.items.find(i => i.id === id);
   if (!set || set.type !== 'set') return;
@@ -4053,36 +4132,20 @@ function showAlarmPopup(alarm) {
   _currentAlarm = alarm;
   const a = alarm.action;
 
-  // セット紐付きアラームは自動起動（設定がONの場合）
-  if (a?.type === 'set' && a.targetId && db.settings.alarmAutoLaunch !== false) {
-    launchSet(a.targetId);
-    const setItem = db.items.find(i => i.id === a.targetId);
-    const setName = setItem ? setItem.title : 'セット';
-    toast(`🔔 ${alarm.name} — 「${setName}」を自動起動しました`, '🚀');
-    _currentAlarm = null;
-    // ビープ音
-    try {
-      const ctx = new AudioContext();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880; osc.type = 'sine';
-      gain.gain.setValueAtTime(0.25, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
-    } catch(_) {}
-    return;
-  }
-
   document.getElementById('alarm-popup-name').textContent = alarm.name;
   const now = new Date();
   document.getElementById('alarm-popup-time').textContent =
     `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${ALARM_DAYS[now.getDay()]}） ${alarm.schedule.time}`;
 
   const execBtn = document.getElementById('alarm-popup-execute');
-  if (a && a.type === 'url') {
+  if (a?.type === 'set' && a.targetId) {
     execBtn.style.display = '';
-    execBtn.textContent = '🔗 開く';
+    execBtn.innerHTML = '<span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>開く';
+    execBtn.onclick = () => { closeAlarmPopup(); showSetQuickPanel(a.targetId); };
+  } else if (a?.type === 'url') {
+    execBtn.style.display = '';
+    execBtn.innerHTML = '🔗 開く';
+    execBtn.onclick = executeCurrentAlarm;
   } else {
     execBtn.style.display = 'none';
   }
@@ -5479,7 +5542,6 @@ if (SERVER_BASE && db.settings.windowSize) {
   }, 1200);
 }
 document.getElementById('confirm-close-toggle').checked = !!db.settings.confirmOnClose;
-document.getElementById('alarm-auto-launch-toggle').checked = db.settings.alarmAutoLaunch !== false;
 applyAlarmMuteUI();
 document.getElementById('alarm-offset-input').value = db.settings.alarmOffsetMin || 0;
 applyTheme();
