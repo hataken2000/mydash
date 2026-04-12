@@ -201,8 +201,42 @@ body {
 .sidebar-subitem:hover { background: rgba(124,131,253,0.07); color: var(--text); }
 .sidebar-subitem.active { color: var(--accent); font-weight: 600; }
 @media (pointer: coarse) {
+  /* サイドバー */
   .sidebar-item:hover { background: transparent; }
   .sidebar-subitem:hover { background: transparent; }
+  /* カード */
+  .list-card:hover { border-color: var(--border) !important; background: var(--card-bg) !important; }
+  .grid-card:hover { border-color: var(--border) !important; background: var(--card-bg) !important; transform: none !important; box-shadow: none !important; }
+  .icon-card:hover { border-color: var(--border) !important; background: var(--card-bg) !important; transform: none !important; box-shadow: none !important; }
+  /* ボタン類 */
+  .action-btn:hover, .action-btn.danger:hover { border-color: var(--border) !important; color: var(--text-muted) !important; }
+  .help-btn:hover { border-color: var(--border) !important; color: var(--text-muted) !important; }
+  .io-btn:hover { border-color: var(--border) !important; color: var(--text) !important; }
+  .view-btn:hover { border-color: var(--border) !important; color: var(--text) !important; }
+  .hamburger-btn:hover { border-color: var(--border) !important; }
+  .input-mode-btn:hover { border-color: var(--border) !important; color: var(--text-muted) !important; }
+  .status-btn:hover { border-color: var(--border) !important; color: var(--text-muted) !important; }
+  .day-btn:hover { border-color: var(--border) !important; color: var(--text-muted) !important; }
+  .btn-primary:hover { background: var(--accent) !important; }
+  .btn-secondary:hover { border-color: var(--border) !important; }
+  .btn-danger:hover { background: transparent !important; }
+  .modal-close:hover { background-color: transparent !important; }
+  .launch-btn:hover { opacity: 1 !important; }
+  .type-add-btn:hover { opacity: 0 !important; background: transparent !important; }
+  /* カード内 */
+  .card-expand-btn:hover { color: var(--text-muted) !important; background: transparent !important; }
+  .status-clickable:hover { outline: none !important; }
+  .type-option:hover { border-color: var(--border) !important; color: var(--text) !important; }
+  /* テキスト・メモ */
+  .memo-toggle:hover { text-decoration: none !important; }
+  .memo-body a:hover, .card-expand-body a:hover { text-decoration: none !important; }
+  .memo-map-link:hover { background: transparent !important; }
+  .memo-map-embed-label:hover { background: transparent !important; }
+  /* タグ */
+  .tag-remove:hover, .filter-tag-remove:hover { color: var(--text-muted) !important; }
+  .tag-dropdown-item:hover { background: transparent !important; color: var(--text) !important; }
+  /* コンテキストメニュー */
+  .ctx-item:hover { background: transparent !important; }
 }
 .cat-dot { display:inline-block; width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 .cat-dot-unset { background:transparent !important; border:2px solid var(--text-muted); }
