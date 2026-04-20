@@ -7,6 +7,7 @@
 :root {
   --bg: #0f1117; --card: #1e2130; --border: #2d3250;
   --text: #e8eaf6; --muted: #8b90aa; --accent: #00afcc;
+  --set: #7c6af7; --task: #f59e42;
   --danger: #ef5350; --success: #66bb6a;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,28 +26,34 @@ body {
   letter-spacing: 2px; font-variant-numeric: tabular-nums;
 }
 #date { font-size: 11px; color: var(--muted); margin-top: 3px; }
-#tasks { flex: 1; overflow-y: auto; padding: 10px 12px; }
+#content { flex: 1; overflow-y: auto; padding: 10px 12px; }
 .section-label {
   font-size: 10px; font-weight: 700; color: var(--muted);
   text-transform: uppercase; letter-spacing: 1px;
-  margin: 10px 0 4px;
+  margin: 14px 0 6px; display: flex; align-items: center; gap: 5px;
 }
 .section-label:first-child { margin-top: 0; }
-.task-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 8px; border-radius: 8px; cursor: pointer;
-  transition: background 0.1s;
+/* sqp-itemと同様のスタイル */
+.w-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; border-radius: 8px; cursor: pointer;
+  transition: background 0.12s; border: 1px solid var(--border);
+  background: var(--card); margin-bottom: 5px;
+  color: var(--text); text-decoration: none; font-size: 13px;
 }
-.task-row:hover { background: var(--card); }
-.task-check {
-  width: 16px; height: 16px; border-radius: 4px;
-  border: 1.5px solid var(--border); flex-shrink: 0;
+.w-item:hover { background: #262b40; border-color: #3d4460; }
+.w-item .w-icon {
+  flex-shrink: 0; width: 20px; height: 20px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; transition: all 0.1s;
+  font-size: 15px;
 }
-.task-check.done { background: var(--success); border-color: var(--success); color: #fff; }
-.task-title { flex: 1; line-height: 1.3; }
-.task-title.done { text-decoration: line-through; color: var(--muted); }
+.w-item .w-icon img { width: 20px; height: 20px; object-fit: contain; border-radius: 3px; }
+.w-item .w-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-item .w-sub { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+.w-item.set-item .w-title { color: #a99ff8; }
+.w-item.task-done .w-title { text-decoration: line-through; color: var(--muted); }
+.w-item.task-overdue { border-color: rgba(239,83,80,0.4); }
+.w-item.task-overdue .w-sub { color: var(--danger); }
 .empty { color: var(--muted); font-size: 12px; padding: 6px 8px; }
 #footer {
   padding: 8px 12px; border-top: 1px solid var(--border);
@@ -61,6 +68,7 @@ button {
 button:hover { border-color: var(--accent); color: var(--accent); }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.w-svg { display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -68,7 +76,7 @@ button:hover { border-color: var(--accent); color: var(--accent); }
   <div id="clock">--:--:--</div>
   <div id="date">----年--月--日（-）</div>
 </div>
-<div id="tasks"></div>
+<div id="content"></div>
 <div id="footer">
   <span id="last-updated"></span>
   <button onclick="window.close()">閉じる</button>
@@ -76,6 +84,10 @@ button:hover { border-color: var(--accent); color: var(--accent); }
 <script>
 const KEY = 'mydash_v1';
 const DAYS = ['日','月','火','水','木','金','土'];
+const bc = new BroadcastChannel('mydash-widget');
+
+const SVG_SET = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></svg>`;
+const SVG_TASK = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>`;
 
 function tick() {
   const now = new Date();
@@ -98,52 +110,97 @@ function loadAndRender() {
     '更新: ' + new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
 }
 
+function getTodayAlarmSets(db) {
+  const now = new Date();
+  const todayDay = now.getDay();
+  const todayDate = now.getDate();
+  const todayMonth = now.getMonth() + 1;
+  return (db.items || []).filter(item => {
+    if (item.type !== 'set') return false;
+    const alarm = item.alarm;
+    if (!alarm || !alarm.enabled) return false;
+    const s = alarm.schedule;
+    switch (s.type) {
+      case 'daily': return true;
+      case 'weekly': return (s.days || []).includes(todayDay);
+      case 'monthly': return s.day === todayDate;
+      case 'yearly': return s.month === todayMonth && s.day === todayDate;
+      default: return false;
+    }
+  }).sort((a, b) => (a.alarm.schedule.time || '').localeCompare(b.alarm.schedule.time || ''));
+}
+
 function render(db) {
   const todayStr = new Date().toISOString().slice(0, 10);
+  const sets = getTodayAlarmSets(db);
   const undone = (db.items || []).filter(i => i.type === 'task' && (i.status || 'todo') !== 'done');
   const overdue = undone.filter(i => i.dueDate && i.dueDate < todayStr);
   const today   = undone.filter(i => i.dueDate === todayStr);
-  const el = document.getElementById('tasks');
-  if (overdue.length === 0 && today.length === 0) {
-    el.innerHTML = '<div class="empty">今日のタスクはありません 🎉</div>';
-    return;
-  }
+  const done    = (db.items || []).filter(i => i.type === 'task' && i.status === 'done' && i.dueDate === todayStr);
+
   let html = '';
-  if (overdue.length) {
-    html += '<div class="section-label">🔴 期限超過</div>' + overdue.map(taskRow).join('');
+
+  // セット一覧
+  if (sets.length) {
+    html += `<div class="section-label"><span class="w-svg" style="color:var(--muted);width:11px;height:11px">${SVG_SET}</span>今日のセット</div>`;
+    html += sets.map(s => setRow(s)).join('');
   }
-  if (today.length) {
-    html += '<div class="section-label">📅 今日締切</div>' + today.map(taskRow).join('');
+
+  // タスク
+  if (overdue.length || today.length || done.length) {
+    html += `<div class="section-label"><span class="w-svg" style="color:var(--muted);width:11px;height:11px">${SVG_TASK}</span>タスク</div>`;
+    overdue.forEach(t => { html += taskRow(t, true); });
+    today.forEach(t => { html += taskRow(t, false); });
+    done.forEach(t => { html += taskRow(t, false); });
   }
-  el.innerHTML = html;
+
+  if (!html) {
+    html = '<div class="empty">今日の予定はありません 🎉</div>';
+  }
+
+  document.getElementById('content').innerHTML = html;
+}
+
+function itemIcon(item, svgInline) {
+  if (!item.icon) return `<span class="w-svg" style="color:var(--muted);width:18px;height:18px">${svgInline}</span>`;
+  if (/^https?:|^\/|^data:/.test(item.icon)) return `<img src="${escHtml(item.icon)}" style="width:18px;height:18px;object-fit:contain;border-radius:3px">`;
+  return `<span style="font-size:15px;line-height:1">${escHtml(item.icon)}</span>`;
+}
+
+function setRow(item) {
+  const time = item.alarm?.schedule?.time || '';
+  return `<div class="w-item set-item" onclick="openPanel('${esc(item.id)}')">
+    <span class="w-icon">${itemIcon(item, SVG_SET)}</span>
+    <span class="w-title">${escHtml(item.title)}</span>
+    <span class="w-sub">${time}</span>
+  </div>`;
 }
 
 function taskRow(t) {
   const done = t.status === 'done';
-  return '<div class="task-row" onclick="toggleDone(\'' + esc(t.id) + '\')">' +
-    '<div class="task-check ' + (done ? 'done' : '') + '">' + (done ? '✓' : '') + '</div>' +
-    '<div class="task-title ' + (done ? 'done' : '') + '">' + escHtml(t.title) + '</div>' +
-    '</div>';
+  const isOverdue = !done && t.dueDate && t.dueDate < new Date().toISOString().slice(0,10);
+  const sub = done ? '完了' : isOverdue ? '期限超過' : '今日締切';
+  return `<div class="w-item${done ? ' task-done' : ''}${isOverdue ? ' task-overdue' : ''}" onclick="openQuickEdit('${esc(t.id)}')">
+    <span class="w-icon">${itemIcon(t, SVG_TASK)}</span>
+    <span class="w-title">${escHtml(t.title)}</span>
+    <span class="w-sub">${sub}</span>
+  </div>`;
 }
 
-function toggleDone(id) {
-  let db;
-  try { db = JSON.parse(localStorage.getItem(KEY)) || { items: [] }; }
-  catch (_) { db = { items: [] }; }
-  const item = (db.items || []).find(i => i.id === id);
-  if (!item) return;
-  item.status = (item.status === 'done') ? 'todo' : 'done';
-  localStorage.setItem(KEY, JSON.stringify(db));
-  render(db);
+function openPanel(id) {
+  bc.postMessage({ cmd: 'openPanel', id });
 }
 
+function openQuickEdit(id) {
+  bc.postMessage({ cmd: 'openQuickEdit', id });
+}
 
 function esc(s) { return String(s).replace(/'/g, "\\'"); }
 function escHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-window.resizeTo(300, 540);
+window.resizeTo(300, 560);
 loadAndRender();
 setInterval(loadAndRender, 30000);
 </script>
