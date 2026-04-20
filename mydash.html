@@ -4027,6 +4027,7 @@ function alarmSchedDesc(alarm) {
     case 'monthly-date':     return `毎月${s.monthDay}日 ${t}${offStr}`;
     case 'monthly-weekday':  return `毎月第${s.weekdayN==-1?'最終':s.weekdayN}${ALARM_DAYS[s.weekday]??'?'} ${t}${offStr}`;
     case 'yearly':           return `毎年${s.month}月${s.day}日 ${t}${offStr}`;
+    case 'once':             return `${s.date} ${t}${offStr}`;
     default:                 return t;
   }
 }
@@ -4069,6 +4070,10 @@ function shouldFireAlarm(alarm, now) {
       return Math.ceil(now.getDate()/7) === s.weekdayN;
     }
     case 'yearly': return now.getMonth()+1 === s.month && now.getDate() === s.day;
+    case 'once': {
+      const dateKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      return dateKey === s.date;
+    }
     default: return false;
   }
 }
@@ -4311,10 +4316,11 @@ function groupICSEvents(events) {
       }
       // タイトルでまとめる（同名イベントは1件に）
       if (!recurringMap.has(summary)) {
-        recurringMap.set(summary, {summary, dtStart, rrule, description, location});
+        recurringMap.set(summary, {summary, dtStart, rrule, description, location, uid: ev.UID || ''});
       }
     } else if (dtStart && dtStart>=now && dtStart<=future) {
-      single.push({summary, dtStart, description, location});
+      const hasTime = ev.DTSTART ? /T\d{4,6}/.test(ev.DTSTART) : false;
+      single.push({summary, dtStart, description, location, uid: ev.UID || '', hasTime});
     }
   }
   const recurring = [...recurringMap.values()];
@@ -4903,30 +4909,39 @@ async function runCalSync(manual = false) {
     const events = parseICS(await fetchICSText(sync.url));
     const groups = groupICSEvents(events);
     let added = 0;
+    const existingCalUids = new Set(db.items.map(i => i.calUid).filter(Boolean));
 
-    // 繰り返し → アラーム内蔵セット（同名がなければ追加）
-    const existingSetTitles = new Set((db.items || []).filter(i => i.type === 'set' && i.alarm).map(i => i.title));
+    // 繰り返し → アラーム内蔵セット（同calUidがなければ追加）
     for (const ev of groups.recurring) {
-      if (!existingSetTitles.has(ev.summary)) {
-        db.items.push({
-          id: genId(), type: 'set', title: ev.summary, desc: '', url: '', icon: '',
-          category: 'カレンダー', tags: [], starred: false, setItems: [],
-          alarm: { enabled: true, schedule: rruleToSchedule(ev.rrule, ev.dtStart), lastFired: null },
-          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), fromCalSync: true
-        });
-        added++;
-      }
+      const uidKey = (ev.uid || ev.summary) + '_recurring';
+      if (existingCalUids.has(uidKey)) continue;
+      db.items.push({
+        id: genId(), type: 'set', title: ev.summary, desc: '', url: '', icon: '',
+        category: 'カレンダー', tags: [], starred: false, setItems: [],
+        alarm: { enabled: true, schedule: rruleToSchedule(ev.rrule, ev.dtStart), lastFired: null },
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), fromCalSync: true, calUid: uidKey
+      });
+      added++;
     }
 
-    // 単発 → タスク（同タイトル＋同日がなければ追加）
+    // 単発 → 時刻ありはセット+アラーム、終日はタスク（同calUidがなければ追加）
     for (const ev of groups.single) {
       const d = ev.dtStart;
       const due = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      const exists = db.items.some(i => i.title === ev.summary && i.due === due);
-      if (!exists) {
-        db.items.push({id: genId(), type: 'task', title: ev.summary, desc: '', url: '', icon: '', category: 'カレンダー', status: 'todo', priority: 'medium', due, tags: [], starred: false, createdAt: new Date().toISOString(), fromCalSync: true});
-        added++;
+      const uidKey = (ev.uid || ev.summary) + '_' + due;
+      if (existingCalUids.has(uidKey)) continue;
+      if (ev.hasTime) {
+        const time = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        db.items.push({
+          id: genId(), type: 'set', title: ev.summary, desc: '', url: '', icon: '',
+          category: 'カレンダー', tags: [], starred: false, setItems: [],
+          alarm: { enabled: true, schedule: { type: 'once', date: due, time }, lastFired: null },
+          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), fromCalSync: true, calUid: uidKey
+        });
+      } else {
+        db.items.push({id: genId(), type: 'task', title: ev.summary, desc: '', url: '', icon: '', category: 'カレンダー', status: 'todo', priority: 'medium', due, tags: [], starred: false, createdAt: new Date().toISOString(), fromCalSync: true, calUid: uidKey});
       }
+      added++;
     }
 
     db.calSync.lastSync = Date.now();
@@ -4974,7 +4989,7 @@ async function fetchCalendar() {
     _icsSelR  = new Set(_icsGroups.recurring.map((_,i)=>i));
     _icsSelS  = new Set(_icsGroups.single.map((_,i)=>i));
     _icsMeetR = new Set(_icsGroups.recurring.map((_,i)=>i).filter(i => extractMeetUrl(_icsGroups.recurring[i].description||'',_icsGroups.recurring[i].location||'')));
-    _icsDescR = new Set(_icsGroups.recurring.map((_,i)=>i).filter(i => (_icsGroups.recurring[i].description||'').trim()));
+    _icsDescR = new Set(_icsGroups.recurring.map((_,i)=>i).filter(i => !isBoilerplateDescription(_icsGroups.recurring[i].description||'')));
     clearInterval(ani);
     renderCalStep2();
   } catch(e) {
@@ -4991,11 +5006,11 @@ function renderCalStep2() {
     html=`<div class="empty-state" style="padding:28px"><div class="ei">📭</div><h3>対象イベントなし</h3><div style="font-size:12px;color:var(--text-muted);margin-top:4px">直近1ヶ月のイベントが対象です</div></div>`;
   }
   if (recurring.length) {
-    html+=`<div style="font-size:10.5px;font-weight:700;color:var(--set);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);width:11px;height:11px;background-color:currentColor"></span>繰り返し → アラームとして追加（${recurring.length}件）</div>`;
+    html+=`<div style="font-size:10.5px;font-weight:700;color:var(--set);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);width:11px;height:11px;background-color:currentColor"></span>繰り返し → セット+アラームとして追加（${recurring.length}件）</div>`;
     html+=`<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">`;
     recurring.forEach((ev,i)=>{
       const hasMeet = !!extractMeetUrl(ev.description||'', ev.location||'');
-      const hasDesc = !!(ev.description||'').trim();
+      const hasDesc = !isBoilerplateDescription(ev.description||'');
       const meetBadge = hasMeet ? `<label onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:3px;flex-shrink:0;cursor:pointer;font-size:10px;color:var(--set);background:rgba(128,203,196,0.15);border:1px solid rgba(128,203,196,0.35);border-radius:4px;padding:1px 5px;white-space:nowrap"><input type="checkbox" checked onchange="if(this.checked)_icsMeetR.add(${i});else _icsMeetR.delete(${i})" style="accent-color:var(--set);width:10px;height:10px;margin:0"><img src="https://www.google.com/s2/favicons?domain=meet.google.com&sz=64" style="width:10px;height:10px;object-fit:contain;vertical-align:middle">Meet</label>` : '';
       const descBadge = hasDesc ? `<label onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:3px;flex-shrink:0;cursor:pointer;font-size:10px;color:var(--memo);background:rgba(244,143,177,0.12);border:1px solid rgba(244,143,177,0.35);border-radius:4px;padding:1px 5px;white-space:nowrap"><input type="checkbox" checked onchange="if(this.checked)_icsDescR.add(${i});else _icsDescR.delete(${i})" style="accent-color:var(--memo);width:10px;height:10px;margin:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo);width:10px;height:10px;background-color:currentColor"></span>メモ</label>` : '';
       html+=`<div class="set-item-row" style="gap:4px">
@@ -5011,26 +5026,77 @@ function renderCalStep2() {
     html+='</div>';
   }
   if (single.length) {
-    html+=`<div style="font-size:10.5px;font-weight:700;color:var(--task);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);width:11px;height:11px;background-color:currentColor"></span>単発 → タスクとして追加（${single.length}件）</div>`;
-    html+=`<div style="display:flex;flex-direction:column;gap:5px">`;
-    single.forEach((ev,i)=>{
-      const d=ev.dtStart;
-      const ds=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      html+=`<div class="set-item-row" style="gap:4px">
-        <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;min-width:0">
-          <input type="checkbox" checked onchange="if(this.checked)_icsSelS.add(${i});else _icsSelS.delete(${i})" style="accent-color:var(--task);flex-shrink:0">
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(ev.summary)}</span>
-          <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${ds}</span>
-        </label>
-        <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
-      </div>`;
-    });
-    html+='</div>';
+    const singleTimed = single.filter(ev => ev.hasTime);
+    const singleAllDay = single.filter(ev => !ev.hasTime);
+    if (singleTimed.length) {
+      html+=`<div style="font-size:10.5px;font-weight:700;color:var(--set);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;margin-top:${recurring.length?'10px':'0'};display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);width:11px;height:11px;background-color:currentColor"></span>単発（時刻あり）→ セット+アラームとして追加（${singleTimed.length}件）</div>`;
+      html+=`<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:${singleAllDay.length?'10px':'0'}">`;
+      singleTimed.forEach(ev=>{
+        const i=single.indexOf(ev);
+        const d=ev.dtStart;
+        const ds=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        html+=`<div class="set-item-row" style="gap:4px">
+          <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;min-width:0">
+            <input type="checkbox" checked onchange="if(this.checked)_icsSelS.add(${i});else _icsSelS.delete(${i})" style="accent-color:var(--set);flex-shrink:0">
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(ev.summary)}</span>
+            <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${ds}</span>
+          </label>
+          <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
+        </div>`;
+      });
+      html+='</div>';
+    }
+    if (singleAllDay.length) {
+      html+=`<div style="font-size:10.5px;font-weight:700;color:var(--task);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);width:11px;height:11px;background-color:currentColor"></span>単発（終日）→ タスクとして追加（${singleAllDay.length}件）</div>`;
+      html+=`<div style="display:flex;flex-direction:column;gap:5px">`;
+      singleAllDay.forEach(ev=>{
+        const i=single.indexOf(ev);
+        const d=ev.dtStart;
+        const ds=`${d.getMonth()+1}/${d.getDate()}`;
+        html+=`<div class="set-item-row" style="gap:4px">
+          <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;min-width:0">
+            <input type="checkbox" checked onchange="if(this.checked)_icsSelS.add(${i});else _icsSelS.delete(${i})" style="accent-color:var(--task);flex-shrink:0">
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(ev.summary)}</span>
+            <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${ds}</span>
+          </label>
+          <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
+        </div>`;
+      });
+      html+='</div>';
+    }
   }
   document.getElementById('cal-import-body').innerHTML=`<div style="max-height:360px;overflow-y:auto;padding-right:3px">${html}</div>`;
   document.getElementById('cal-import-footer').innerHTML=`
     <button class="btn-secondary" onclick="renderCalStep1()">← 戻る</button>
     <button class="btn-primary" onclick="importCalendarEvents()" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px;background-color:white"></span>インポート</button>`;
+}
+
+function isBoilerplateDescription(desc) {
+  if (!desc || !desc.trim()) return true;
+  if (/<html-blob>/i.test(desc)) return true;
+  const boilerplate = [
+    /^https?:\/\//,
+    /^Google Meet に参加/,
+    /^Meet の詳細/,
+    /^電話で参加/,
+    /^その他の電話番号/,
+    /^ミーティングID/,
+    /^パスコード/,
+    /^PIN:/i,
+    /^\(JP\)/,
+    /^zoom\.us/i,
+    /^ズーム/,
+    /^This is an event reminder/i,
+    /^View your event/i,
+    /^When:/i,
+    /^Where:/i,
+    /^Calendar:/i,
+    /^Who:/i,
+    /^Organizer:/i,
+    /^Going\?/i,
+  ];
+  const meaningful = desc.split('\n').map(l => l.trim()).filter(l => l && !boilerplate.some(p => p.test(l)));
+  return meaningful.length === 0;
 }
 
 function extractMeetUrl(description, location) {
@@ -5041,9 +5107,12 @@ function extractMeetUrl(description, location) {
 function importCalendarEvents() {
   const {recurring,single} = _icsGroups;
   if (!Array.isArray(db.alarms)) db.alarms=[];
-  let count=0;
+  const existingCalUids = new Set(db.items.map(i => i.calUid).filter(Boolean));
+  let count=0, skipped=0;
   for (const i of _icsSelR) {
     const ev=recurring[i]; if(!ev) continue;
+    const uidKey = (ev.uid || ev.summary) + '_recurring';
+    if (existingCalUids.has(uidKey)) { skipped++; continue; }
     // Meet URLを自動抽出（トグルONのときのみ）
     const meetUrl = _icsMeetR.has(i) ? extractMeetUrl(ev.description || '', ev.location || '') : null;
     const setItems = [];
@@ -5074,7 +5143,7 @@ function importCalendarEvents() {
       category: 'カレンダー', tags: [], starred: false,
       setItems,
       alarm: { enabled: true, schedule: rruleToSchedule(ev.rrule, ev.dtStart), lastFired: null },
-      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), calUid: uidKey
     });
     count++;
   }
@@ -5082,12 +5151,25 @@ function importCalendarEvents() {
     const ev=single[i]; if(!ev) continue;
     const d=ev.dtStart;
     const due=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    db.items.push({id:genId(), type:'task', title:ev.summary, desc:'', url:'', icon:'📅', category:'カレンダー', status:'todo', priority:'medium', due, tags:[], starred:false, createdAt:new Date().toISOString()});
+    const uidKey = (ev.uid || ev.summary) + '_' + due;
+    if (existingCalUids.has(uidKey)) { skipped++; continue; }
+    if (ev.hasTime) {
+      const time=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      db.items.push({
+        id:genId(), type:'set', title:ev.summary, desc:'', url:'', icon:'',
+        category:'カレンダー', tags:[], starred:false, setItems:[],
+        alarm:{enabled:true, schedule:{type:'once', date:due, time}, lastFired:null},
+        createdAt:new Date().toISOString(), updatedAt:new Date().toISOString(), calUid:uidKey
+      });
+    } else {
+      db.items.push({id:genId(), type:'task', title:ev.summary, desc:'', url:'', icon:'', category:'カレンダー', status:'todo', priority:'medium', due, tags:[], starred:false, createdAt:new Date().toISOString(), calUid:uidKey});
+    }
     count++;
   }
   save(); render(); updateAlarmBadge();
   closeCalImportModal();
-  toast(`${count}件をインポートしました`,'📅');
+  const msg = skipped > 0 ? `${count}件をインポートしました（${skipped}件は追加済みのためスキップ）` : `${count}件をインポートしました`;
+  toast(msg, count > 0 ? '✅' : 'ℹ️');
 }
 
 // ── Alarm Modal ──────────────────────────────
