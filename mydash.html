@@ -381,6 +381,127 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   min-width: 80px;
   white-space: nowrap;
 }
+.main-tabs { display: flex; gap: 2px; align-items: center; }
+.main-tab {
+  padding: 5px 14px; border-radius: var(--radius-sm);
+  border: none; background: none; cursor: pointer;
+  font-size: 13px; font-weight: 600; color: var(--text-muted);
+  font-family: inherit; transition: all 0.15s; white-space: nowrap;
+}
+.main-tab:hover { color: var(--text); background: var(--hover); }
+.main-tab.active { background: var(--accent); color: #fff; }
+
+/* ── 今日ビュー ────────────────────────── */
+.today-view { padding: 16px 20px; max-width: 800px; }
+.today-view-header { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+.today-allday { margin-bottom: 16px; }
+.today-allday-label {
+  font-size: 10.5px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+}
+.today-allday-items { display: flex; flex-direction: column; gap: 5px; }
+.today-allday-card {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 8px 12px; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.today-allday-card:hover { border-color: var(--accent); }
+.today-allday-card.done { opacity: 0.45; }
+.today-timeline { display: flex; flex-direction: column; gap: 0; }
+.today-timeline-label {
+  font-size: 10.5px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.today-slot {
+  display: flex; gap: 12px; align-items: flex-start;
+  min-height: 52px; position: relative;
+}
+.today-slot::before {
+  content: ''; position: absolute; left: 44px; top: 24px;
+  bottom: -4px; width: 1px; background: var(--border);
+}
+.today-slot:last-child::before { display: none; }
+.today-time {
+  width: 44px; font-size: 11px; color: var(--text-muted);
+  padding-top: 4px; flex-shrink: 0; text-align: right;
+}
+.today-event-card {
+  flex: 1; background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 8px 12px; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  transition: border-color 0.15s; border-left: 3px solid var(--set);
+}
+.today-event-card:hover { border-color: var(--accent); }
+.today-event-card.today-task { border-left-color: var(--task); }
+.today-event-title { flex: 1; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.today-event-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+.today-launch-btn {
+  background: var(--accent); color: #fff; border: none; border-radius: 6px;
+  padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer;
+  font-family: inherit; flex-shrink: 0; white-space: nowrap;
+}
+.today-empty { padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 13px; }
+.today-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.today-nav-btn {
+  background: none; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text-muted); cursor: pointer; font-size: 20px; line-height: 1;
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s; flex-shrink: 0;
+}
+.today-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+.today-nav-date {
+  font-size: 15px; font-weight: 700; cursor: pointer; position: relative;
+  display: flex; align-items: center; gap: 6px; flex: 1;
+  border-radius: var(--radius-sm); padding: 3px 8px;
+  transition: background 0.12s;
+}
+.today-nav-date:hover { background: var(--hover); }
+.today-badge {
+  font-size: 10px; font-weight: 700; background: var(--accent);
+  color: #fff; border-radius: 4px; padding: 1px 6px;
+}
+.today-nav-today {
+  background: none; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text-muted); cursor: pointer; font-size: 11px; padding: 3px 10px;
+  font-family: inherit; transition: all 0.12s;
+}
+.today-nav-today:hover { border-color: var(--accent); color: var(--accent); }
+.date-picker-btn {
+  display: inline-flex; align-items: center; gap: 6px; position: relative;
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 7px 12px; cursor: pointer; font-size: 13px; color: var(--text);
+  transition: border-color 0.12s; font-family: inherit; white-space: nowrap;
+}
+.date-picker-btn:hover { border-color: var(--accent); }
+.date-picker-btn input[type="date"] {
+  position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%;
+  cursor: pointer; border: none; background: none;
+}
+
+/* ── タイムライングリッド ─────────────────── */
+.tl-wrap { overflow-y: auto; padding-bottom: 24px; }
+.tl-grid { position: relative; }
+.tl-hour-row { position: absolute; left: 0; right: 0; display: flex; align-items: flex-start; pointer-events: none; }
+.tl-hour-label { width: 48px; text-align: right; font-size: 10px; color: var(--text-muted); padding-right: 10px; margin-top: -6px; flex-shrink: 0; }
+.tl-hour-line { flex: 1; height: 1px; background: var(--border); }
+.tl-half-row { position: absolute; right: 0; height: 1px; background: var(--border); opacity: 0.35; left: 48px; pointer-events: none; }
+.tl-now-line { position: absolute; right: 0; left: 42px; height: 2px; background: #ef5350; z-index: 10; pointer-events: none; }
+.tl-now-dot { position: absolute; left: 36px; width: 12px; height: 12px; border-radius: 50%; background: #ef5350; z-index: 11; pointer-events: none; margin-top: -5px; }
+.tl-events-area { position: absolute; top: 0; bottom: 0; left: 56px; right: 0; }
+.tl-event-block {
+  position: absolute; left: 0; right: 6px;
+  border-radius: 7px; padding: 5px 10px; cursor: pointer;
+  min-height: 28px; display: flex; align-items: center; gap: 8px;
+  overflow: hidden; z-index: 5;
+  border-left: 3px solid var(--set);
+  background: rgba(128,203,196,0.15);
+  backdrop-filter: blur(2px);
+  transition: filter 0.12s;
+}
+.tl-event-block:hover { filter: brightness(1.15); }
+.tl-event-block .tl-ev-title { font-size: 12px; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tl-event-block .tl-ev-sub { font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
 .input-mode-wrap { display: flex; align-items: center; gap: 6px; flex: 1; max-width: 300px; }
 .input-mode-btn {
   width: 30px; height: 30px; border-radius: var(--radius-sm);
@@ -1166,7 +1287,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.7</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.9</div>
   </div>
 </aside>
 
@@ -1316,7 +1437,10 @@ body.hide-server .launch-btn { display: none !important; }
   <!-- Toolbar -->
   <div class="toolbar">
     <button class="hamburger-btn" onclick="toggleSidebar()" title="メニュー"><span class="app-icon" style="-webkit-mask-image:var(--icon-hamburger);mask-image:var(--icon-hamburger)"></span></button>
-    <div class="toolbar-title" id="toolbar-title">すべて</div>
+    <div class="main-tabs">
+      <button class="main-tab" id="tab-today" onclick="setMainTab('today')">今日</button>
+      <button class="main-tab active" id="tab-library" onclick="setMainTab('library')">ライブラリ</button>
+    </div>
     <div class="input-mode-wrap">
       <button class="input-mode-btn" id="input-mode-btn" onclick="cycleInputMode()" title="モード切り替え（検索 / メモ / タスク）"><span class="app-icon" style="-webkit-mask-image:var(--icon-search);mask-image:var(--icon-search);width:15px;height:15px"></span></button>
       <div class="search-wrap">
@@ -1489,14 +1613,17 @@ body.hide-server .launch-btn { display: none !important; }
         </div>
         <div id="f-alarm-settings" style="display:none;margin-top:10px">
           <div style="display:flex;flex-direction:column;gap:10px">
-            <select class="form-select" id="f-alarm-type" onchange="onSetAlarmTypeChange()">
-              <option value="daily">毎日</option>
-              <option value="weekly">毎週</option>
-              <option value="biweekly">隔週</option>
-              <option value="monthly-date">毎月（日付）</option>
-              <option value="monthly-weekday">毎月（第N曜日）</option>
-              <option value="yearly">毎年</option>
-            </select>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input class="form-input" type="number" id="f-alarm-interval" min="1" max="99" value="1" style="width:65px;text-align:center" oninput="onSetAlarmTypeChange()">
+              <select class="form-select" id="f-alarm-unit" onchange="onSetAlarmTypeChange()">
+                <option value="day">日ごと</option>
+                <option value="week">週ごと</option>
+                <option value="month-date">ヶ月ごと（日付）</option>
+                <option value="month-weekday">ヶ月ごと（曜日）</option>
+                <option value="year">年ごと</option>
+                <option value="once">一度だけ</option>
+              </select>
+            </div>
             <div id="f-alarm-days-group" style="display:none">
               <div class="day-picker">
                 <button type="button" class="day-btn" onclick="toggleSetAlarmDay(0,this)">日</button>
@@ -1537,6 +1664,12 @@ body.hide-server .launch-btn { display: none !important; }
                 <input class="form-input" type="number" id="f-alarm-yearly-day" min="1" max="31" value="1" style="width:60px">
                 <span style="font-size:12px;color:var(--text-muted)">日</span>
               </div>
+            </div>
+            <div id="f-alarm-once-group" style="display:none">
+              <button type="button" class="date-picker-btn" onclick="document.getElementById('f-alarm-once-date').showPicker?.()">
+                📅 <span id="f-alarm-once-disp">日付を選択</span>
+                <input type="date" id="f-alarm-once-date" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0" onchange="document.getElementById('f-alarm-once-disp').textContent=this.value">
+              </button>
             </div>
             <input class="form-input" type="time" id="f-alarm-time" value="08:00" style="width:120px">
           </div>
@@ -1741,6 +1874,8 @@ let db = { items: [] };
 let state = {
   filter: 'all',
   view: 'grid',
+  mainTab: 'library',
+  todayViewDate: new Date().toISOString().slice(0,10),
   editId: null,
   tags: [],
   filterTags: [],
@@ -1775,6 +1910,8 @@ function load() {
   if (db.settings.alarmOffsetMin === undefined) db.settings.alarmOffsetMin = 0;
   if (db.settings.alarmMuted === undefined) db.settings.alarmMuted = false;
   if (db.settings.showServerFeatures === undefined) db.settings.showServerFeatures = (SERVER_BASE !== null);
+  if (!db.settings.workStart) db.settings.workStart = '09:00';
+  if (!db.settings.workEnd)   db.settings.workEnd   = '19:00';
   if (!db.settings.priorityIcons) db.settings.priorityIcons = { low:'▂', medium:'▄', high:'█' };
   if (!db.settings.view) db.settings.view = 'grid';
   if (!db.settings.sort) db.settings.sort = 'manual';
@@ -2049,6 +2186,7 @@ function render() {
   updateSelectBar();
   updateTaskFilterRow();
   updateSetFilterRow();
+  if (state.mainTab === 'today') { renderTodayView(); return; }
   const items = filteredItems();
   const el = contentEl;
   el.classList.toggle('select-mode', state.selectMode);
@@ -2413,8 +2551,7 @@ function setFilter(f) {
   document.querySelectorAll('.sidebar-item').forEach(el => {
     el.classList.toggle('active', el.dataset.filter === f);
   });
-  const label = f.startsWith('cat:') ? (f.slice(4) ? '● ' + esc(f.slice(4)) : '○ 未設定') : FILTER_LABELS[f] || esc(f);
-  document.getElementById('toolbar-title').innerHTML = label;
+  if (state.mainTab === 'today') setMainTab('library');
   render();
 }
 
@@ -2461,6 +2598,166 @@ function onSortChange() {
   db.settings.sort = document.getElementById('sort-select').value;
   save();
   render();
+}
+
+function setMainTab(tab) {
+  state.mainTab = tab;
+  document.getElementById('tab-today').classList.toggle('active', tab === 'today');
+  document.getElementById('tab-library').classList.toggle('active', tab === 'library');
+  // 今日タブ中はツールバー行2・サイドバーフィルターを薄くする
+  const row2 = document.querySelector('.toolbar.toolbar-row2');
+  if (row2) row2.style.opacity = tab === 'today' ? '0.35' : '';
+  render();
+}
+
+function moveTodayView(delta) {
+  const d = new Date(state.todayViewDate);
+  d.setDate(d.getDate() + delta);
+  state.todayViewDate = d.toISOString().slice(0, 10);
+  renderTodayView();
+}
+function jumpTodayView(dateStr) {
+  if (dateStr) state.todayViewDate = dateStr;
+  renderTodayView();
+}
+function resetTodayView() {
+  state.todayViewDate = new Date().toISOString().slice(0, 10);
+  renderTodayView();
+}
+
+function renderTodayView() {
+  const el = document.getElementById('content');
+  const todayStr = state.todayViewDate;
+  const now = new Date(todayStr + 'T00:00:00');
+  const isToday = todayStr === new Date().toISOString().slice(0, 10);
+  const dow = ['日','月','火','水','木','金','土'][now.getDay()];
+  const dateLabel = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${dow}）`;
+
+  const workStart = db.settings.workStart || '09:00';
+  const workEnd   = db.settings.workEnd   || '19:00';
+  const [sh, sm] = workStart.split(':').map(Number);
+  const [eh, em] = workEnd.split(':').map(Number);
+  const startMin  = sh * 60 + sm;
+  const endMin    = eh * 60 + em;
+  const HOUR_H    = 64; // px per hour
+  const gridH     = (endMin - startMin) / 60 * HOUR_H;
+
+  // 時刻ありセット（once + 繰り返し）
+  const timedItems = db.items
+    .filter(i => i.alarm?.enabled && (
+      (i.alarm.schedule.type === 'once' && i.alarm.schedule.date === todayStr) ||
+      (i.alarm.schedule.type !== 'once' && (() => {
+        const s = i.alarm.schedule;
+        if (s.type === 'daily') return true;
+        if (s.type === 'weekly' || s.type === 'biweekly') return (s.days||[]).includes(now.getDay());
+        if (s.type === 'monthly-date') return now.getDate() === (s.monthDay||1);
+        if (s.type === 'yearly') return now.getMonth()+1 === s.month && now.getDate() === s.day;
+        return false;
+      })())
+    ))
+    .sort((a, b) => (a.alarm.schedule.time||'').localeCompare(b.alarm.schedule.time||''));
+
+  // 終日タスク
+  const allDayTasks = db.items
+    .filter(i => i.type === 'task' && (i.due || i.dueDate) === todayStr && i.status !== 'done')
+    .sort((a, b) => a.title.localeCompare(b.title, 'ja'));
+
+  // グリッドライン（1時間 + 30分）
+  let gridLines = '';
+  for (let m = 0; m <= endMin - startMin; m += 30) {
+    const top = m / 60 * HOUR_H;
+    const isHour = m % 60 === 0;
+    const hh = Math.floor((startMin + m) / 60);
+    const mm = (startMin + m) % 60;
+    const label = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+    if (isHour) {
+      gridLines += `<div class="tl-hour-row" style="top:${top}px">
+        <span class="tl-hour-label">${label}</span>
+        <div class="tl-hour-line"></div>
+      </div>`;
+    } else {
+      gridLines += `<div class="tl-half-row" style="top:${top}px"></div>`;
+    }
+  }
+
+  // 現在時刻ライン（今日のみ）
+  const realNow = new Date();
+  const nowMin  = realNow.getHours() * 60 + realNow.getMinutes();
+  const showNow = isToday && nowMin >= startMin && nowMin <= endMin;
+  const nowTop  = (nowMin - startMin) / 60 * HOUR_H;
+  const nowLine = showNow
+    ? `<div class="tl-now-dot" id="tl-now-dot" style="top:${nowTop}px"></div>
+       <div class="tl-now-line" id="tl-now-line" style="top:${nowTop}px"></div>`
+    : '';
+
+  // イベントブロック
+  let eventsHtml = '';
+  timedItems.forEach(item => {
+    const [ih, im] = (item.alarm.schedule.time||'00:00').split(':').map(Number);
+    const iMin = ih * 60 + im;
+    if (iMin < startMin || iMin > endMin) return;
+    const top = (iMin - startMin) / 60 * HOUR_H;
+    const ic = iconHtml(item, 'sm');
+    const sub = item.alarm.schedule.type === 'once' ? '単発' : '繰り返し';
+    eventsHtml += `<div class="tl-event-block" style="top:${top}px" onclick="editItem('${item.id}')">
+      ${ic}
+      <span class="tl-ev-title">${esc(item.title)}</span>
+      <span class="tl-ev-sub">${sub}</span>
+      <button class="today-launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
+    </div>`;
+  });
+
+  // 終日エリア HTML
+  let allDayHtml = '';
+  if (allDayTasks.length) {
+    allDayHtml = `<div class="today-allday">
+      <div class="today-allday-label">終日</div>
+      <div class="today-allday-items">` +
+      allDayTasks.map(item => {
+        const ic = iconHtml(item, 'sm');
+        return `<div class="today-allday-card" onclick="editItem('${item.id}')">${ic}<span class="today-event-title">${esc(item.title)}</span></div>`;
+      }).join('') +
+    `</div></div>`;
+  }
+
+  if (!timedItems.length && !allDayTasks.length) {
+    el.innerHTML = `<div class="today-view"><div class="today-view-header">${dateLabel}</div><div class="today-empty">今日の予定はありません</div></div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="today-view">
+    <div class="today-nav">
+      <button class="today-nav-btn" onclick="moveTodayView(-1)" title="前の日">‹</button>
+      <label class="today-nav-date" title="日付を選択" onclick="document.getElementById('today-date-input').showPicker?.()">
+        ${dateLabel}${isToday ? '<span class="today-badge">今日</span>' : ''}
+        <input type="date" value="${todayStr}" onchange="jumpTodayView(this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none" id="today-date-input">
+      </label>
+      <button class="today-nav-btn" onclick="moveTodayView(1)" title="次の日">›</button>
+      ${!isToday ? `<button class="today-nav-today" onclick="resetTodayView()">今日に戻る</button>` : ''}
+    </div>
+    ${allDayHtml}
+    <div class="tl-wrap">
+      <div class="tl-grid" style="height:${gridH}px">
+        ${gridLines}
+        ${nowLine}
+        <div class="tl-events-area">${eventsHtml}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // 現在時刻ラインを1分ごとに更新
+  if (window._tlTimer) clearInterval(window._tlTimer);
+  if (showNow) {
+    window._tlTimer = setInterval(() => {
+      const n = new Date();
+      const nMin = n.getHours() * 60 + n.getMinutes();
+      const nTop = (nMin - startMin) / 60 * HOUR_H;
+      const dot = document.getElementById('tl-now-dot');
+      const line = document.getElementById('tl-now-line');
+      if (dot)  dot.style.top  = nTop + 'px';
+      if (line) line.style.top = nTop + 'px';
+    }, 60000);
+  }
 }
 
 function setView(v) {
@@ -2817,7 +3114,17 @@ function editItem(id) {
     onSetAlarmToggle(enabledEl.checked);
     if (al) {
       const s = al.schedule || {};
-      document.getElementById('f-alarm-type').value = s.type || 'weekly';
+      // schedType → unit / interval
+      let _unit = 'week', _intv = 1;
+      if (s.type === 'daily')            { _unit = 'day'; }
+      else if (s.type === 'weekly')      { _unit = 'week';         _intv = s.interval || 1; }
+      else if (s.type === 'biweekly')    { _unit = 'week';         _intv = 2; }
+      else if (s.type === 'monthly-date')    { _unit = 'month-date'; }
+      else if (s.type === 'monthly-weekday') { _unit = 'month-weekday'; }
+      else if (s.type === 'yearly')      { _unit = 'year'; }
+      else if (s.type === 'once')        { _unit = 'once'; }
+      document.getElementById('f-alarm-unit').value = _unit;
+      document.getElementById('f-alarm-interval').value = _intv;
       document.getElementById('f-alarm-time').value = s.time || '08:00';
       onSetAlarmTypeChange();
       // 曜日ボタン（weekly/biweekly）
@@ -2837,6 +3144,11 @@ function editItem(id) {
       // yearly
       if (s.month) document.getElementById('f-alarm-yearly-month').value = s.month;
       if (s.day) document.getElementById('f-alarm-yearly-day').value = s.day;
+      // once
+      if (s.date) {
+        document.getElementById('f-alarm-once-date').value = s.date;
+        document.getElementById('f-alarm-once-disp').textContent = s.date;
+      }
     } else {
       onSetAlarmTypeChange();
     }
@@ -2868,20 +3180,31 @@ function saveItem() {
     // アラーム設定を保存
     const alarmEnabled = document.getElementById('f-alarm-enabled').checked;
     if (alarmEnabled) {
-      const schedType = document.getElementById('f-alarm-type').value;
+      const unit = document.getElementById('f-alarm-unit').value;
+      const intervalN = parseInt(document.getElementById('f-alarm-interval')?.value) || 1;
       const time = document.getElementById('f-alarm-time').value || '08:00';
       const days = [...document.querySelectorAll('#f-alarm-days-group .day-btn.selected')].map(b =>
         [...b.parentElement.children].indexOf(b));
-      const schedule = { type: schedType, time };
-      if (['weekly','biweekly'].includes(schedType)) schedule.days = days;
-      if (schedType === 'monthly-date') schedule.monthDay = parseInt(document.getElementById('f-alarm-monthday').value) || 1;
-      if (schedType === 'monthly-weekday') {
-        schedule.weekdayN = parseInt(document.getElementById('f-alarm-weekday-n').value) || 1;
-        schedule.weekday = _setAlarmMWDay;
-      }
-      if (schedType === 'yearly') {
-        schedule.month = parseInt(document.getElementById('f-alarm-yearly-month').value) || 1;
-        schedule.day = parseInt(document.getElementById('f-alarm-yearly-day').value) || 1;
+      let schedule;
+      if (unit === 'once') {
+        schedule = { type: 'once', time, date: document.getElementById('f-alarm-once-date').value };
+      } else if (unit === 'day') {
+        schedule = { type: 'daily', time };
+      } else if (unit === 'week') {
+        if (intervalN === 2) {
+          schedule = { type: 'biweekly', time, days, biweeklyRef: new Date().toISOString().slice(0,10) };
+        } else {
+          schedule = { type: 'weekly', time, days };
+          if (intervalN > 2) schedule.interval = intervalN;
+        }
+      } else if (unit === 'month-date') {
+        schedule = { type: 'monthly-date', time, monthDay: parseInt(document.getElementById('f-alarm-monthday').value) || 1 };
+      } else if (unit === 'month-weekday') {
+        schedule = { type: 'monthly-weekday', time, weekdayN: parseInt(document.getElementById('f-alarm-weekday-n').value) || 1, weekday: _setAlarmMWDay };
+      } else if (unit === 'year') {
+        schedule = { type: 'yearly', time, month: parseInt(document.getElementById('f-alarm-yearly-month').value) || 1, day: parseInt(document.getElementById('f-alarm-yearly-day').value) || 1 };
+      } else {
+        schedule = { type: 'weekly', time, days };
       }
       // 既存アラームの lastFired を引き継ぐ
       const existing = state.editId ? db.items.find(i => i.id === state.editId) : null;
@@ -4022,7 +4345,7 @@ function alarmSchedDesc(alarm) {
   const offStr = off === 0 ? '' : off > 0 ? ` (+${off}分)` : ` (${Math.abs(off)}分前)`;
   switch (s.type) {
     case 'daily':            return `毎日 ${t}${offStr}`;
-    case 'weekly':           return `毎週 ${daysStr} ${t}${offStr}`;
+    case 'weekly':           { const intv = s.interval||1; return `${intv>1?intv+'週ごと':'毎週'} ${daysStr} ${t}${offStr}`; }
     case 'biweekly':         return `隔週 ${daysStr} ${t}${offStr}`;
     case 'monthly-date':     return `毎月${s.monthDay}日 ${t}${offStr}`;
     case 'monthly-weekday':  return `毎月第${s.weekdayN==-1?'最終':s.weekdayN}${ALARM_DAYS[s.weekday]??'?'} ${t}${offStr}`;
@@ -4053,7 +4376,14 @@ function shouldFireAlarm(alarm, now) {
 
   switch (s.type) {
     case 'daily': return true;
-    case 'weekly': return (s.days||[]).includes(now.getDay());
+    case 'weekly': {
+      if (!(s.days||[]).includes(now.getDay())) return false;
+      const intv = s.interval || 1;
+      if (intv <= 1) return true;
+      const refMonday = new Date(2000, 0, 3);
+      const weeksDiff = Math.round((now - refMonday) / (7*24*60*60*1000));
+      return weeksDiff % intv === 0;
+    }
     case 'biweekly': {
       if (!(s.days||[]).includes(now.getDay())) return false;
       if (!s.biweeklyRef) return true;
@@ -5327,6 +5657,18 @@ function openAlarmForm(id) {
   const sets = db.items.filter(i => i.type === 'set');
   const setOpts = sets.map(s => `<option value="${s.id}" ${alarm?.action?.targetId===s.id?'selected':''}>${esc(s.title)}</option>`).join('');
 
+  // schedType → unit / interval
+  let _afUnit = 'week', _afInterval = 1;
+  if (schedType === 'daily')           { _afUnit = 'day';          _afInterval = 1; }
+  else if (schedType === 'weekly')     { _afUnit = 'week';         _afInterval = alarm?.schedule?.interval || 1; }
+  else if (schedType === 'biweekly')   { _afUnit = 'week';         _afInterval = 2; }
+  else if (schedType === 'monthly-date')    { _afUnit = 'month-date';  _afInterval = 1; }
+  else if (schedType === 'monthly-weekday') { _afUnit = 'month-weekday'; _afInterval = 1; }
+  else if (schedType === 'yearly')     { _afUnit = 'year';         _afInterval = 1; }
+  else if (schedType === 'once')       { _afUnit = 'once';         _afInterval = 1; }
+  const _afOnceDate = alarm?.schedule?.date || new Date().toISOString().slice(0,10);
+  const _afBiRef   = alarm?.schedule?.biweeklyRef || new Date().toISOString().slice(0,10);
+
   document.getElementById('alarm-modal-body').innerHTML = `
     <div class="form-group">
       <div class="form-label">アラーム名</div>
@@ -5334,30 +5676,29 @@ function openAlarmForm(id) {
     </div>
     <div class="form-group">
       <div class="form-label">繰り返し</div>
-      <select class="form-select" id="af-type" onchange="onAlarmTypeChange()">
-        <option value="daily"            ${schedType==='daily'?'selected':''}>毎日</option>
-        <option value="weekly"           ${schedType==='weekly'?'selected':''}>毎週</option>
-        <option value="biweekly"         ${schedType==='biweekly'?'selected':''}>隔週</option>
-        <option value="monthly-date"     ${schedType==='monthly-date'?'selected':''}>毎月（日付）</option>
-        <option value="monthly-weekday"  ${schedType==='monthly-weekday'?'selected':''}>毎月（第N曜日）</option>
-        <option value="yearly"           ${schedType==='yearly'?'selected':''}>毎年</option>
-      </select>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="form-input" type="number" id="af-interval" min="1" max="99" value="${_afInterval}" style="width:65px;text-align:center${_afUnit==='once'?';display:none':''}" oninput="onAlarmTypeChange()">
+        <select class="form-select" id="af-unit" onchange="onAlarmTypeChange()">
+          <option value="day"           ${_afUnit==='day'?'selected':''}>日ごと</option>
+          <option value="week"          ${_afUnit==='week'?'selected':''}>週ごと</option>
+          <option value="month-date"    ${_afUnit==='month-date'?'selected':''}>ヶ月ごと（日付）</option>
+          <option value="month-weekday" ${_afUnit==='month-weekday'?'selected':''}>ヶ月ごと（曜日）</option>
+          <option value="year"          ${_afUnit==='year'?'selected':''}>年ごと</option>
+          <option value="once"          ${_afUnit==='once'?'selected':''}>一度だけ</option>
+        </select>
+      </div>
     </div>
-    <div class="form-group" id="af-days-group">
+    <div class="form-group" id="af-days-group"${_afUnit!=='week'?' style="display:none"':''}>
       <div class="form-label">曜日</div>
       <div class="day-picker">${ALARM_DAYS.map((d,i)=>`
         <button type="button" class="day-btn${_alarmFormDays.includes(i)?' selected':''}"
           onclick="toggleAlarmDay(${i},this)">${d}</button>`).join('')}</div>
     </div>
-    <div class="form-group" id="af-biweekly-group" style="display:none">
-      <div class="form-label">隔週の基準日（この日の週から開始）</div>
-      <input class="form-input" type="date" id="af-biweekly-ref" value="${alarm?.schedule?.biweeklyRef||new Date().toISOString().slice(0,10)}">
-    </div>
-    <div class="form-group" id="af-monthday-group" style="display:none">
+    <div class="form-group" id="af-monthday-group"${_afUnit!=='month-date'?' style="display:none"':''}>
       <div class="form-label">毎月何日</div>
       <input class="form-input" type="number" id="af-monthday" min="1" max="31" value="${alarm?.schedule?.monthDay||1}" style="width:90px">
     </div>
-    <div class="form-group" id="af-monthweekday-group" style="display:none">
+    <div class="form-group" id="af-monthweekday-group"${_afUnit!=='month-weekday'?' style="display:none"':''}>
       <div class="form-label">第何週・曜日</div>
       <div style="display:flex;gap:8px;align-items:center">
         <select class="form-select" id="af-weekday-n" style="width:100px">
@@ -5369,7 +5710,7 @@ function openAlarmForm(id) {
             onclick="selectMonthWeekday(${i},this)">${d}</button>`).join('')}</div>
       </div>
     </div>
-    <div class="form-group" id="af-yearly-group" style="display:none">
+    <div class="form-group" id="af-yearly-group"${_afUnit!=='year'?' style="display:none"':''}>
       <div class="form-label">毎年何月何日</div>
       <div style="display:flex;gap:8px;align-items:center">
         <select class="form-select" id="af-yearly-month" style="width:90px">
@@ -5379,6 +5720,14 @@ function openAlarmForm(id) {
         <span style="color:var(--text-muted);font-size:13px">日</span>
       </div>
     </div>
+    <div class="form-group" id="af-once-group"${_afUnit!=='once'?' style="display:none"':''}>
+      <div class="form-label">日付</div>
+      <button type="button" class="date-picker-btn" onclick="document.getElementById('af-once-date').showPicker?.()">
+        📅 <span id="af-once-disp">${_afOnceDate}</span>
+        <input type="date" id="af-once-date" value="${_afOnceDate}" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0" onchange="document.getElementById('af-once-disp').textContent=this.value">
+      </button>
+    </div>
+    <input type="hidden" id="af-biweekly-ref" value="${_afBiRef}">
     <div class="form-group">
       <div class="form-label">時刻</div>
       <input class="form-input" type="time" id="af-time" value="${alarm?.schedule?.time||'09:00'}">
@@ -5411,16 +5760,19 @@ function openAlarmForm(id) {
 let _alarmMonthWeekday = 1; // 毎月第N曜日用の選択中の曜日
 
 function onAlarmTypeChange() {
-  const type = document.getElementById('af-type').value;
-  const show = id => document.getElementById(id).style.display = '';
-  const hide = id => document.getElementById(id).style.display = 'none';
-  // まず全部隠す
-  ['af-days-group','af-biweekly-group','af-monthday-group','af-monthweekday-group','af-yearly-group'].forEach(hide);
-  if (type === 'weekly' || type === 'biweekly') show('af-days-group');
-  if (type === 'biweekly') show('af-biweekly-group');
-  if (type === 'monthly-date') show('af-monthday-group');
-  if (type === 'monthly-weekday') show('af-monthweekday-group');
-  if (type === 'yearly') show('af-yearly-group');
+  const unit = document.getElementById('af-unit')?.value;
+  if (!unit) return;
+  const show = id => { const el=document.getElementById(id); if(el) el.style.display=''; };
+  const hide = id => { const el=document.getElementById(id); if(el) el.style.display='none'; };
+  // interval入力は「一度だけ」のとき非表示
+  const intEl = document.getElementById('af-interval');
+  if (intEl) intEl.style.display = unit === 'once' ? 'none' : '';
+  ['af-days-group','af-monthday-group','af-monthweekday-group','af-yearly-group','af-once-group'].forEach(hide);
+  if (unit === 'week')          show('af-days-group');
+  if (unit === 'month-date')    show('af-monthday-group');
+  if (unit === 'month-weekday') show('af-monthweekday-group');
+  if (unit === 'year')          show('af-yearly-group');
+  if (unit === 'once')          show('af-once-group');
 }
 
 function selectMonthWeekday(idx, btn) {
@@ -5452,14 +5804,18 @@ function onSetAlarmToggle(enabled) {
 }
 
 function onSetAlarmTypeChange() {
-  const type = document.getElementById('f-alarm-type').value;
+  const unit = document.getElementById('f-alarm-unit')?.value;
+  if (!unit) return;
   const show = id => { const el=document.getElementById(id); if(el) el.style.display=''; };
   const hide = id => { const el=document.getElementById(id); if(el) el.style.display='none'; };
-  ['f-alarm-days-group','f-alarm-monthday-group','f-alarm-monthweekday-group','f-alarm-yearly-group'].forEach(hide);
-  if (['weekly','biweekly'].includes(type)) show('f-alarm-days-group');
-  if (type === 'monthly-date') show('f-alarm-monthday-group');
-  if (type === 'monthly-weekday') show('f-alarm-monthweekday-group');
-  if (type === 'yearly') show('f-alarm-yearly-group');
+  const intEl = document.getElementById('f-alarm-interval');
+  if (intEl) intEl.style.display = unit === 'once' ? 'none' : '';
+  ['f-alarm-days-group','f-alarm-monthday-group','f-alarm-monthweekday-group','f-alarm-yearly-group','f-alarm-once-group'].forEach(hide);
+  if (unit === 'week')          show('f-alarm-days-group');
+  if (unit === 'month-date')    show('f-alarm-monthday-group');
+  if (unit === 'month-weekday') show('f-alarm-monthweekday-group');
+  if (unit === 'year')          show('f-alarm-yearly-group');
+  if (unit === 'once')          show('f-alarm-once-group');
 }
 
 function toggleSetAlarmDay(idx, btn) {
@@ -5476,29 +5832,40 @@ function selectSetAlarmMWDay(idx, btn) {
 function saveAlarm() {
   const name = document.getElementById('af-name').value.trim();
   if (!name) { toast('アラーム名を入力してください', '⚠️'); return; }
-  const schedType = document.getElementById('af-type').value;
+  const unit = document.getElementById('af-unit').value;
+  const intervalN = parseInt(document.getElementById('af-interval')?.value) || 1;
   const time = document.getElementById('af-time').value;
   if (!time) { toast('時刻を入力してください', '⚠️'); return; }
-  const needsDays = ['weekly','biweekly'].includes(schedType);
-  if (needsDays && _alarmFormDays.length === 0) { toast('曜日を選択してください', '⚠️'); return; }
+
+  let schedule;
+  if (unit === 'once') {
+    const date = document.getElementById('af-once-date').value;
+    if (!date) { toast('日付を選択してください', '⚠️'); return; }
+    schedule = { type: 'once', time, date };
+  } else if (unit === 'day') {
+    schedule = { type: 'daily', time };
+  } else if (unit === 'week') {
+    if (_alarmFormDays.length === 0) { toast('曜日を選択してください', '⚠️'); return; }
+    if (intervalN === 2) {
+      schedule = { type: 'biweekly', time, days: [..._alarmFormDays], biweeklyRef: document.getElementById('af-biweekly-ref').value };
+    } else {
+      schedule = { type: 'weekly', time, days: [..._alarmFormDays] };
+      if (intervalN > 2) schedule.interval = intervalN;
+    }
+  } else if (unit === 'month-date') {
+    schedule = { type: 'monthly-date', time, monthDay: parseInt(document.getElementById('af-monthday').value) || 1 };
+  } else if (unit === 'month-weekday') {
+    schedule = { type: 'monthly-weekday', time, weekdayN: parseInt(document.getElementById('af-weekday-n').value), weekday: _alarmMonthWeekday };
+  } else if (unit === 'year') {
+    schedule = { type: 'yearly', time, month: parseInt(document.getElementById('af-yearly-month').value), day: parseInt(document.getElementById('af-yearly-day').value) || 1 };
+  } else {
+    schedule = { type: 'weekly', time, days: [..._alarmFormDays] };
+  }
 
   const actionType = document.getElementById('af-action-type').value;
   const action = { type: actionType };
   if (actionType === 'set') action.targetId = document.getElementById('af-set-target').value;
   else if (actionType === 'url') action.url = document.getElementById('af-url').value.trim();
-
-  const schedule = { type: schedType, time };
-  if (needsDays) schedule.days = [..._alarmFormDays];
-  if (schedType === 'biweekly') schedule.biweeklyRef = document.getElementById('af-biweekly-ref').value;
-  if (schedType === 'monthly-date') schedule.monthDay = parseInt(document.getElementById('af-monthday').value) || 1;
-  if (schedType === 'monthly-weekday') {
-    schedule.weekdayN = parseInt(document.getElementById('af-weekday-n').value);
-    schedule.weekday = _alarmMonthWeekday;
-  }
-  if (schedType === 'yearly') {
-    schedule.month = parseInt(document.getElementById('af-yearly-month').value);
-    schedule.day = parseInt(document.getElementById('af-yearly-day').value) || 1;
-  }
 
   if (!Array.isArray(db.alarms)) db.alarms = [];
 
