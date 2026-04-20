@@ -17,4 +17,27 @@
       console.warn('[MyDash] セット起動失敗:', err.message);
     }
   });
+
+  window.addEventListener('mydash-window-saver-get-sessions', () => {
+    try {
+      chrome.runtime.sendMessage({ type: 'WS_GET_SESSIONS' }, (resp) => {
+        const sessions = Array.isArray(resp) ? resp : (resp?.sessions ?? []);
+        window.postMessage({ type: 'WINDOW_SAVER_SESSIONS', sessions }, '*');
+      });
+    } catch (err) {
+      console.warn('[MyDash] WindowSaver GET_SESSIONS失敗:', err.message);
+      window.postMessage({ type: 'WINDOW_SAVER_SESSIONS', sessions: [] }, '*');
+    }
+  });
+
+  window.addEventListener('mydash-window-saver-restore', (e) => {
+    try {
+      chrome.runtime.sendMessage({ type: 'WS_RESTORE_SESSION', session: e.detail.session }, (resp) => {
+        window.postMessage({ type: 'WINDOW_SAVER_RESTORED', success: !!resp?.success }, '*');
+      });
+    } catch (err) {
+      console.warn('[MyDash] WindowSaver RESTORE_SESSION失敗:', err.message);
+      window.postMessage({ type: 'WINDOW_SAVER_RESTORED', success: false }, '*');
+    }
+  });
 })();

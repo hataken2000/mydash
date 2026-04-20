@@ -1,8 +1,20 @@
-chrome.runtime.onMessage.addListener((msg) => {
+const WINDOW_SAVER_EXT_ID = 'jjfmikbhobeolfbihplmklplpfmmfhnn';
+
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg.type === 'SLACK_SEND') {
     openSlackAndSend(msg.url, msg.message);
   } else if (msg.type === 'OPEN_SET') {
     openSetInTabGroup(msg.urls, msg.title);
+  } else if (msg.type === 'WS_GET_SESSIONS') {
+    chrome.runtime.sendMessage(WINDOW_SAVER_EXT_ID, { type: 'GET_SESSIONS' }, (resp) => {
+      sendResponse(resp ?? { sessions: [] });
+    });
+    return true;
+  } else if (msg.type === 'WS_RESTORE_SESSION') {
+    chrome.runtime.sendMessage(WINDOW_SAVER_EXT_ID, { type: 'RESTORE_SESSION', session: msg.session }, (resp) => {
+      sendResponse(resp ?? { success: false });
+    });
+    return true;
   }
 });
 

@@ -1281,6 +1281,9 @@ body.hide-server .launch-btn { display: none !important; }
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('slack')" title="Slack送信追加">＋</button>
     <span class="count-badge" id="cnt-slack">0</span>
   </div>
+  <div class="sidebar-item" id="ws-sidebar-btn" onclick="openWindowSaverModal()" style="display:none">
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor)"></span></span><span class="si-label">ウィンドウ復元</span>
+  </div>
 
   <div class="sidebar-section" id="cat-section" style="display:none">カテゴリ</div>
   <div id="cat-list"></div>
@@ -1806,6 +1809,22 @@ body.hide-server .launch-btn { display: none !important; }
   </div>
 </div>
 
+<!-- Window Saver Modal -->
+<div class="modal-overlay" id="ws-modal" style="display:none" onclick="if(event.target===this)closeWindowSaverModal()">
+  <div class="modal" style="max-width:460px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>ウィンドウ復元</div>
+      <button class="modal-close" onclick="closeWindowSaverModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:12px 16px">
+      <div id="ws-session-list" style="display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeWindowSaverModal()">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <!-- Alarm Management Modal -->
 <div class="modal-overlay" id="alarm-modal" style="display:none" onclick="closeAlarmModalOutside(event)">
   <div class="modal" style="max-width:540px" onclick="event.stopPropagation()">
@@ -1826,6 +1845,16 @@ body.hide-server .launch-btn { display: none !important; }
 window.addEventListener('message', (e) => {
   if (e.data?.type === 'MYDASH_EXTENSION_READY') {
     window._mydashExtension = true;
+    document.getElementById('ws-sidebar-btn').style.display = '';
+  }
+  if (e.data?.type === 'WINDOW_SAVER_SESSIONS') {
+    window._wsSessionsCallback?.(e.data.sessions ?? []);
+    window._wsSessionsCallback = null;
+  }
+  if (e.data?.type === 'WINDOW_SAVER_RESTORED') {
+    if (e.data.success) toast('ウィンドウを復元しました', '🖥️');
+    else toast('復元に失敗しました', '⚠️');
+    closeWindowSaverModal();
   }
 });
 
@@ -4155,6 +4184,51 @@ function execSlackSend() {
   window.dispatchEvent(new CustomEvent('mydash-slack-send', { detail: _slackSendTarget }));
   closeSlackModal();
   toast('Chrome拡張にSlack送信リクエストを送りました', '💬');
+}
+
+// ═══════════════════════════════════════════
+// WindowSaver連携
+// ═══════════════════════════════════════════
+function openWindowSaverModal() {
+  const list = document.getElementById('ws-session-list');
+  list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px">読み込み中…</div>';
+  document.getElementById('ws-modal').style.display = 'flex';
+  window.dispatchEvent(new CustomEvent('mydash-window-saver-get-sessions'));
+  window._wsSessionsCallback = (sessions) => _renderWsSessions(sessions);
+}
+
+function closeWindowSaverModal() {
+  document.getElementById('ws-modal').style.display = 'none';
+  window._wsSessionsCallback = null;
+}
+
+function _renderWsSessions(sessions) {
+  const list = document.getElementById('ws-session-list');
+  if (!sessions.length) {
+    list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px">保存済みセッションがありません</div>';
+    return;
+  }
+  list.innerHTML = sessions.map((s, i) => {
+    const name = esc(s.name || `セッション ${i + 1}`);
+    const tabCount = Array.isArray(s.tabs) ? s.tabs.length : '?';
+    const date = s.savedAt ? new Date(s.savedAt).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    return `<div onclick="wsRestoreSession(${i})" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--card-bg);gap:10px" onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='var(--card-bg)'">
+      <div style="overflow:hidden">
+        <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${tabCount}タブ${date ? ' · ' + date : ''}</div>
+      </div>
+      <button style="flex-shrink:0;padding:5px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;cursor:pointer" onclick="event.stopPropagation();wsRestoreSession(${i})">復元</button>
+    </div>`;
+  }).join('');
+  window._wsSessions = sessions;
+}
+
+function wsRestoreSession(indexOrSession) {
+  const session = typeof indexOrSession === 'number'
+    ? window._wsSessions?.[indexOrSession]
+    : indexOrSession;
+  if (!session) return;
+  window.dispatchEvent(new CustomEvent('mydash-window-saver-restore', { detail: { session } }));
 }
 
 // セットを起動: Chrome新ウィンドウで開く
