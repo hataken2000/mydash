@@ -734,6 +734,25 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .icon-card .set-member-badge {
   position: absolute; bottom: 3px; right: 4px;
 }
+.set-count-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 999px;
+  background: rgba(239,83,80,0.18);
+  border: 1px solid rgba(239,83,80,0.35);
+  color: #ef5350; font-size: 10px; font-weight: 700; line-height: 1;
+  cursor: pointer; vertical-align: middle; white-space: nowrap;
+}
+.set-count-badge:hover { background: rgba(239,83,80,0.32); }
+.icon-card .set-count-badge {
+  position: absolute; bottom: 3px; left: 4px;
+}
+.grid-card .set-member-badge, .list-card .set-member-badge {
+  position: absolute; bottom: 6px; right: 6px;
+}
+.grid-card .set-count-badge, .list-card .set-count-badge {
+  position: absolute; bottom: 6px; left: 6px;
+}
 
 /* Type / Status badges */
 .type-badge {
@@ -2222,7 +2241,7 @@ function setCountBadge(item) {
   if (item.type !== 'set') return '';
   const count = (item.setItems || []).filter(si => db.items.find(i => i.id === si.itemId)).length;
   if (count === 0) return '';
-  return `<span class="set-member-badge" onclick="event.stopPropagation();showSetQuickPanel('${item.id}')" title="${count}個のアイテム">${count}</span>`;
+  return `<span class="set-count-badge" onclick="event.stopPropagation();showSetQuickPanel('${item.id}')" title="${count}個のアイテム">${count}</span>`;
 }
 
 function typeBadge(item) {
@@ -2423,7 +2442,7 @@ function gridCard(item) {
   // フッター：タイプバッジ + 優先度 + 期日 + 展開ボタン
   const pri = item.type === 'task' && item.priority ? priorityIconHtml(item.priority) : '';
   const footer = `<div class="card-footer">
-    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1;justify-content:center">${typeBadge(item)}${pri}${dueBadge(item)}${setMemberBadge(item)}${setCountBadge(item)}</div>
+    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1;justify-content:center">${typeBadge(item)}${pri}${dueBadge(item)}</div>
     ${expandBtn}
   </div>`;
 
@@ -2447,6 +2466,7 @@ function gridCard(item) {
     <div class="card-title">${esc(item.title)}</div>
     ${footer}
     ${expandBody}
+    ${setMemberBadge(item)}${setCountBadge(item)}
   </div>`;
 }
 
@@ -2492,7 +2512,7 @@ function listCard(item) {
         <div class="list-desc">${item.alarm?.enabled ? `<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:11px;height:11px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>${alarmSchedDesc({schedule:item.alarm.schedule})}　` : ''}${preview}</div>
       </div>
       <div class="list-meta">
-        ${typeBadge(item)}${setCountBadge(item)}
+        ${typeBadge(item)}
         <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
         <div class="list-actions">
           <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
@@ -2501,6 +2521,7 @@ function listCard(item) {
           <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
         </div>
       </div>
+      ${setCountBadge(item)}
     </div>`;
   }
   const pri = item.type === 'task' && item.priority
@@ -2556,7 +2577,7 @@ function listCard(item) {
       <div class="list-desc">${esc(item.desc || item.url || (item.tags||[]).join(', ') || '')}</div>
     </div>
     <div class="list-meta">
-      ${pri} ${typeBadge(item)} ${dueBadge(item)} ${cat} ${setMemberBadge(item)}
+      ${pri} ${typeBadge(item)} ${dueBadge(item)} ${cat}
       <span class="list-date">${relativeDate(item.createdAt)}</span>
       <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
       <div class="list-actions">
@@ -2566,6 +2587,7 @@ function listCard(item) {
         <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
       </div>
     </div>
+    ${setMemberBadge(item)}
   </div>`;
 }
 
