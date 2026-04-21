@@ -1241,6 +1241,15 @@ body.hide-server .launch-btn { display: none !important; }
   </div>
 
   <div class="sidebar-section">種類</div>
+  <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set)"></span></span><span class="si-label">セット</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('set')" title="セット追加">＋</button>
+    <span class="count-badge" id="cnt-set">0</span>
+  </div>
+  <div id="set-subfilter-section" style="display:none">
+    <div class="sidebar-subitem active" data-ssf="all"   onclick="setSetSubFilter('all')">すべて</div>
+    <div class="sidebar-subitem"        data-ssf="alarm" onclick="setSetSubFilter('alarm')"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>アラームあり</div>
+  </div>
   <div class="sidebar-item" data-filter="bookmark" onclick="setFilter('bookmark')">
     <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark)"></span></span><span class="si-label">ブックマーク</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('bookmark')" title="ブックマーク追加">＋</button>
@@ -1273,22 +1282,15 @@ body.hide-server .launch-btn { display: none !important; }
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('other')" title="その他追加">＋</button>
     <span class="count-badge" id="cnt-other">0</span>
   </div>
-  <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set)"></span></span><span class="si-label">セット</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('set')" title="セット追加">＋</button>
-    <span class="count-badge" id="cnt-set">0</span>
-  </div>
-  <div id="set-subfilter-section" style="display:none">
-    <div class="sidebar-subitem active" data-ssf="all"   onclick="setSetSubFilter('all')">すべて</div>
-    <div class="sidebar-subitem"        data-ssf="alarm" onclick="setSetSubFilter('alarm')"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>アラームあり</div>
-  </div>
   <div class="sidebar-item" data-filter="slack" onclick="setFilter('slack')">
     <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack)"></span></span><span class="si-label">Slack送信</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('slack')" title="Slack送信追加">＋</button>
     <span class="count-badge" id="cnt-slack">0</span>
   </div>
-  <div class="sidebar-item" id="ws-sidebar-btn" onclick="openWindowSaverModal()" style="display:none">
+  <div class="sidebar-item server-feature" data-filter="window-session" onclick="setFilter('window-session')">
     <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor)"></span></span><span class="si-label">ウィンドウ復元</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openWindowSaverModal()" title="ウィンドウ復元追加">＋</button>
+    <span class="count-badge" id="cnt-window-session">0</span>
   </div>
 
   <div class="sidebar-section" id="cat-section" style="display:none">カテゴリ</div>
@@ -1296,7 +1298,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.14</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.15</div>
   </div>
 </aside>
 
@@ -1507,6 +1509,9 @@ body.hide-server .launch-btn { display: none !important; }
       <div class="form-group">
         <div class="form-label">種類</div>
         <div class="type-selector">
+          <div class="type-option" data-type="set" onclick="selectType('set')">
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set)"></span></span>セット
+          </div>
           <div class="type-option selected" data-type="bookmark" onclick="selectType('bookmark')">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark)"></span></span>ブックマーク
           </div>
@@ -1521,9 +1526,6 @@ body.hide-server .launch-btn { display: none !important; }
           </div>
           <div class="type-option" data-type="other" onclick="selectType('other')">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-box);mask-image:var(--icon-box)"></span></span>その他
-          </div>
-          <div class="type-option" data-type="set" onclick="selectType('set')">
-            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set)"></span></span>セット
           </div>
           <div class="type-option" data-type="slack" onclick="selectType('slack')">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack)"></span></span>Slack送信
@@ -1851,7 +1853,6 @@ body.hide-server .launch-btn { display: none !important; }
 window.addEventListener('message', (e) => {
   if (e.data?.type === 'MYDASH_EXTENSION_READY') {
     window._mydashExtension = true;
-    document.getElementById('ws-sidebar-btn').style.display = '';
   }
   if (e.data?.type === 'WINDOW_SAVER_SESSIONS') {
     window._wsSessionsCallback?.(e.data.sessions ?? []);
@@ -2476,10 +2477,10 @@ function listCard(item) {
 
 function updateCounts() {
   const showServer = db.settings?.showServerFeatures !== false;
-  const visibleItems = showServer ? db.items : db.items.filter(i => !i.appName);
+  const visibleItems = showServer ? db.items : db.items.filter(i => !i.appName && i.type !== 'window-session');
   document.getElementById('cnt-all').textContent = visibleItems.length;
   document.getElementById('cnt-starred').textContent = visibleItems.filter(i => i.starred).length;
-  ['bookmark','tool','task','memo','other','set','slack'].forEach(t => {
+  ['bookmark','tool','task','memo','other','set','slack','window-session'].forEach(t => {
     const count = visibleItems.filter(i => i.type === t).length;
     document.getElementById(`cnt-${t}`).textContent = count;
     const sidebarEl = document.querySelector(`.sidebar-item[data-filter="${t}"]`);
