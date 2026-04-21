@@ -101,6 +101,7 @@
   --success: #66bb6a;
   --set: #80cbc4;
   --slack: #4ab95f;
+  --window-session: #90a4ae;
   --radius: 12px;
   --radius-sm: 8px;
   --icon-active: var(--accent);
@@ -688,14 +689,16 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .type-memo     { color: var(--memo);     background: rgba(244,143,177,0.14); }
 .type-other    { color: var(--other);    background: rgba(206,147,216,0.14); }
 .type-set      { color: var(--set);      background: rgba(128,203,196,0.14); }
-.type-slack    { color: var(--slack);   background: rgba(74,185,95,0.14); }
+.type-slack           { color: var(--slack);          background: rgba(74,185,95,0.14); }
+.type-window-session  { color: var(--window-session); background: rgba(144,164,174,0.14); }
 .icon-bg-bookmark { background: rgba(79,195,247,0.10); }
 .icon-bg-tool     { background: rgba(129,199,132,0.10); }
 .icon-bg-task     { background: rgba(255,183,77,0.10); }
 .icon-bg-memo     { background: rgba(244,143,177,0.10); }
 .icon-bg-other    { background: rgba(206,147,216,0.10); }
 .icon-bg-set      { background: rgba(128,203,196,0.10); }
-.icon-bg-slack    { background: rgba(74,185,95,0.10); }
+.icon-bg-slack           { background: rgba(74,185,95,0.10); }
+.icon-bg-window-session  { background: rgba(144,164,174,0.10); }
 .status-todo  { background: rgba(139,144,170,0.18); color: var(--text-muted); }
 .status-doing { background: rgba(255,183,77,0.18);  color: var(--task); }
 .status-done  { background: rgba(102,187,106,0.18); color: var(--success); }
@@ -1293,7 +1296,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.11</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.14</div>
   </div>
 </aside>
 
@@ -1875,7 +1878,8 @@ const TYPE_DEF = {
   memo:     { icon: '📝', label: 'メモ',          iconVar: 'var(--icon-memo)' },
   other:    { icon: '📦', label: 'その他',        iconVar: 'var(--icon-box)' },
   set:      { icon: '🚀', label: 'セット',        iconVar: 'var(--icon-set)' },
-  slack:    { icon: '💬', label: 'Slack送信',     iconVar: 'var(--icon-slack)' },
+  slack:           { icon: '💬', label: 'Slack送信',     iconVar: 'var(--icon-slack)' },
+  'window-session': { icon: '🖥️', label: 'ウィンドウ復元', iconVar: 'var(--icon-monitor)' },
 };
 function _iconFallback(el, type) {
   const v = TYPE_DEF[type]?.iconVar;
@@ -2332,7 +2336,7 @@ function gridCard(item) {
   const shortcutBtn = ['memo','task','other','set','bookmark','tool'].includes(item.type)
     ? `<div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>` : '';
 
-  return `<div class="grid-card${item.appName ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+  return `<div class="grid-card${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
       style="border-left:4px solid ${tc}"
       onclick="cardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')">
@@ -2446,7 +2450,7 @@ function listCard(item) {
     </div>`;
   }
   const selChkL = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
-  return `<div class="list-card ${taskCardClass(item)}${item.appName ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+  return `<div class="list-card ${taskCardClass(item)}${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
       style="border-left:4px solid ${tc}"
       onclick="cardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')">
@@ -2826,6 +2830,7 @@ function cardClick(e, id) {
   if (!item) return;
   if (item.type === 'set') { showSetQuickPanel(id); return; }
   if (item.type === 'slack') { sendSlackMessage(id); return; }
+  if (item.type === 'window-session') { launchWindowSession(item); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   if (item.appName) { openWithServer(item.appName); return; }
   if (item.url) { window.open(item.url, '_blank'); return; }
@@ -3387,7 +3392,7 @@ function iconCard(item) {
   const tc = typeColor(item);
   const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked)" style="width:14px;height:14px;accent-color:var(--set);cursor:pointer"></div>` : '';
   const titleSuffix = item.type === 'set' ? ' ▶ クリックでパネルを開く' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
-  return `<div class="icon-wrap${item.appName ? ' server-feature' : ''}${item.hidden?' item-hidden':''}">
+  return `<div class="icon-wrap${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${item.hidden?' item-hidden':''}">
     <div class="icon-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}"
         onclick="iconCardClick(event,'${item.id}')"
         oncontextmenu="showCtx(event,'${item.id}')"
@@ -4238,7 +4243,10 @@ function _renderWsSessions(sessions) {
         <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${tabCount}タブ${date ? ' · ' + date : ''}</div>
       </div>
-      <button style="flex-shrink:0;padding:5px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;cursor:pointer" onclick="event.stopPropagation();wsRestoreSession(${i})">復元</button>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button style="padding:5px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:11px;cursor:pointer" onclick="event.stopPropagation();wsAddToMyDash(${i})" title="MyDashにアイテムとして追加">+ MyDash</button>
+        <button style="padding:5px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;cursor:pointer" onclick="event.stopPropagation();wsRestoreSession(${i})">復元</button>
+      </div>
     </div>`;
   }).join('');
   window._wsSessions = sessions;
@@ -4250,6 +4258,44 @@ function wsRestoreSession(indexOrSession) {
     : indexOrSession;
   if (!session) return;
   window.dispatchEvent(new CustomEvent('mydash-window-saver-restore', { detail: { session } }));
+}
+
+function launchWindowSession(item) {
+  toast('セッションを読み込み中…', '🖥️');
+  window.dispatchEvent(new CustomEvent('mydash-window-saver-get-sessions'));
+  window._wsSessionsCallback = (sessions) => {
+    window._wsSessionsCallback = null;
+    const session = sessions.find(s => s.name === item.sessionName);
+    if (!session) { toast(`「${esc(item.title)}」のセッションが見つかりません`, '⚠️'); return; }
+    wsRestoreSession(session);
+  };
+}
+
+function launchWindowSessionById(id) {
+  const item = db.items.find(i => i.id === id);
+  if (item) launchWindowSession(item);
+}
+
+function wsAddToMyDash(index) {
+  const session = window._wsSessions?.[index];
+  if (!session) return;
+  const existing = db.items.find(i => i.type === 'window-session' && i.sessionName === session.name);
+  if (existing) { toast('このセッションはすでにMyDashに登録されています', '⚠️'); return; }
+  const item = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+    type: 'window-session',
+    title: session.name || `セッション`,
+    desc: '',
+    icon: '',
+    category: '',
+    tags: [],
+    sessionName: session.name,
+    createdAt: new Date().toISOString(),
+  };
+  db.items.unshift(item);
+  save();
+  render();
+  toast(`「${esc(item.title)}」をMyDashに追加しました`, '🖥️');
 }
 
 // セットを起動: Chrome新ウィンドウで開く
@@ -4283,6 +4329,12 @@ function showSetQuickPanel(id) {
         <span class="sqp-icon">${iconHtml(item,'sm')}</span>
         <span class="sqp-title">${esc(item.title)}</span>
         <span class="sqp-type" style="color:${itemTc}">${esc(item.type)}</span>
+      </div>`;
+    } else if (item.type === 'window-session') {
+      return `<div class="sqp-item server-feature" onclick="closeSetQuickPanel();launchWindowSessionById('${item.id}')">
+        <span class="sqp-icon">${iconHtml(item,'sm')}</span>
+        <span class="sqp-title">${esc(item.title)}</span>
+        <span class="sqp-type" style="color:${itemTc}">ウィンドウ復元</span>
       </div>`;
     } else {
       return `<div class="sqp-item" style="cursor:default">
@@ -4332,6 +4384,8 @@ async function launchSet(id) {
     if (!item) continue;
     if (item.type === 'tool' && item.appName) {
       appNames.push(item.appName);
+    } else if (item.type === 'window-session') {
+      launchWindowSession(item);
     } else if (item.url) {
       urls.push(item.url);
       urlItems.push({ title: item.title, icon: item.icon || '', url: item.url, type: item.type });
