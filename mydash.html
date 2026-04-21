@@ -355,6 +355,53 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .sidebar-item .app-icon { background-color: var(--icon-inactive); }
 .sidebar-item.active .app-icon { background-color: var(--icon-active); }
 .sidebar-item:hover .app-icon { background-color: var(--text); }
+/* サイドバー種類ごとの左帯 */
+.sidebar-item[data-filter="set"],
+.sidebar-item[data-filter="bookmark"],
+.sidebar-item[data-filter="tool"],
+.sidebar-item[data-filter="task"],
+.sidebar-item[data-filter="memo"],
+.sidebar-item[data-filter="other"],
+.sidebar-item[data-filter="slack"],
+.sidebar-item[data-filter="window-session"] {
+  border-left: 3px solid transparent;
+  padding-left: 17px;
+}
+.sidebar-item[data-filter="set"]            { border-left-color: rgba(128,203,196,0.4); }
+.sidebar-item[data-filter="bookmark"]       { border-left-color: rgba(79,195,247,0.4); }
+.sidebar-item[data-filter="tool"]           { border-left-color: rgba(129,199,132,0.4); }
+.sidebar-item[data-filter="task"]           { border-left-color: rgba(255,183,77,0.4); }
+.sidebar-item[data-filter="memo"]           { border-left-color: rgba(244,143,177,0.4); }
+.sidebar-item[data-filter="other"]          { border-left-color: rgba(206,147,216,0.4); }
+.sidebar-item[data-filter="slack"]          { border-left-color: rgba(74,185,95,0.4); }
+.sidebar-item[data-filter="window-session"] { border-left-color: rgba(144,164,174,0.4); }
+/* アクティブ時は帯を濃く */
+.sidebar-item[data-filter="set"].active             { border-left-color: var(--set); }
+.sidebar-item[data-filter="bookmark"].active        { border-left-color: var(--bookmark); }
+.sidebar-item[data-filter="tool"].active            { border-left-color: var(--tool); }
+.sidebar-item[data-filter="task"].active            { border-left-color: var(--task); }
+.sidebar-item[data-filter="memo"].active            { border-left-color: var(--memo); }
+.sidebar-item[data-filter="other"].active           { border-left-color: var(--other); }
+.sidebar-item[data-filter="slack"].active           { border-left-color: var(--slack); }
+.sidebar-item[data-filter="window-session"].active  { border-left-color: var(--window-session); }
+/* サイドバー種類ごとのタイプカラー（非アクティブ・非ホバー時） */
+.sidebar-item[data-filter="set"]:not(.active):not(:hover)            .app-icon { background-color: var(--set); }
+.sidebar-item[data-filter="bookmark"]:not(.active):not(:hover)       .app-icon { background-color: var(--bookmark); }
+.sidebar-item[data-filter="tool"]:not(.active):not(:hover)           .app-icon { background-color: var(--tool); }
+.sidebar-item[data-filter="task"]:not(.active):not(:hover)           .app-icon { background-color: var(--task); }
+.sidebar-item[data-filter="memo"]:not(.active):not(:hover)           .app-icon { background-color: var(--memo); }
+.sidebar-item[data-filter="other"]:not(.active):not(:hover)          .app-icon { background-color: var(--other); }
+.sidebar-item[data-filter="slack"]:not(.active):not(:hover)          .app-icon { background-color: var(--slack); }
+.sidebar-item[data-filter="window-session"]:not(.active):not(:hover) .app-icon { background-color: var(--window-session); }
+/* カウントバッジをタイプカラーに */
+.sidebar-item[data-filter="set"]            .count-badge { background: rgba(128,203,196,0.18); color: var(--set); }
+.sidebar-item[data-filter="bookmark"]       .count-badge { background: rgba(79,195,247,0.18);  color: var(--bookmark); }
+.sidebar-item[data-filter="tool"]           .count-badge { background: rgba(129,199,132,0.18); color: var(--tool); }
+.sidebar-item[data-filter="task"]           .count-badge { background: rgba(255,183,77,0.18);  color: var(--task); }
+.sidebar-item[data-filter="memo"]           .count-badge { background: rgba(244,143,177,0.18); color: var(--memo); }
+.sidebar-item[data-filter="other"]          .count-badge { background: rgba(206,147,216,0.18); color: var(--other); }
+.sidebar-item[data-filter="slack"]          .count-badge { background: rgba(74,185,95,0.18);   color: var(--slack); }
+.sidebar-item[data-filter="window-session"] .count-badge { background: rgba(144,164,174,0.18); color: var(--window-session); }
 .action-btn .app-icon { background-color: var(--text-muted); width:15px; height:15px; }
 .action-btn:hover .app-icon { background-color: var(--text); }
 .action-btn.danger:hover .app-icon { background-color: var(--danger); }
@@ -672,6 +719,21 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 }
 .action-btn:hover { border-color: var(--accent); color: var(--accent); }
 .action-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+/* Set membership badge */
+.set-member-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 999px;
+  background: rgba(38,198,218,0.18);
+  border: 1px solid rgba(38,198,218,0.35);
+  color: var(--set); font-size: 10px; font-weight: 700; line-height: 1;
+  cursor: pointer; vertical-align: middle; white-space: nowrap;
+}
+.set-member-badge:hover { background: rgba(38,198,218,0.32); }
+.icon-card .set-member-badge {
+  position: absolute; bottom: 3px; right: 4px;
+}
 
 /* Type / Status badges */
 .type-badge {
@@ -1247,8 +1309,7 @@ body.hide-server .launch-btn { display: none !important; }
     <span class="count-badge" id="cnt-set">0</span>
   </div>
   <div id="set-subfilter-section" style="display:none">
-    <div class="sidebar-subitem active" data-ssf="all"   onclick="setSetSubFilter('all')">すべて</div>
-    <div class="sidebar-subitem"        data-ssf="alarm" onclick="setSetSubFilter('alarm')"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>アラームあり</div>
+    <div class="sidebar-subitem" data-ssf="alarm" onclick="setSetSubFilter('alarm')"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>アラームあり<span class="count-badge" id="cnt-ssf-alarm" style="margin-left:auto">0</span></div>
   </div>
   <div class="sidebar-item" data-filter="bookmark" onclick="setFilter('bookmark')">
     <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark)"></span></span><span class="si-label">ブックマーク</span>
@@ -1263,14 +1324,12 @@ body.hide-server .launch-btn { display: none !important; }
   <div class="sidebar-item" data-filter="task" onclick="setFilter('task')">
     <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task)"></span></span><span class="si-label">タスク</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('task')" title="タスク追加">＋</button>
-    <span class="due-alert-badge" id="cnt-task-due" style="display:none"></span>
     <span class="count-badge" id="cnt-task">0</span>
   </div>
   <div id="task-subfilter-section" style="display:none">
-    <div class="sidebar-subitem active" data-tsf="all"     onclick="setTaskSubFilter('all')">すべて</div>
-    <div class="sidebar-subitem"        data-tsf="today"   onclick="setTaskSubFilter('today')"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>今日締切</div>
-    <div class="sidebar-subitem"        data-tsf="overdue" onclick="setTaskSubFilter('overdue')"><span class="app-icon" style="-webkit-mask-image:var(--icon-alert-triangle);mask-image:var(--icon-alert-triangle);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>期限超過</div>
-    <div class="sidebar-subitem"        data-tsf="doing"   onclick="setTaskSubFilter('doing')"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>進行中</div>
+    <div class="sidebar-subitem" data-tsf="today"   onclick="setTaskSubFilter('today')"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>今日締切<span class="count-badge" id="cnt-tsf-today" style="margin-left:auto">0</span></div>
+    <div class="sidebar-subitem" data-tsf="overdue" onclick="setTaskSubFilter('overdue')"><span class="app-icon" style="-webkit-mask-image:var(--icon-alert-triangle);mask-image:var(--icon-alert-triangle);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>期限超過<span class="count-badge" id="cnt-tsf-overdue" style="margin-left:auto">0</span></div>
+    <div class="sidebar-subitem" data-tsf="doing"   onclick="setTaskSubFilter('doing')"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>進行中<span class="count-badge" id="cnt-tsf-doing" style="margin-left:auto">0</span></div>
   </div>
   <div class="sidebar-item" data-filter="memo" onclick="setFilter('memo')">
     <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo)"></span></span><span class="si-label">メモ</span>
@@ -1298,7 +1357,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.15</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.16</div>
   </div>
 </aside>
 
@@ -2136,6 +2195,29 @@ function iconHtml(item, size) {
   return svgFallback;
 }
 
+let _setMembership = new Map();
+function buildSetMembership() {
+  const map = new Map();
+  db.items.forEach(set => {
+    if (set.type !== 'set') return;
+    (set.setItems || []).forEach(si => {
+      if (!map.has(si.itemId)) map.set(si.itemId, []);
+      map.get(si.itemId).push(set);
+    });
+  });
+  return map;
+}
+function setMemberBadge(item) {
+  if (item.type === 'set') return '';
+  const sets = _setMembership.get(item.id);
+  if (!sets || sets.length === 0) return '';
+  const titles = sets.map(s => s.title).join('・');
+  const onclick = sets.length === 1
+    ? `event.stopPropagation();showSetQuickPanel('${sets[0].id}')`
+    : `event.stopPropagation();showQuickEdit('${item.id}')`;
+  return `<span class="set-member-badge" onclick="${onclick}" title="セット: ${esc(titles)}">${sets.length}</span>`;
+}
+
 function typeBadge(item) {
   if (item.type === 'task') {
     const s = item.status || 'todo';
@@ -2157,6 +2239,9 @@ function filteredItems() {
     if (state.filter !== 'all') {
       if (state.filter === 'starred') {
         if (!item.starred) return false;
+      } else if (state.filter.startsWith('set-member:')) {
+        const sid = state.filter.slice(11);
+        if (!_setMembership.get(item.id)?.some(s => s.id === sid)) return false;
       } else if (state.filter.startsWith('cat:')) {
         if ((item.category || '') !== state.filter.slice(4)) return false;
       } else {
@@ -2221,6 +2306,7 @@ function filteredItems() {
 function render() {
   const contentEl = document.getElementById('content');
   const savedScroll = contentEl ? contentEl.scrollTop : 0;
+  _setMembership = buildSetMembership();
   updateCounts();
   updateCatList();
   updateSelectBar();
@@ -2329,7 +2415,7 @@ function gridCard(item) {
   // フッター：タイプバッジ + 優先度 + 期日 + 展開ボタン
   const pri = item.type === 'task' && item.priority ? priorityIconHtml(item.priority) : '';
   const footer = `<div class="card-footer">
-    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1;justify-content:center">${typeBadge(item)}${pri}${dueBadge(item)}</div>
+    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1;justify-content:center">${typeBadge(item)}${pri}${dueBadge(item)}${setMemberBadge(item)}</div>
     ${expandBtn}
   </div>`;
 
@@ -2462,7 +2548,7 @@ function listCard(item) {
       <div class="list-desc">${esc(item.desc || item.url || (item.tags||[]).join(', ') || '')}</div>
     </div>
     <div class="list-meta">
-      ${pri} ${typeBadge(item)} ${dueBadge(item)} ${cat}
+      ${pri} ${typeBadge(item)} ${dueBadge(item)} ${cat} ${setMemberBadge(item)}
       <span class="list-date">${relativeDate(item.createdAt)}</span>
       <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
       <div class="list-actions">
@@ -2487,20 +2573,19 @@ function updateCounts() {
     if (sidebarEl) sidebarEl.style.display = '';
   });
 
-  // 期限切れ・今日締切タスクの警告バッジ
+  // タスクサブフィルターのカウント
   const todayStr = new Date().toISOString().slice(0, 10);
-  const dueCount = db.items.filter(i =>
-    i.type === 'task' && i.dueDate && (i.status || 'todo') !== 'done' && i.dueDate <= todayStr
-  ).length;
-  const dueBadgeEl = document.getElementById('cnt-task-due');
-  if (dueBadgeEl) {
-    if (dueCount > 0) {
-      dueBadgeEl.textContent = dueCount;
-      dueBadgeEl.style.display = '';
-    } else {
-      dueBadgeEl.style.display = 'none';
-    }
-  }
+  const tasks = db.items.filter(i => i.type === 'task');
+  const el_today   = document.getElementById('cnt-tsf-today');
+  const el_overdue = document.getElementById('cnt-tsf-overdue');
+  const el_doing   = document.getElementById('cnt-tsf-doing');
+  if (el_today)   el_today.textContent   = tasks.filter(i => i.dueDate === todayStr && (i.status||'todo') !== 'done').length;
+  if (el_overdue) el_overdue.textContent = tasks.filter(i => i.dueDate && i.dueDate < todayStr && (i.status||'todo') !== 'done').length;
+  if (el_doing)   el_doing.textContent   = tasks.filter(i => (i.status||'todo') === 'doing').length;
+
+  // セットサブフィルターのカウント
+  const el_alarm = document.getElementById('cnt-ssf-alarm');
+  if (el_alarm) el_alarm.textContent = db.items.filter(i => i.type === 'set' && i.alarm?.enabled).length;
 
   // タブタイトルに件数を反映
   document.title = 'MyDash';
@@ -2588,8 +2673,9 @@ function setFilter(f) {
   state.filter = f;
   state.taskSubFilter = 'all';
   state.setSubFilter = 'all';
+  const activeKey = f.startsWith('set-member:') ? 'set' : f;
   document.querySelectorAll('.sidebar-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.filter === f);
+    el.classList.toggle('active', el.dataset.filter === activeKey);
   });
   if (state.mainTab === 'today') setMainTab('library');
   render();
@@ -3400,6 +3486,7 @@ function iconCard(item) {
         title="${esc(item.title)}${titleSuffix}" style="border-top:3px solid ${tc}">
       ${selChkI}
       <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
+      ${setMemberBadge(item)}
     </div>
     <div class="icon-title">${esc(item.title)}</div>
   </div>`;
@@ -3697,6 +3784,22 @@ function showQuickEdit(id) {
         style="display:none;width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--accent);
         background:${t.btnBg};color:${t.text};font-size:14px;line-height:1.7;
         min-height:110px;resize:vertical;box-sizing:border-box;outline:none"></textarea>
+      ${(() => {
+        const linkedSets = _setMembership.get(id);
+        if (!linkedSets || linkedSets.length === 0) return '';
+        const btns = linkedSets.map(s =>
+          `<button onclick="closeQuickEdit('${id}');showSetQuickPanel('${s.id}')"
+            style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;
+            border:1px solid rgba(38,198,218,0.3);background:rgba(38,198,218,0.1);
+            color:var(--set);font-size:12px;font-weight:600;cursor:pointer">
+            <span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);background-color:currentColor;width:11px;height:11px"></span>${esc(s.title)}
+          </button>`
+        ).join('');
+        return `<div style="margin-top:16px">
+          <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">登録済みセット</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">${btns}</div>
+        </div>`;
+      })()}
       <div style="display:flex;gap:10px;margin-top:16px">
         <button onclick="closeQuickEdit('${id}')"
           style="flex:1;padding:12px;background:${t.btnBg};color:${t.textMuted};
@@ -4357,6 +4460,7 @@ function showSetQuickPanel(id) {
   // フッター
   document.getElementById('sqp-footer').innerHTML =
     `<button class="btn-secondary" onclick="closeSetQuickPanel()">閉じる</button>
+     <button class="btn-secondary" onclick="closeSetQuickPanel();setFilter('set-member:${id}')" title="このセットに登録されているアイテムを絞り込む" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-all);mask-image:var(--icon-all);width:13px;height:13px"></span>アイテムを表示</button>
      <button class="btn-secondary" onclick="closeSetQuickPanel();editItem('${id}')">詳細編集</button>
      <button class="btn-primary" onclick="closeSetQuickPanel();launchSet('${id}')" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>▶ 起動</button>`;
 
