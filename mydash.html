@@ -1159,6 +1159,8 @@ body.hide-server .launch-btn { display: none !important; }
 .sqp-item:hover { background: var(--hover); }
 .sqp-item .sqp-icon { flex-shrink: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 .sqp-item .sqp-icon img { width: 20px; height: 20px; object-fit: contain; border-radius: 3px; }
+.tl-event-block img, .today-allday-card img { width: 20px; height: 20px; object-fit: contain; border-radius: 3px; flex-shrink: 0; }
+#sqp-title img { width: 20px; height: 20px; object-fit: contain; border-radius: 4px; }
 .sqp-item .sqp-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sqp-item .sqp-type { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
 .sqp-alarm { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; margin-top: 4px; }
@@ -1290,7 +1292,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.9</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.11</div>
   </div>
 </aside>
 
@@ -2750,7 +2752,18 @@ function renderTodayView() {
   }
 
   if (!timedItems.length && !allDayTasks.length) {
-    el.innerHTML = `<div class="today-view"><div class="today-view-header">${dateLabel}</div><div class="today-empty">今日の予定はありません</div></div>`;
+    el.innerHTML = `<div class="today-view">
+      <div class="today-nav">
+        <button class="today-nav-btn" onclick="moveTodayView(-1)" title="前の日">‹</button>
+        <label class="today-nav-date" title="日付を選択" onclick="document.getElementById('today-date-input').showPicker?.()">
+          ${dateLabel}${isToday ? '<span class="today-badge">今日</span>' : ''}
+          <input type="date" value="${todayStr}" onchange="jumpTodayView(this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none" id="today-date-input">
+        </label>
+        <button class="today-nav-btn" onclick="moveTodayView(1)" title="次の日">›</button>
+        ${!isToday ? `<button class="today-nav-today" onclick="resetTodayView()">今日に戻る</button>` : ''}
+      </div>
+      <div class="today-empty">今日の予定はありません</div>
+    </div>`;
     return;
   }
 
@@ -4239,7 +4252,7 @@ function showSetQuickPanel(id) {
 
   // タイトル
   document.getElementById('sqp-title').innerHTML =
-    `<span style="color:${tc}">${iconHtml(set,'sm')}</span>${esc(set.title)}`;
+    `<span style="color:${tc};display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;font-size:16px">${iconHtml(set,'sm')}</span>${esc(set.title)}`;
 
   // ボディ
   const setItems = (set.setItems || []).map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
