@@ -2218,6 +2218,13 @@ function setMemberBadge(item) {
   return `<span class="set-member-badge" onclick="${onclick}" title="セット: ${esc(titles)}">${sets.length}</span>`;
 }
 
+function setCountBadge(item) {
+  if (item.type !== 'set') return '';
+  const count = (item.setItems || []).filter(si => db.items.find(i => i.id === si.itemId)).length;
+  if (count === 0) return '';
+  return `<span class="set-member-badge" onclick="event.stopPropagation();showSetQuickPanel('${item.id}')" title="${count}個のアイテム">${count}</span>`;
+}
+
 function typeBadge(item) {
   if (item.type === 'task') {
     const s = item.status || 'todo';
@@ -2235,13 +2242,14 @@ function filteredItems() {
   const sort = document.getElementById('sort-select').value;
 
   let items = db.items.filter(item => {
-    if (item.hidden && !state.selectMode) return false;
+    if (item.hidden && !state.selectMode && !state.filter.startsWith('set-member:')) return false;
     if (state.filter !== 'all') {
       if (state.filter === 'starred') {
         if (!item.starred) return false;
       } else if (state.filter.startsWith('set-member:')) {
         const sid = state.filter.slice(11);
-        if (!_setMembership.get(item.id)?.some(s => s.id === sid)) return false;
+        const targetSet = db.items.find(i => i.id === sid && i.type === 'set');
+        if (!targetSet || !targetSet.setItems?.some(si => si.itemId === item.id)) return false;
       } else if (state.filter.startsWith('cat:')) {
         if ((item.category || '') !== state.filter.slice(4)) return false;
       } else {
@@ -2415,7 +2423,7 @@ function gridCard(item) {
   // フッター：タイプバッジ + 優先度 + 期日 + 展開ボタン
   const pri = item.type === 'task' && item.priority ? priorityIconHtml(item.priority) : '';
   const footer = `<div class="card-footer">
-    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1;justify-content:center">${typeBadge(item)}${pri}${dueBadge(item)}${setMemberBadge(item)}</div>
+    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1;justify-content:center">${typeBadge(item)}${pri}${dueBadge(item)}${setMemberBadge(item)}${setCountBadge(item)}</div>
     ${expandBtn}
   </div>`;
 
@@ -2484,7 +2492,7 @@ function listCard(item) {
         <div class="list-desc">${item.alarm?.enabled ? `<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:11px;height:11px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>${alarmSchedDesc({schedule:item.alarm.schedule})}　` : ''}${preview}</div>
       </div>
       <div class="list-meta">
-        ${typeBadge(item)}
+        ${typeBadge(item)}${setCountBadge(item)}
         <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
         <div class="list-actions">
           <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
@@ -3486,7 +3494,7 @@ function iconCard(item) {
         title="${esc(item.title)}${titleSuffix}" style="border-top:3px solid ${tc}">
       ${selChkI}
       <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
-      ${setMemberBadge(item)}
+      ${setMemberBadge(item)}${setCountBadge(item)}
     </div>
     <div class="icon-title">${esc(item.title)}</div>
   </div>`;
