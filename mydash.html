@@ -2806,7 +2806,7 @@ function startCatRename(btnEl, oldName) {
   let colorPickerOpen = false;
   const swatch = document.createElement('span');
   swatch.title = '色を変更';
-  swatch.style.cssText = `width:14px;height:14px;border-radius:3px;background:${currentColor};border:1px solid rgba(255,255,255,0.3);cursor:pointer;flex-shrink:0;display:inline-block`;
+  swatch.style.cssText = `width:14px;height:14px;border-radius:3px;background:${currentColor};border:1px solid var(--border);cursor:pointer;flex-shrink:0;display:inline-block`;
   swatch.addEventListener('mousedown', e => {
     e.preventDefault();
     e.stopPropagation();
