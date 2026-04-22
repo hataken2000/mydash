@@ -5606,7 +5606,8 @@ async function gistDownload() {
 
     save();
     render();
-    gistStatus(`✅ マージ完了（${new Date().toLocaleTimeString('ja-JP')}）`, false);
+    const chCount = db.slackChannels?.length ?? 0;
+    gistStatus(`✅ マージ完了（${new Date().toLocaleTimeString('ja-JP')}）ch:${chCount}`, false);
   } catch(e) {
     gistStatus(`❌ ${e.message}`, true);
   }
