@@ -1114,6 +1114,17 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 }
 .memo-map-embed-label:hover { background: rgba(0,175,204,0.2); }
 .memo-map-embed iframe { display: block; width: 100%; height: 150px; border: 0; }
+.memo-embed-card {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; margin: 3px 0;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--card-bg); cursor: pointer;
+  text-decoration: none; color: var(--text); font-size: 13px; line-height: 1.4;
+}
+.memo-embed-card:hover { background: var(--hover); text-decoration: none !important; }
+.memo-embed-card .mec-icon { flex-shrink:0; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+.memo-embed-card .mec-title { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
+.memo-embed-card .mec-sub { font-size:11px; color:var(--text-muted); flex-shrink:0; }
 
 /* ── Card footer & expand ────────────────────── */
 .card-footer {
@@ -1385,7 +1396,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.18</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.19</div>
   </div>
 </aside>
 
@@ -1894,6 +1905,22 @@ body.hide-server .launch-btn { display: none !important; }
   </div>
 </div>
 
+<!-- Item Insert Modal -->
+<div class="modal-overlay" id="item-insert-modal" style="display:none" onclick="if(event.target===this)closeItemInsertModal()">
+  <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" style="display:flex;align-items:center;gap:6px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block"></span>アイテムを挿入</div>
+      <button class="modal-close" onclick="closeItemInsertModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:8px 16px 12px">
+      <input type="text" id="iim-search" placeholder="アイテムを検索…" oninput="renderItemInsertList()"
+        style="width:100%;padding:7px 10px;border-radius:8px;border:1px solid var(--border);
+        background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:8px;outline:none">
+      <div id="iim-list" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:3px"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Place Quick Panel -->
 <div class="modal-overlay" id="place-quick-panel" style="display:none" onclick="if(event.target===this)closePlaceQuickPanel()">
   <div class="modal" style="max-width:480px" onclick="event.stopPropagation()">
@@ -2146,9 +2173,46 @@ function relativeDate(iso) {
   return d.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' });
 }
 
+function embedItemHtml(item) {
+  const tc = typeColor(item);
+  const ih = iconHtml(item, 'sm');
+  const label = esc(TYPE_DEF[item.type]?.label || item.type);
+  if (item.type === 'place') {
+    const mapH = placeMapHtml(item);
+    if (mapH) return mapH;
+  }
+  if (item.type === 'task') {
+    const statusLabel = esc({ todo:'未着手', doing:'進行中', done:'完了' }[item.status||'todo'] || '');
+    const sub = [statusLabel, item.dueDate].filter(Boolean).join(' · ');
+    return `<div class="memo-embed-card" onclick="event.stopPropagation();showQuickEdit('${item.id}')"><span class="mec-icon" style="color:${tc}">${ih}</span><span class="mec-title">${esc(item.title)}</span><span class="mec-sub">${sub}</span></div>`;
+  }
+  if (item.type === 'memo') {
+    const preview = esc((item.desc||'').replace(/\n/g,' ').slice(0,40));
+    return `<div class="memo-embed-card" onclick="event.stopPropagation();showQuickEdit('${item.id}')"><span class="mec-icon" style="color:${tc}">${ih}</span><div style="flex:1;min-width:0"><div class="mec-title">${esc(item.title)}</div>${preview?`<div style="font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${preview}</div>`:''}</div></div>`;
+  }
+  if (item.type === 'set') {
+    const count = (item.setItems||[]).length;
+    return `<div class="memo-embed-card" onclick="event.stopPropagation();showSetQuickPanel('${item.id}')"><span class="mec-icon" style="color:${tc}">${ih}</span><span class="mec-title">${esc(item.title)}</span><span class="mec-sub">${count}アイテム</span></div>`;
+  }
+  if (item.url) {
+    return `<a class="memo-embed-card" href="${esc(item.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><span class="mec-icon">${ih}</span><span class="mec-title">${esc(item.title)}</span><span class="mec-sub" style="color:${tc}">${label}</span></a>`;
+  }
+  return `<div class="memo-embed-card" style="cursor:default"><span class="mec-icon" style="color:${tc}">${ih}</span><span class="mec-title">${esc(item.title)}</span><span class="mec-sub">${label}</span></div>`;
+}
+
 function renderMemo(text) {
   if (!text) return '';
-  let s = esc(text);
+  // [[アイテムID]] → プレースホルダーに置換してからesc、その後復元
+  const embeds = [];
+  s = text.replace(/\[\[([a-z0-9]+)\]\]/g, (match, id) => {
+    const item = db.items.find(i => i.id === id);
+    const html = item ? embedItemHtml(item) : `<span style="color:var(--text-muted);font-size:12px">[削除済みアイテム]</span>`;
+    embeds.push(html);
+    return `\x00embed${embeds.length - 1}\x00`;
+  });
+  s = esc(s);
+  // プレースホルダーを復元
+  s = s.replace(/\x00embed(\d+)\x00/g, (_, i) => embeds[parseInt(i)]);
   // ![alt](url) → サムネイル画像（クリックでURL先へ）
   s = s.replace(/!\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
     '<a href="$2" target="_blank" rel="noopener" onclick="event.stopPropagation()"><img src="$2" alt="$1" class="memo-img" onerror="this.parentNode.style.display=\'none\'"></a>');
@@ -3900,7 +3964,10 @@ function showQuickEdit(id) {
         margin-bottom:16px;box-sizing:border-box">
       ${statusHtml}
       ${dueHtml}
-      <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">内容</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+        <div style="font-size:11px;color:${t.textMuted};font-weight:600;letter-spacing:0.5px">内容</div>
+        <button onclick="openItemInsertModal('${id}')" style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:3px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);width:11px;height:11px"></span>挿入</button>
+      </div>
       <div id="qe-desc-preview" class="memo-body"
         onclick="_qeShowEdit('${id}')" title="クリックして編集"
         style="min-height:80px;max-height:220px;overflow-y:auto;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
@@ -4636,6 +4703,59 @@ function showPlaceQuickPanel(id) {
 
 function closePlaceQuickPanel() {
   document.getElementById('place-quick-panel').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════
+// アイテム挿入モーダル
+// ═══════════════════════════════════════════
+let _iimTargetId = null;
+
+function openItemInsertModal(targetId) {
+  _iimTargetId = targetId;
+  document.getElementById('iim-search').value = '';
+  renderItemInsertList();
+  document.getElementById('item-insert-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('iim-search').focus(), 50);
+}
+
+function closeItemInsertModal() {
+  document.getElementById('item-insert-modal').style.display = 'none';
+}
+
+function renderItemInsertList() {
+  const q = document.getElementById('iim-search').value.trim().toLowerCase();
+  const items = db.items
+    .filter(i => i.id !== _iimTargetId && !i.hidden)
+    .filter(i => !q || (i.title||'').toLowerCase().includes(q) || (i.address||'').toLowerCase().includes(q) || (i.desc||'').toLowerCase().includes(q))
+    .slice(0, 50);
+  document.getElementById('iim-list').innerHTML = items.map(item => {
+    const tc = typeColor(item);
+    const label = esc(TYPE_DEF[item.type]?.label || item.type);
+    const sub = item.address || item.url || (item.desc||'').replace(/\n/g,' ').slice(0,40) || '';
+    return `<div class="memo-embed-card" onclick="insertItemEmbed('${item.id}')">
+      <span class="mec-icon" style="color:${tc}">${iconHtml(item,'sm')}</span>
+      <div style="flex:1;min-width:0">
+        <div class="mec-title">${esc(item.title)}</div>
+        ${sub ? `<div style="font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(sub)}</div>` : ''}
+      </div>
+      <span class="mec-sub" style="color:${tc}">${label}</span>
+    </div>`;
+  }).join('') || '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">見つかりません</div>';
+}
+
+function insertItemEmbed(itemId) {
+  const ta = document.getElementById('qe-desc');
+  if (!ta) return;
+  const embed = `[[${itemId}]]`;
+  const start = ta.selectionStart ?? ta.value.length;
+  const end = ta.selectionEnd ?? ta.value.length;
+  const before = ta.value.slice(0, start);
+  const after = ta.value.slice(end);
+  const newline = (before && !before.endsWith('\n')) ? '\n' : '';
+  ta.value = before + newline + embed + '\n' + after;
+  ta.selectionStart = ta.selectionEnd = before.length + newline.length + embed.length + 1;
+  closeItemInsertModal();
+  ta.focus();
 }
 
 async function launchSet(id) {
