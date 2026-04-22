@@ -1397,7 +1397,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.21</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.22</div>
   </div>
 </aside>
 
@@ -3922,6 +3922,14 @@ function showShortcutPopup(type, title, body) {
 // クイック編集パネル（メモ・タスク用）
 // ═══════════════════════════════════════════
 function showQuickEdit(id) {
+  // 既存ポップアップがあれば先に保存・削除（入れ子防止）
+  const existing = document.getElementById('quick-edit-popup');
+  if (existing) {
+    const prevId = existing.dataset.itemId;
+    if (prevId) _qeSave(prevId);
+    existing.remove();
+    document.body.style.overflow = '';
+  }
   const item = db.items.find(i => i.id === id);
   if (!item) return;
   const t = _shortcutTheme();
@@ -3954,6 +3962,7 @@ function showQuickEdit(id) {
 
   const el = document.createElement('div');
   el.id = 'quick-edit-popup';
+  el.dataset.itemId = id;
   el.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
   document.body.style.overflow = 'hidden';
   el.innerHTML = `
