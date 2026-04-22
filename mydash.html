@@ -2799,7 +2799,7 @@ function updateCatList() {
 function startCatRename(btnEl, oldName) {
   const sidebarItem = btnEl.parentElement;
   const labelEl = btnEl.previousElementSibling;
-  const dotEl = sidebarItem.querySelector('.cat-dot');
+  const dotEl = sidebarItem.querySelector('.si-icon .app-icon');
   const currentColor = getCatColor(oldName) || CAT_COLORS[0];
 
   // 色変更: フォルダアイコンをクリックでカラーピッカーを起動
