@@ -1414,7 +1414,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.0</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.1</div>
   </div>
 </aside>
 
@@ -2567,7 +2567,6 @@ function renderNodeView() {
 
   const svgW = Math.max(600, curX + GAP);
   const svgH = curY + rowMaxH + GAP * 2;
-  const itemPos = new Map();
 
   let islandsSvg = '';
   layouts.forEach(({ cat, items: gitems, x, y, w, h, catIdx }) => {
@@ -2579,35 +2578,23 @@ function renderNodeView() {
       const c = idx % PER_ROW, r = Math.floor(idx / PER_ROW);
       const nx = x + PAD + c * (ITEM_W + ITEM_GAP);
       const ny = y + HEAD + r * (ITEM_H + ITEM_GAP);
-      itemPos.set(item.id, { cx: nx + ITEM_W / 2, cy: ny + ITEM_H / 2 });
       const tc = { bookmark:'var(--bookmark)', tool:'var(--tool)', task:'var(--task)',
         memo:'var(--memo)', other:'var(--other)', set:'var(--set)', slack:'var(--slack)',
         place:'var(--place)' }[item.type] || 'var(--border)';
-      const label = esc((item.title || '').slice(0, 16));
-      const prefix = item.type === 'set' ? '▶ ' : '';
+      const emoji = TYPE_DEF[item.type]?.icon || '○';
+      const label = esc((item.title || '').slice(0, 14));
       islandsSvg += `<g onclick="nodeItemClick('${item.id}')" style="cursor:pointer" class="nv-item">`;
       islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${tc}" fill-opacity="0.2" stroke="${tc}" stroke-width="1.5" class="nv-rect"/>`;
-      islandsSvg += `<text x="${nx+6}" y="${ny+18}" fill="var(--text)" font-size="10" font-family="system-ui,sans-serif" pointer-events="none">${prefix}${label}</text>`;
+      islandsSvg += `<text x="${nx+5}" y="${ny+19}" font-size="11" font-family="system-ui,sans-serif" pointer-events="none">${emoji}</text>`;
+      islandsSvg += `<text x="${nx+21}" y="${ny+18}" fill="var(--text)" font-size="10" font-family="system-ui,sans-serif" pointer-events="none">${label}</text>`;
       islandsSvg += `</g>`;
     });
     islandsSvg += `</g>`;
   });
 
-  let linesSvg = '';
-  items.filter(i => i.type === 'set' && i.setItems?.length).forEach(setItem => {
-    const from = itemPos.get(setItem.id);
-    if (!from) return;
-    setItem.setItems.forEach(si => {
-      const to = itemPos.get(si.itemId);
-      if (!to) return;
-      linesSvg += `<line x1="${from.cx}" y1="${from.cy}" x2="${to.cx}" y2="${to.cy}" stroke="var(--set)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.5"/>`;
-    });
-  });
-
   el.innerHTML = `<div id="nv-wrap" style="width:100%;height:100%;overflow:hidden;position:relative;cursor:grab;user-select:none;-webkit-user-select:none">
     <svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}" style="display:block;overflow:visible">
       <g id="nv-canvas" style="transform-origin:0 0">
-        ${linesSvg}
         ${islandsSvg}
       </g>
     </svg>
