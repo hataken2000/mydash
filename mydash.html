@@ -1411,7 +1411,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.34</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.35</div>
   </div>
 </aside>
 
@@ -3089,7 +3089,7 @@ function cardClick(e, id) {
   if (!item) return;
   if (item.type === 'set') { showSetQuickPanel(id); return; }
   if (item.type === 'place') { showPlaceQuickPanel(id); return; }
-  if (item.type === 'slack') { sendSlackMessage(id); return; }
+  if (item.type === 'slack') { showSlackQuickPanel(id); return; }
   if (item.type === 'window-session') { launchWindowSession(item); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   if (item.appName) { openWithServer(item.appName); return; }
@@ -3681,7 +3681,7 @@ function iconCardClick(event, id) {
   if (!item) return;
   if (item.type === 'set') { showSetQuickPanel(id); return; }
   if (item.type === 'place') { showPlaceQuickPanel(id); return; }
-  if (item.type === 'slack') { sendSlackMessage(id); return; }
+  if (item.type === 'slack') { showSlackQuickPanel(id); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   cardClick(event, id);
 }
@@ -4697,9 +4697,17 @@ function _execSlackQPSend() {
   const msg = document.getElementById('sqkp-msg')?.value || '';
   if (!url) { toast('送信先チャンネルを選択または追加してください', '⚠️'); return; }
   _saveSlackQPMessage();
-  window.dispatchEvent(new CustomEvent('mydash-slack-send', { detail: { url, message: msg } }));
-  closeSlackQuickPanel();
-  toast('Chrome拡張にSlack送信リクエストを送りました', '💬');
+  if (window._mydashExtension) {
+    window.dispatchEvent(new CustomEvent('mydash-slack-send', { detail: { url, message: msg } }));
+    closeSlackQuickPanel();
+    toast('Chrome拡張にSlack送信リクエストを送りました', '💬');
+  } else {
+    // モバイル: メッセージをクリップボードにコピーしてSlackを開く
+    navigator.clipboard?.writeText(msg).catch(() => {});
+    window.open(url, '_blank');
+    closeSlackQuickPanel();
+    toast(msg ? 'メッセージをコピーしてSlackを開きました' : 'Slackを開きました', '💬');
+  }
 }
 
 function _saveSlackQPMessage() {
