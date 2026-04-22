@@ -203,6 +203,7 @@ code {
   <a href="#sidebar">サイドバー</a>
   <a href="#items">アイテムの種類</a>
   <a href="#operations">追加・編集・削除</a>
+  <a href="#views">表示モード</a>
   <a href="#quickadd">クイック追加</a>
   <a href="#icon">アイコンの設定</a>
   <a href="#drag">並び替え・カテゴリ変更</a>
@@ -254,9 +255,9 @@ code {
       <div class="desc">port 3737 でアプリ起動・カレンダー取得を中継</div>
     </div>
     <div class="type-card">
-      <div class="icon">📤</div>
-      <div class="name">バックアップ</div>
-      <div class="desc">JSON形式でエクスポート・インポートが可能</div>
+      <div class="icon">☁️</div>
+      <div class="name">Gist同期</div>
+      <div class="desc">GitHub Gistを使って複数端末でデータを同期</div>
     </div>
   </div>
 
@@ -318,10 +319,21 @@ code {
     <tr><td>✅ タスク</td><td>種類別フィルター。期限切れ・今日締切の未完了タスクがある場合、赤いバッジで件数表示。タブタイトルも <code>(N) MyDash</code> に変わる。選択するとツールバー下にクイックフィルター（<strong>すべて・📅 今日締切・🔴 期限超過・⚡ 進行中</strong>）が表示される</td></tr>
     <tr><td>📝 メモ</td><td>種類別フィルター</td></tr>
     <tr><td>📦 その他</td><td>種類別フィルター</td></tr>
-    <tr><td>🚀 セット</td><td>種類別フィルター</td></tr>
-    <tr><td>● カテゴリ名</td><td>カスタムカテゴリ別フィルター（カテゴリをつけると自動追加）。カテゴリごとに自動でカラードットが割り当てられる。カテゴリ名にホバーすると ✏️ が表示され、クリックでリネームできる</td></tr>
+    <tr><td>🚀 セット</td><td>種類別フィルター。選択するとツールバー下にセット名でのサブフィルターが表示される</td></tr>
+    <tr><td>💬 Slack送信</td><td>種類別フィルター</td></tr>
+    <tr><td>📍 場所</td><td>種類別フィルター</td></tr>
+    <tr><td>🖥 ウィンドウ復元</td><td>種類別フィルター（Window Saver連携）</td></tr>
+    <tr><td>📁 カテゴリ名</td><td>カスタムカテゴリ別フィルター。カテゴリごとにフォルダアイコン（色付き）で表示。カテゴリ名にホバーすると ✏️ が表示され、クリックでリネームモードに入れる</td></tr>
     <tr><td>○ 未設定</td><td>カテゴリ未設定のアイテム（整理漏れ確認用。件数が0のときは非表示）</td></tr>
   </table>
+
+  <h3>カテゴリのリネーム・削除・色変更</h3>
+  <p>カテゴリ名横の ✏️ をクリックするとリネームモードに入る。</p>
+  <div class="card-grid" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="card"><strong>📝 リネーム</strong><p style="margin:4px 0 0">テキスト入力に切り替わり、Enter で確定・Esc でキャンセル。全アイテムのカテゴリが一括変更される</p></div>
+    <div class="card"><strong>🎨 色変更</strong><p style="margin:4px 0 0">フォルダアイコンをクリックするとカラーパレットが表示される。選択した色がフォルダアイコンとノードマップの島の枠色に反映される</p></div>
+    <div class="card"><strong>🗑 削除</strong><p style="margin:4px 0 0">リネームモード中の × ボタンをクリック。確認ダイアログの後、カテゴリと全アイテムのカテゴリ設定を削除</p></div>
+  </div>
 
   <!-- ── アイテムの種類 ── -->
   <h2 id="items">アイテムの種類</h2>
@@ -344,7 +356,7 @@ code {
     <div class="type-card">
       <div class="icon">📝</div>
       <div class="name"><span class="badge badge-memo">メモ</span></div>
-      <div class="desc">Markdown対応のメモ。折りたたみ表示対応。</div>
+      <div class="desc">Markdown対応のメモ。画像・Google Mapsカード・住所の地図埋め込みに自動変換。</div>
     </div>
     <div class="type-card">
       <div class="icon">📦</div>
@@ -354,12 +366,22 @@ code {
     <div class="type-card">
       <div class="icon">🚀</div>
       <div class="name"><span class="badge badge-set">セット</span></div>
-      <div class="desc">複数アイテムを一括起動。会議資料・朝のルーティンなどに。</div>
+      <div class="desc">複数アイテムを一括起動。会議資料・朝のルーティンなどに。アラームと組み合わせて自動起動も可能。</div>
     </div>
     <div class="type-card">
       <div class="icon">💬</div>
       <div class="name"><span class="badge" style="background:rgba(74,185,95,0.14);color:#4ab95f">Slack送信</span></div>
-      <div class="desc">Slackの特定チャンネルに定型文をワンクリック送信。Chrome拡張と連携して動作。</div>
+      <div class="desc">Slackの特定チャンネルに定型文を素早く送信。Chrome拡張あり：入力欄に自動入力。なし（スマホ等）：クリップボードにコピーしてSlackを開く。</div>
+    </div>
+    <div class="type-card">
+      <div class="icon">📍</div>
+      <div class="name"><span class="badge" style="background:rgba(67,160,71,0.14);color:#43a047">場所</span></div>
+      <div class="desc">住所・Google MapsのURLを登録。クリックでMapsを開く。説明欄に住所を書くと地図を自動表示。</div>
+    </div>
+    <div class="type-card">
+      <div class="icon">🖥</div>
+      <div class="name"><span class="badge" style="background:rgba(144,164,174,0.14);color:#90a4ae">ウィンドウ復元</span></div>
+      <div class="desc">Window Saver拡張機能と連携して保存済みのウィンドウセッションを復元。Chrome拡張が必要。</div>
     </div>
   </div>
 
@@ -384,8 +406,22 @@ code {
     </div>
   </div>
 
-  <h3>編集・削除</h3>
-  <p><strong>カードをクリック</strong>で編集ダイアログを開く。右クリックでコンテキストメニュー（編集・開く・削除）も使える。</p>
+  <h3>クリック時の動作（種類別）</h3>
+  <p>カードをクリックすると種類に応じた操作が行われる。</p>
+  <table>
+    <tr><th>種類</th><th>クリック時の動作</th></tr>
+    <tr><td>🚀 セット</td><td>セットクイックパネルを開く（メンバー一覧・起動ボタン）</td></tr>
+    <tr><td>💬 Slack送信</td><td>Slackクイックパネルを開く（チャンネル選択・メッセージ送信）</td></tr>
+    <tr><td>📍 場所</td><td>場所パネルを開く（地図・リンク表示）</td></tr>
+    <tr><td>🖥 ウィンドウ復元</td><td>ウィンドウセッションを復元</td></tr>
+    <tr><td>✅ タスク・📝 メモ</td><td>クイック編集パネルを開く</td></tr>
+    <tr><td>URLあり</td><td>新しいタブでURLを開く</td></tr>
+    <tr><td>🔧 ツール/アプリ</td><td>サーバー経由でMacアプリを起動</td></tr>
+  </table>
+  <div class="tip">
+    <span class="tip-icon">💡</span>
+    <span>詳細編集ダイアログはカードのホバー時に表示される ✏️ ボタンから開ける。</span>
+  </div>
 
   <h3>タスクのステータス切り替え</h3>
   <p>ステータスバッジ（📋 未着手 など）を直接クリックすると編集ダイアログを開かずに切り替えできる。</p>
@@ -404,16 +440,31 @@ code {
 
   <h3>アイテムの非表示</h3>
   <p>セット専用など通常は見せたくないアイテムを非表示にできる。選択モードで対象アイテムを選び「非表示にする」ボタンを押す。非表示アイテムは通常時は一覧に出ない。</p>
-  <p>非表示アイテムを再表示するには、選択モードに入ると薄く表示されるので選択して「表示にする」を押す。非表示アイテムはグリッド・リスト・アイコンいずれのビューでもタイプカラーの辺はそのまま、他の辺が破線で統一表示される。</p>
+  <p>非表示アイテムを再表示するには、選択モードに入ると薄く表示されるので選択して「表示にする」を押す。</p>
 
   <h3>ホバーボタン（リスト表示）</h3>
-  <p>リスト表示でカードにホバーすると、編集・削除・複製などのアイコンボタンが右端に表示される。⭐ は左端に表示される。選択モード中はチェックボックスが優先されるため ⭐ は非表示になる。</p>
+  <p>リスト表示でカードにホバーすると、編集・削除・複製などのアイコンボタンが右端に表示される。⭐ は左端に表示される。</p>
 
   <h3>選択モード</h3>
   <p>ツールバーの選択ボタンで選択モードに入ると複数アイテムを一括操作できる。選択後のアクションは「表示にする」「非表示にする」「削除」の3種類。</p>
 
   <h3>狭幅モード（リスト表示）</h3>
-  <p>ウィンドウを狭くしてメインエリアが約450px以下になると、リストカードは自動的にコンパクト表示に切り替わる。タイトル・ステータス・優先度・⭐ボタンのみ表示し、説明文・タイプバッジ・期限日・カテゴリ・作成日は非表示になる。</p>
+  <p>ウィンドウを狭くしてメインエリアが約450px以下になると、リストカードは自動的にコンパクト表示に切り替わる。</p>
+
+  <!-- ── 表示モード ── -->
+  <h2 id="views">表示モード</h2>
+  <p>ツールバーのビューボタンで表示モードを切り替えられる。選択した表示モードは自動保存される。</p>
+  <table>
+    <tr><th>モード</th><th>内容</th></tr>
+    <tr><td>⊞ グリッド</td><td>カードをグリッド状に表示。展開ボタン（▼）で詳細を確認できる</td></tr>
+    <tr><td>≡ リスト</td><td>縦一列のコンパクト表示。ホバーで操作ボタンが出る</td></tr>
+    <tr><td>⊡ アイコン</td><td>アイコンのみを並べたコンパクト表示。大量アイテムの一覧に</td></tr>
+    <tr><td>◉ ノードマップ</td><td>カテゴリを「島」として表示し、その中にアイテムをノードで配置する俯瞰ビュー。ドラッグでパン、ホイール/ピンチでズーム。クリックで各アイテムのパネルを開ける</td></tr>
+  </table>
+  <div class="tip">
+    <span class="tip-icon">💡</span>
+    <span>ノードマップでは各アイテムに種類アイコンと設定済みのアイテムアイコン（ファビコン・絵文字）が表示される。カテゴリの色はサイドバーのフォルダアイコン色と連動する。</span>
+  </div>
 
   <!-- ── クイック追加 ── -->
   <h2 id="quickadd">クイック追加</h2>
@@ -454,14 +505,12 @@ code {
     <tr><td>新しい順 / 古い順</td><td>登録日時で並び替え</td></tr>
     <tr><td>A→Z / Z→A</td><td>タイトル順（日本語対応）</td></tr>
     <tr><td>種類順</td><td>アイテムの種類でグループ化</td></tr>
+    <tr><td>カテゴリ順</td><td>カテゴリ別にグループ化して表示</td></tr>
     <tr><td>優先度順</td><td>⭐お気に入り → 優先度（高→中→低→なし） → 期限日の順。タスク管理に最適</td></tr>
   </table>
 
   <h3>カテゴリ変更（サイドバーへドロップ）</h3>
   <p>カードをドラッグして、サイドバーの <strong>📁 カテゴリ名</strong> にドロップするとそのカテゴリに変更される。<strong>📂 未設定</strong> にドロップするとカテゴリをクリアできる。</p>
-
-  <h3>カテゴリのリネーム</h3>
-  <p>サイドバーのカテゴリ名にホバーすると ✏️ ボタンが表示される。クリックするとその場でテキスト入力に切り替わり、Enter で確定・Esc でキャンセル。確定するとそのカテゴリに属する全アイテムが一括で新しい名前に変わる。</p>
 
   <div class="tip">
     <span class="tip-icon">💡</span>
@@ -498,8 +547,8 @@ code {
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
-        <strong>設定時刻になるとセットが自動起動する</strong>
-        <p>トースト通知とビープ音で知らせる。操作不要。</p>
+        <strong>設定時刻になるとポップアップが表示される</strong>
+        <p>トースト通知とビープ音で知らせる。ポップアップから「今すぐ起動」でセットを実行できる。</p>
       </div>
     </div>
   </div>
@@ -562,26 +611,37 @@ code {
       <div class="step-num">3</div>
       <div class="step-body">
         <strong>🔔 アラームを設定（任意）</strong>
-        <p>フォーム下部のアラームトグルをONにすると繰り返し・時刻を設定できる。設定時刻になると自動でセットが起動する。</p>
+        <p>フォーム下部のアラームトグルをONにすると繰り返し・時刻を設定できる</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
-        <strong>保存 → カードの「🚀 起動」ボタンで一括実行</strong>
-        <p>URLはChromeの新ウィンドウで、アプリはそのまま起動。アラームありのセットにはカードに🔔スケジュールが表示される。</p>
+        <strong>保存 → セットカードをクリックしてクイックパネルを開く</strong>
+        <p>パネル内の「🚀 起動」ボタンで一括実行。URLはChromeの新ウィンドウでタブグループとして開く。アプリはサーバー経由で起動。</p>
       </div>
     </div>
   </div>
 
   <div class="tip">
     <span class="tip-icon">💡</span>
-    <span>セット起動にはローカルサーバー（MyDash.app）が起動している必要がある。</span>
+    <span>URLのみのセットはサーバーなしでも動作する（Chrome拡張経由で新ウィンドウ＋タブグループとして起動）。Macアプリ起動はローカルサーバーが必要。</span>
   </div>
 
   <!-- ── Slack送信 ── -->
   <h2 id="slack">Slack送信</h2>
-  <p>Slackの特定チャンネルに定型文をワンクリックで送信する機能。Chrome拡張（MyDash Slack Sender）と組み合わせて動作する。</p>
+  <p>Slackの特定チャンネルに定型文を素早く送れる機能。環境によって動作が異なる。</p>
+
+  <div class="card-grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <strong>💻 PC（Chrome拡張あり）</strong>
+      <p style="margin:4px 0 0">Chrome拡張（MyDash Slack Sender）がSlackの入力欄にメッセージを自動入力する。送信ボタンはユーザーが押す。</p>
+    </div>
+    <div class="card">
+      <strong>📱 スマホ・拡張なし</strong>
+      <p style="margin:4px 0 0">メッセージをクリップボードにコピーしてSlackのURLを開く。Slackアプリに切り替えて貼り付けて送信する。</p>
+    </div>
+  </div>
 
   <h3>アイテムの作成</h3>
   <div class="steps">
@@ -594,15 +654,15 @@ code {
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>タイトル・SlackチャンネルURL・送信するメッセージを入力して保存</strong>
-        <p>URLはSlackのチャンネルURL（ブラウザ版: https://app.slack.com/client/...）</p>
+        <strong>タイトルを入力して保存</strong>
+        <p>チャンネルURLとメッセージはクイックパネルから設定・編集できる</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <strong>カードの「💬 送信」ボタンを押すと自動送信</strong>
-        <p>グリッドビューではカードを展開すると送信ボタンが表示される</p>
+        <strong>カードをクリック → Slackクイックパネルが開く</strong>
+        <p>チャンネルを選択してメッセージを入力し「送信」ボタンを押す</p>
       </div>
     </div>
   </div>
@@ -627,14 +687,9 @@ code {
       <div class="step-num">3</div>
       <div class="step-body">
         <strong>拡張機能が追加されたらセットアップ完了</strong>
-        <p>MyDashをリロードすると拡張機能が認識され、Slack送信ボタンが動作するようになる</p>
+        <p>MyDashをリロードすると拡張機能が認識される</p>
       </div>
     </div>
-  </div>
-
-  <div class="tip">
-    <span class="tip-icon">💡</span>
-    <span>拡張機能なしでも送信ボタンは表示されるが、実際の送信は行われない。Chrome専用機能のためSafariでは動作しない。</span>
   </div>
 
   <!-- ── クイック編集 ── -->
@@ -702,7 +757,6 @@ code {
   </div>
 
   <h3>オートメーションで自動実行</h3>
-  <p>ショートカットアプリの「オートメーション」タブでトリガーを設定すると、条件に応じて自動実行できる。</p>
   <div class="card-grid" style="grid-template-columns:1fr 1fr">
     <div class="card">
       <strong>⏰ 時刻トリガー</strong>
@@ -714,20 +768,10 @@ code {
     </div>
   </div>
 
-  <div class="tip">
-    <span class="tip-icon">💡</span>
-    <span>セットのショートカットURLを使うと、スマホからURLリストをパネル表示して各リンクを開ける。ローカルサーバーなしで複数URLをまとめて確認できる。</span>
-  </div>
-  <div class="warn">
-    <span>⚠️</span>
-    <span>iOSのバックグラウンドでの位置情報検知には制限がある。オートメーション実行時に確認ダイアログが表示される場合がある（iOS設定で「自動実行を許可」にすると省略可能）。</span>
-  </div>
-
   <!-- ── カレンダー連携 ── -->
   <h2 id="calendar">Googleカレンダー連携</h2>
   <p>GoogleカレンダーのICS URLを登録すると、予定を自動インポートできる。</p>
 
-  <h3>設定方法</h3>
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
@@ -745,7 +789,7 @@ code {
       <div class="step-num">3</div>
       <div class="step-body">
         <strong>繰り返し予定 → アラーム付きセットに変換、単発予定 → タスクに変換</strong>
-        <p>繰り返し予定は「アラームあり」のセットとして追加される。起動するアイテムは後から編集で設定できる。自動同期は23時間ごと。手動で「再同期」も可能</p>
+        <p>自動同期は23時間ごと。手動で「再同期」も可能</p>
       </div>
     </div>
   </div>
@@ -772,6 +816,8 @@ code {
 
   <!-- ── データ管理 ── -->
   <h2 id="data">データ管理</h2>
+
+  <h3>JSON エクスポート / インポート</h3>
   <table>
     <tr><th>操作</th><th>場所</th><th>内容</th></tr>
     <tr><td>エクスポート</td><td>設定 → 📤 JSONエクスポート</td><td>全データをJSONファイルに保存</td></tr>
@@ -781,8 +827,33 @@ code {
     <span class="tip-icon">💡</span>
     <span>データは localStorage に保存されるため、ブラウザのキャッシュクリアで消えることがある。定期的にエクスポートしてバックアップを取ること。</span>
   </div>
+
+  <h3>GitHub Gist 同期（複数端末）</h3>
+  <p>GitHub GistをバックアップストレージとしてPC・スマホ間でデータを同期できる。</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>GitHubでPersonal Access Token（repo または gist スコープ）を発行</strong>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>設定（⚙️）→「☁️ Gist同期」→ TokenとGist IDを入力して保存</strong>
+        <p>Gist IDは空欄で保存すると新規作成される</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>「今すぐ同期」で手動アップロード。以降は起動時に自動で同期</strong>
+        <p>PC側でアップロード → スマホ側でリロードするとダウンロードされる</p>
+      </div>
+    </div>
+  </div>
   <div class="tip">
-    <span class="tip-icon">🔧</span>
+    <span class="tip-icon">💡</span>
     <span>起動時に壊れた参照（削除済みアイテムへの参照がセットやアラームに残っている場合）を自動検出・修復する。修復があった場合はトーストで件数を通知する。</span>
   </div>
 
@@ -794,13 +865,15 @@ code {
     <tr><td>🌙 ダーク / ☀️ ライト</td><td>テーマの切り替え</td></tr>
     <tr><td>アクセントカラー</td><td>メインカラーをプリセットまたはカスタムで変更</td></tr>
     <tr><td>🔒 編集中の確認</td><td>編集ダイアログを外クリックで閉じる前に確認を出す（ON/OFF）</td></tr>
-    <tr><td>🚀 セット自動起動（アラーム）</td><td>アラーム発火時にセットを自動起動するかどうか（ON/OFF）。OFFにするとポップアップで確認あり</td></tr>
     <tr><td>⏱ アラーム時刻ずらし（分）</td><td>全アラームの発火時刻を一括でずらす。-15 なら15分前、+10 なら10分後に発火</td></tr>
-    <tr><td>優先度アイコン</td><td>低・中・高それぞれのアイコンを変更できる。絵文字・テキスト・画像URL・クリップボード画像に対応。変更はリアルタイムで反映される</td></tr>
+    <tr><td>優先度アイコン</td><td>低・中・高それぞれのアイコンを変更できる。絵文字・テキスト・画像URL・クリップボード画像に対応</td></tr>
+    <tr><td>☁️ Gist同期</td><td>GitHub GistでデータをバックアップしてPC・スマホ間で同期する</td></tr>
+    <tr><td>📅 カレンダーインポート</td><td>GoogleカレンダーのICS URLを登録して予定をインポート</td></tr>
+    <tr><td>🖥 Dockインポート</td><td>macOS DockのアプリをMyDashにインポート（サーバー必要）</td></tr>
   </table>
   <div class="tip">
     <span class="tip-icon">💡</span>
-    <span>表示モード（グリッド/リスト/アイコン）とソート順は自動保存される。再読み込みしても前回の状態が復元される。</span>
+    <span>表示モード（グリッド/リスト/アイコン/ノードマップ）とソート順は自動保存される。再読み込みしても前回の状態が復元される。</span>
   </div>
 
   <!-- ── ウィジェット ── -->
@@ -838,7 +911,7 @@ code {
 
   <div class="usecase">
     <h3>🗓 会議前に資料・アプリを全部まとめて自動展開</h3>
-    <p>セットとアラームを紐付けると、会議の時刻になると<strong>自動でセットが起動</strong>する。操作は一切不要。</p>
+    <p>セットとアラームを紐付けると、会議の時刻になると<strong>ポップアップで通知</strong>され、ワンクリックでセットが起動する。</p>
   </div>
 
   <h3>準備ステップ</h3>
@@ -847,14 +920,14 @@ code {
       <div class="step-num">1</div>
       <div class="step-body">
         <strong>資料URLをブックマーク登録</strong>
-        <p>例：Google スライド、Notion ページ、参考URL など。種類「ブックマーク」で登録し、カテゴリ「会議」などをつけておく</p>
+        <p>例：Google スライド、Notion ページ、参考URL など</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
         <strong>使うアプリをツール/アプリで登録</strong>
-        <p>例：Zoom、Slack、Teams。Macアプリ名（Dockに表示されているもの）を入力。Dockインポートでまとめて登録も可</p>
+        <p>例：Zoom、Slack、Teams。Dockインポートでまとめて登録も可</p>
       </div>
     </div>
     <div class="step">
@@ -868,7 +941,7 @@ code {
       <div class="step-num">4</div>
       <div class="step-body">
         <strong>セットの編集でアラームをONにして時刻を設定</strong>
-        <p>例：「週次ミーティングセット」を編集 → 🔔 アラームをON → 毎週月曜 9:50（会議10分前）。これだけで完了！</p>
+        <p>例：毎週月曜 9:50（会議10分前）。これだけで完了！</p>
       </div>
     </div>
   </div>
@@ -876,18 +949,6 @@ code {
   <div class="tip">
     <span class="tip-icon">🎯</span>
     <span>アラームは MyDash が開いているタブでのみ発火する。MyDash.app を起動しっぱなしにしておくと確実。</span>
-  </div>
-
-  <h3>イメージ図</h3>
-  <div class="card" style="font-size:13px;line-height:2.2;color:var(--muted)">
-    🔔 月曜 9:50 にアラーム発火<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-    <strong style="color:var(--teal)">🚀 週次ミーティングセット が自動起動</strong>（操作不要）<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-    Chrome 新ウィンドウ：<strong style="color:var(--accent)">Google スライド + 参考URL</strong> が開く<br>
-    Macアプリ：<strong style="color:var(--green)">Zoom・Slack</strong> が起動<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
-    トースト通知「🔔 週次ミーティング — 「週次ミーティングセット」を自動起動しました」
   </div>
 
   <!-- ── ショートカット ── -->
