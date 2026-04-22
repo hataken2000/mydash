@@ -1411,7 +1411,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.36</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.37</div>
   </div>
 </aside>
 
@@ -2049,6 +2049,7 @@ function priorityIconHtml(priority) {
 }
 
 function getCatColor(catName) {
+  if (db.catColors?.[catName]) return db.catColors[catName];
   const cats = [...new Set(db.items.map(i => i.category).filter(Boolean))].sort();
   const idx = cats.indexOf(catName);
   return idx >= 0 ? CAT_COLORS[idx % CAT_COLORS.length] : null;
@@ -2795,7 +2796,30 @@ function updateCatList() {
 }
 
 function startCatRename(btnEl, oldName) {
+  const sidebarItem = btnEl.parentElement;
   const labelEl = btnEl.previousElementSibling;
+  const dotEl = sidebarItem.querySelector('.cat-dot');
+  const currentColor = getCatColor(oldName) || CAT_COLORS[0];
+
+  // 色変更: dot をカラーピッカー付きに差し替え
+  let pickedColor = currentColor;
+  const newDot = document.createElement('span');
+  newDot.className = 'cat-dot';
+  newDot.style.background = currentColor;
+  newDot.title = '色を変更';
+  newDot.style.cursor = 'pointer';
+  const colorInput = document.createElement('input');
+  colorInput.type = 'color';
+  colorInput.value = currentColor;
+  colorInput.style.cssText = 'position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;cursor:pointer;border:none;padding:0;margin:0';
+  const dotWrap = document.createElement('span');
+  dotWrap.style.cssText = 'position:relative;display:inline-flex;align-items:center;flex-shrink:0';
+  dotWrap.appendChild(newDot);
+  dotWrap.appendChild(colorInput);
+  dotEl.replaceWith(dotWrap);
+  colorInput.addEventListener('input', e => { newDot.style.background = e.target.value; pickedColor = e.target.value; });
+
+  // 名前入力欄
   const input = document.createElement('input');
   input.value = oldName;
   input.style.cssText = 'flex:1;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:4px;padding:0 4px;font-size:13px;min-width:0';
@@ -2814,9 +2838,11 @@ function startCatRename(btnEl, oldName) {
   let deleting = false;
   const commit = () => {
     if (deleting) return;
+    if (!db.catColors) db.catColors = {};
+    if (pickedColor !== currentColor) db.catColors[oldName] = pickedColor;
     const newName = input.value.trim();
     if (newName && newName !== oldName) renameCategory(oldName, newName);
-    else render();
+    else { save(); render(); }
   };
   delBtn.addEventListener('mousedown', e => {
     e.preventDefault();
@@ -2837,6 +2863,7 @@ function startCatRename(btnEl, oldName) {
 
 function deleteCategory(name) {
   db.items.forEach(item => { if (item.category === name) item.category = ''; });
+  if (db.catColors) delete db.catColors[name];
   if (state.filter === 'cat:' + name) state.filter = 'all';
   save();
   render();
@@ -2847,6 +2874,11 @@ function renameCategory(oldName, newName) {
   db.items.forEach(item => {
     if (item.category === oldName) item.category = newName;
   });
+  if (db.catColors?.[oldName]) {
+    if (!db.catColors) db.catColors = {};
+    db.catColors[newName] = db.catColors[oldName];
+    delete db.catColors[oldName];
+  }
   if (state.filter === 'cat:' + oldName) state.filter = 'cat:' + newName;
   save();
   render();
