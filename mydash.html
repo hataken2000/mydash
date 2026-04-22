@@ -2802,25 +2802,25 @@ function startCatRename(btnEl, oldName) {
   const dotEl = sidebarItem.querySelector('.si-icon .app-icon');
   const currentColor = getCatColor(oldName) || CAT_COLORS[0];
 
-  // カラースウォッチ（クリックでカスタムパレットポップアップ）
+  // フォルダアイコンをそのまま使いクリックでパレットを開く
   let colorPickerOpen = false;
-  const swatch = document.createElement('span');
-  swatch.title = '色を変更';
-  swatch.style.cssText = 'cursor:pointer;flex-shrink:0;display:inline-flex;align-items:center';
-  swatch.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" style="display:block"><rect width="14" height="14" rx="3" fill="${currentColor}" stroke="var(--border)" stroke-width="1"/></svg>`;
-  swatch.addEventListener('mousedown', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    colorPickerOpen = true;
+  const folderIcon = dotEl;
+  folderIcon.style.cursor = 'pointer';
+  folderIcon.title = '色を変更';
+  folderIcon.style.outline = '2px solid var(--accent)';
+  folderIcon.style.borderRadius = '3px';
+
+  const openColorPalette = (anchorEl) => {
     const existing = document.getElementById('cat-color-popup');
     if (existing) { existing.remove(); colorPickerOpen = false; return; }
-    const palette = [...CAT_COLORS, '#FF5722','#795548','#607D8B','#E91E63','#9C27B0','#00BCD4','#8BC34A','#FF9800','#ffffff','#888888'];
+    colorPickerOpen = true;
+    const palette = [...CAT_COLORS, '#FF5722','#795548','#607D8B','#E91E63','#9C27B0','#00BCD4','#8BC34A','#FF9800','#9E9E9E','#333333'];
     const popup = document.createElement('div');
     popup.id = 'cat-color-popup';
-    popup.style.cssText = 'position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px;display:grid;grid-template-columns:repeat(6,1fr);gap:5px;z-index:100000;box-shadow:0 4px 20px rgba(0,0,0,0.35)';
+    popup.style.cssText = 'position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;z-index:100000;box-shadow:0 4px 20px rgba(0,0,0,0.35)';
     palette.forEach(c => {
       const sw = document.createElement('span');
-      sw.style.cssText = `width:18px;height:18px;border-radius:4px;background:${c};cursor:pointer;border:2px solid ${c === currentColor ? 'var(--accent)' : 'transparent'};box-sizing:border-box`;
+      sw.style.cssText = `width:20px;height:20px;border-radius:4px;display:inline-block;cursor:pointer;box-shadow:0 0 0 20px ${c} inset${c === currentColor ? ',0 0 0 2px var(--accent)' : ''}`;
       sw.addEventListener('mousedown', ev => {
         ev.preventDefault();
         ev.stopPropagation();
@@ -2837,8 +2837,8 @@ function startCatRename(btnEl, oldName) {
       popup.appendChild(sw);
     });
     document.body.appendChild(popup);
-    const rect = swatch.getBoundingClientRect();
-    popup.style.left = Math.min(rect.left, window.innerWidth - popup.offsetWidth - 8) + 'px';
+    const rect = anchorEl.getBoundingClientRect();
+    popup.style.left = Math.min(rect.left, window.innerWidth - 160) + 'px';
     popup.style.top = (rect.bottom + 4) + 'px';
     setTimeout(() => {
       document.addEventListener('mousedown', function close(ev) {
@@ -2849,8 +2849,13 @@ function startCatRename(btnEl, oldName) {
         }
       });
     }, 0);
+  };
+
+  folderIcon.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    openColorPalette(folderIcon);
   });
-  dotEl.replaceWith(swatch);
 
   // 名前入力欄
   const input = document.createElement('input');
