@@ -82,6 +82,7 @@
   --icon-trash: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAgMTF2NiIgLz4KICA8cGF0aCBkPSJNMTQgMTF2NiIgLz4KICA8cGF0aCBkPSJNMTkgNnYxNGEyIDIgMCAwIDEtMiAySDdhMiAyIDAgMCAxLTItMlY2IiAvPgogIDxwYXRoIGQ9Ik0zIDZoMTgiIC8+CiAgPHBhdGggZD0iTTggNlY0YTIgMiAwIDAgMSAyLTJoNGEyIDIgMCAwIDEgMiAydjIiIC8+Cjwvc3ZnPg==');
   --icon-upload: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTIgM3YxMiIgLz4KICA8cGF0aCBkPSJtMTcgOC01LTUtNSA1IiAvPgogIDxwYXRoIGQ9Ik0yMSAxNXY0YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0ydi00IiAvPgo8L3N2Zz4=');
   --icon-widget: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI5IiB4PSIzIiB5PSIzIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI1IiB4PSIxNCIgeT0iMyIgcng9IjEiIC8+CiAgPHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iOSIgeD0iMTQiIHk9IjEyIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI1IiB4PSIzIiB5PSIxNiIgcng9IjEiIC8+Cjwvc3ZnPg==');
+  --icon-node: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjE4IiBjeT0iNSIgcj0iMyIvPjxjaXJjbGUgY3g9IjYiIGN5PSIxMiIgcj0iMyIvPjxjaXJjbGUgY3g9IjE4IiBjeT0iMTkiIHI9IjMiLz48bGluZSB4MT0iOC41OSIgeTE9IjEzLjUxIiB4Mj0iMTUuNDIiIHkyPSIxNy40OSIvPjxsaW5lIHgxPSIxNS40MSIgeTE9IjYuNTEiIHgyPSI4LjU5IiB5Mj0iMTAuNDkiLz48L3N2Zz4=');
 }
 :root {
   --bg: #0f1117;
@@ -708,6 +709,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   border-left-style: dashed !important;
 }
 .list-card:hover { border-color: var(--accent); background: var(--card-hover); }
+.nv-item:hover .nv-rect { fill-opacity: 0.45; }
 .list-icon {
   width: 36px; height: 36px;
   border-radius: 9px;
@@ -1412,7 +1414,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.40</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.0</div>
   </div>
 </aside>
 
@@ -1589,6 +1591,7 @@ body.hide-server .launch-btn { display: none !important; }
     <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="グリッド表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-grid);mask-image:var(--icon-grid)"></span></button>
     <button class="view-btn" id="btn-list" onclick="setView('list')" title="リスト表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-list);mask-image:var(--icon-list)"></span></button>
     <button class="view-btn" id="btn-icon" onclick="setView('icon')" title="アイコンのみ表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-icon-view);mask-image:var(--icon-icon-view)"></span></button>
+    <button class="view-btn" id="btn-node" onclick="setView('node')" title="ノードマップ"><span class="app-icon" style="-webkit-mask-image:var(--icon-node);mask-image:var(--icon-node)"></span></button>
     <button class="view-btn" id="btn-select" onclick="toggleSelectMode()" title="選択モード"><span class="app-icon" style="-webkit-mask-image:var(--icon-select);mask-image:var(--icon-select)"></span></button>
   </div>
   <!-- Filter tag chips -->
@@ -2494,6 +2497,8 @@ function render() {
     return;
   }
 
+  if (state.view === 'node') { renderNodeView(); return; }
+
   const sort = document.getElementById('sort-select').value;
   if (sort === 'category') {
     const grouped = [];
@@ -2524,6 +2529,145 @@ function render() {
   }
   initDragSort();
   requestAnimationFrame(() => { if (contentEl) contentEl.scrollTop = savedScroll; });
+}
+
+function renderNodeView() {
+  const items = filteredItems();
+  const el = document.getElementById('content');
+
+  const ITEM_W = 130, ITEM_H = 28, ITEM_GAP = 6, PER_ROW = 3;
+  const PAD = 12, HEAD = 28, GAP = 24;
+
+  const catMap = new Map();
+  items.forEach(item => {
+    const cat = item.category || '未設定';
+    if (!catMap.has(cat)) catMap.set(cat, []);
+    catMap.get(cat).push(item);
+  });
+
+  const cats = [...catMap.entries()];
+  const COLS = Math.max(1, Math.ceil(Math.sqrt(cats.length * 1.3)));
+
+  const layouts = cats.map(([cat, gitems], catIdx) => {
+    const rows = Math.ceil(gitems.length / PER_ROW);
+    const cols = Math.min(gitems.length, PER_ROW);
+    const w = cols * ITEM_W + (cols - 1) * ITEM_GAP + PAD * 2;
+    const h = HEAD + rows * ITEM_H + (rows - 1) * ITEM_GAP + PAD * 2;
+    return { cat, items: gitems, w, h, catIdx };
+  });
+
+  let curX = GAP, curY = GAP, rowMaxH = 0, col = 0;
+  layouts.forEach(l => {
+    if (col >= COLS) { curX = GAP; curY += rowMaxH + GAP; rowMaxH = 0; col = 0; }
+    l.x = curX; l.y = curY;
+    curX += l.w + GAP;
+    rowMaxH = Math.max(rowMaxH, l.h);
+    col++;
+  });
+
+  const svgW = Math.max(600, curX + GAP);
+  const svgH = curY + rowMaxH + GAP * 2;
+  const itemPos = new Map();
+
+  let islandsSvg = '';
+  layouts.forEach(({ cat, items: gitems, x, y, w, h, catIdx }) => {
+    const color = getCatColor(cat) || CAT_COLORS[catIdx % CAT_COLORS.length];
+    islandsSvg += `<g>`;
+    islandsSvg += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="var(--card-bg)" stroke="${color}" stroke-width="2"/>`;
+    islandsSvg += `<text x="${x+10}" y="${y+18}" fill="${color}" font-size="12" font-weight="bold" font-family="system-ui,sans-serif">${esc(cat.slice(0,24))}</text>`;
+    gitems.forEach((item, idx) => {
+      const c = idx % PER_ROW, r = Math.floor(idx / PER_ROW);
+      const nx = x + PAD + c * (ITEM_W + ITEM_GAP);
+      const ny = y + HEAD + r * (ITEM_H + ITEM_GAP);
+      itemPos.set(item.id, { cx: nx + ITEM_W / 2, cy: ny + ITEM_H / 2 });
+      const tc = { bookmark:'var(--bookmark)', tool:'var(--tool)', task:'var(--task)',
+        memo:'var(--memo)', other:'var(--other)', set:'var(--set)', slack:'var(--slack)',
+        place:'var(--place)' }[item.type] || 'var(--border)';
+      const label = esc((item.title || '').slice(0, 16));
+      const prefix = item.type === 'set' ? '▶ ' : '';
+      islandsSvg += `<g onclick="nodeItemClick('${item.id}')" style="cursor:pointer" class="nv-item">`;
+      islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${tc}" fill-opacity="0.2" stroke="${tc}" stroke-width="1.5" class="nv-rect"/>`;
+      islandsSvg += `<text x="${nx+6}" y="${ny+18}" fill="var(--text)" font-size="10" font-family="system-ui,sans-serif" pointer-events="none">${prefix}${label}</text>`;
+      islandsSvg += `</g>`;
+    });
+    islandsSvg += `</g>`;
+  });
+
+  let linesSvg = '';
+  items.filter(i => i.type === 'set' && i.setItems?.length).forEach(setItem => {
+    const from = itemPos.get(setItem.id);
+    if (!from) return;
+    setItem.setItems.forEach(si => {
+      const to = itemPos.get(si.itemId);
+      if (!to) return;
+      linesSvg += `<line x1="${from.cx}" y1="${from.cy}" x2="${to.cx}" y2="${to.cy}" stroke="var(--set)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.5"/>`;
+    });
+  });
+
+  el.innerHTML = `<div id="nv-wrap" style="width:100%;height:100%;overflow:hidden;position:relative;cursor:grab;user-select:none;-webkit-user-select:none">
+    <svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}" style="display:block;overflow:visible">
+      <g id="nv-canvas" style="transform-origin:0 0">
+        ${linesSvg}
+        ${islandsSvg}
+      </g>
+    </svg>
+    <div style="position:absolute;bottom:10px;right:14px;font-size:10px;color:var(--text-muted);background:var(--card-bg);padding:2px 8px;border-radius:4px;opacity:0.75;pointer-events:none">ドラッグ: パン　ホイール/ピンチ: ズーム</div>
+  </div>`;
+  initNodeViewPan();
+}
+
+function nodeItemClick(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  if (item.type === 'set') { showSetQuickPanel(id); return; }
+  openQuickEdit(id);
+}
+
+function initNodeViewPan() {
+  const wrap = document.getElementById('nv-wrap');
+  const canvas = document.getElementById('nv-canvas');
+  if (!wrap || !canvas) return;
+  let drag = false, sx = 0, sy = 0, tx = 16, ty = 16, scale = 1;
+  const applyT = () => { canvas.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; };
+  applyT();
+
+  wrap.addEventListener('mousedown', e => {
+    if (e.target.closest('.nv-item')) return;
+    drag = true; sx = e.clientX - tx; sy = e.clientY - ty; wrap.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', e => {
+    if (!drag) return; tx = e.clientX - sx; ty = e.clientY - sy; applyT();
+  });
+  window.addEventListener('mouseup', () => { drag = false; if (wrap) wrap.style.cursor = 'grab'; });
+
+  wrap.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = wrap.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const ns = Math.min(4, Math.max(0.1, scale * (e.deltaY > 0 ? 0.85 : 1.18)));
+    tx = mx - (mx - tx) * (ns / scale); ty = my - (my - ty) * (ns / scale);
+    scale = ns; applyT();
+  }, { passive: false });
+
+  let ltd = 0;
+  wrap.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) { drag = true; sx = e.touches[0].clientX - tx; sy = e.touches[0].clientY - ty; }
+    else if (e.touches.length === 2) { drag = false; ltd = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); }
+  }, { passive: true });
+  wrap.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length === 1 && drag) { tx = e.touches[0].clientX - sx; ty = e.touches[0].clientY - sy; applyT(); }
+    else if (e.touches.length === 2 && ltd) {
+      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      const rect = wrap.getBoundingClientRect();
+      const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+      const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+      const ns = Math.min(4, Math.max(0.1, scale * (dist / ltd)));
+      tx = mx - (mx - tx) * (ns / scale); ty = my - (my - ty) * (ns / scale);
+      scale = ns; ltd = dist; applyT();
+    }
+  }, { passive: false });
+  wrap.addEventListener('touchend', () => { drag = false; ltd = 0; }, { passive: true });
 }
 
 function typeColor(item) {
@@ -3174,6 +3318,7 @@ function setView(v) {
   document.getElementById('btn-grid').classList.toggle('active', v === 'grid');
   document.getElementById('btn-list').classList.toggle('active', v === 'list');
   document.getElementById('btn-icon').classList.toggle('active', v === 'icon');
+  document.getElementById('btn-node').classList.toggle('active', v === 'node');
   render();
 }
 
