@@ -1397,7 +1397,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.22</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.23</div>
   </div>
 </aside>
 
@@ -3976,7 +3976,7 @@ function showQuickEdit(id) {
       ${dueHtml}
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
         <div style="font-size:11px;color:${t.textMuted};font-weight:600;letter-spacing:0.5px">内容</div>
-        <button onclick="openItemInsertModal('${id}')" style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:3px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);width:11px;height:11px"></span>挿入</button>
+        <button onmousedown="event.preventDefault()" onclick="openItemInsertModal('${id}')" style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:3px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);width:11px;height:11px"></span>挿入</button>
       </div>
       <div id="qe-desc-preview" class="memo-body"
         onclick="_qeShowEdit('${id}')" title="クリックして編集"
