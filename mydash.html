@@ -1122,7 +1122,8 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   text-decoration: none; color: var(--text); font-size: 13px; line-height: 1.4;
 }
 .memo-embed-card:hover { background: var(--hover); text-decoration: none !important; }
-.memo-embed-card .mec-icon { flex-shrink:0; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+.memo-embed-card .mec-icon { flex-shrink:0; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:14px; overflow:hidden; }
+.memo-embed-card .mec-icon img { width:20px; height:20px; object-fit:contain; border-radius:3px; flex-shrink:0; }
 .memo-embed-card .mec-title { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
 .memo-embed-card .mec-sub { font-size:11px; color:var(--text-muted); flex-shrink:0; }
 
@@ -1396,7 +1397,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.19</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.20</div>
   </div>
 </aside>
 
@@ -1906,7 +1907,7 @@ body.hide-server .launch-btn { display: none !important; }
 </div>
 
 <!-- Item Insert Modal -->
-<div class="modal-overlay" id="item-insert-modal" style="display:none" onclick="if(event.target===this)closeItemInsertModal()">
+<div class="modal-overlay" id="item-insert-modal" style="display:none;z-index:100000" onclick="if(event.target===this)closeItemInsertModal()">
   <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" style="display:flex;align-items:center;gap:6px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block"></span>アイテムを挿入</div>
@@ -4074,6 +4075,7 @@ function qeSetStatus(id, status) {
 
 function closeQuickEdit(id) {
   _qeSave(id);
+  closeItemInsertModal();
   const el = document.getElementById('quick-edit-popup');
   if (el) el.remove();
   document.body.style.overflow = '';
