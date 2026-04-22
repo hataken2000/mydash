@@ -1412,7 +1412,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.38</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.39</div>
   </div>
 </aside>
 
@@ -2802,20 +2802,39 @@ function startCatRename(btnEl, oldName) {
   const dotEl = sidebarItem.querySelector('.si-icon .app-icon');
   const currentColor = getCatColor(oldName) || CAT_COLORS[0];
 
-  // 色変更: フォルダアイコンをクリックでカラーピッカーを起動
-  let pickedColor = currentColor;
+  // カラーピッカー: body直下に配置してアイコン位置に合わせる
   const colorInput = document.createElement('input');
   colorInput.type = 'color';
   colorInput.value = currentColor;
-  colorInput.style.cssText = 'position:fixed;width:0;height:0;padding:0;border:0;opacity:0;top:0;left:0;pointer-events:none';
+  colorInput.style.cssText = 'position:fixed;width:0;height:0;padding:0;border:0;opacity:0;pointer-events:none';
+  document.body.appendChild(colorInput);
+
+  colorInput.addEventListener('change', e => {
+    if (!db.catColors) db.catColors = {};
+    db.catColors[oldName] = e.target.value;
+    save();
+    colorInput.remove();
+    render();
+    // 色変更後も rename モードを継続
+    const newBtn = [...document.querySelectorAll('.cat-rename-btn')]
+      .find(b => b.parentElement.dataset.cat === oldName);
+    if (newBtn) startCatRename(newBtn, oldName);
+  });
+
+  // フォルダアイコン
   const folderIcon = document.createElement('span');
   folderIcon.className = 'app-icon';
   folderIcon.title = '色を変更';
   folderIcon.style.cssText = `-webkit-mask-image:var(--icon-folder);mask-image:var(--icon-folder);background-color:${currentColor};width:13px;height:13px;display:inline-block;cursor:pointer;flex-shrink:0`;
-  folderIcon.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); colorInput.click(); });
+  folderIcon.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    const rect = folderIcon.getBoundingClientRect();
+    colorInput.style.left = rect.left + 'px';
+    colorInput.style.top = rect.bottom + 'px';
+    colorInput.click();
+  });
   dotEl.replaceWith(folderIcon);
-  folderIcon.after(colorInput);
-  colorInput.addEventListener('input', e => { folderIcon.style.backgroundColor = e.target.value; pickedColor = e.target.value; });
 
   // 名前入力欄
   const input = document.createElement('input');
@@ -2836,15 +2855,15 @@ function startCatRename(btnEl, oldName) {
   let deleting = false;
   const commit = () => {
     if (deleting) return;
-    if (!db.catColors) db.catColors = {};
-    if (pickedColor !== currentColor) db.catColors[oldName] = pickedColor;
+    colorInput.remove();
     const newName = input.value.trim();
     if (newName && newName !== oldName) renameCategory(oldName, newName);
-    else { save(); render(); }
+    else render();
   };
   delBtn.addEventListener('mousedown', e => {
     e.preventDefault();
     deleting = true;
+    colorInput.remove();
     const cnt = db.items.filter(i => i.category === oldName).length;
     const msg = cnt > 0
       ? `「${oldName}」を削除しますか？\n${cnt}件のアイテムからカテゴリが外れます。`
@@ -2854,7 +2873,7 @@ function startCatRename(btnEl, oldName) {
   });
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); commit(); }
-    if (e.key === 'Escape') render();
+    if (e.key === 'Escape') { colorInput.remove(); render(); }
   });
   input.addEventListener('blur', commit);
 }
