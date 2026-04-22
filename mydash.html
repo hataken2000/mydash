@@ -2812,7 +2812,7 @@ function startCatRename(btnEl, oldName) {
   folderIcon.className = 'app-icon';
   folderIcon.title = '色を変更';
   folderIcon.style.cssText = `-webkit-mask-image:var(--icon-folder);mask-image:var(--icon-folder);background-color:${currentColor};width:13px;height:13px;display:inline-block;cursor:pointer;flex-shrink:0`;
-  folderIcon.onclick = (e) => { e.stopPropagation(); colorInput.click(); };
+  folderIcon.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); colorInput.click(); });
   dotEl.replaceWith(folderIcon);
   folderIcon.after(colorInput);
   colorInput.addEventListener('input', e => { folderIcon.style.backgroundColor = e.target.value; pickedColor = e.target.value; });
