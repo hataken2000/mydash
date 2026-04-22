@@ -1411,7 +1411,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.28</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.29</div>
   </div>
 </aside>
 
@@ -3348,16 +3348,43 @@ function selectType(type) {
   if (isSlack) {
     const channels = db.slackChannels || [];
     const urlEl = document.getElementById('f-url');
+    // セレクト＋追加ボタンの表示制御
+    let sel = document.getElementById('f-slack-ch-select');
+    if (!sel) {
+      sel = document.createElement('select');
+      sel.id = 'f-slack-ch-select';
+      sel.className = 'form-input';
+      sel.onchange = () => { urlEl.value = sel.value; };
+      urlEl.parentNode.insertBefore(sel, urlEl);
+    }
+    // 追加フォームの挿入（1回だけ）
+    let addRow = document.getElementById('f-slack-add-row');
+    if (!addRow) {
+      addRow = document.createElement('div');
+      addRow.id = 'f-slack-add-row';
+      addRow.style.cssText = 'display:none;flex-direction:column;gap:6px;margin-top:6px';
+      addRow.innerHTML = `
+        <div style="display:flex;gap:6px">
+          <input type="text" id="f-slack-add-name" placeholder="チャンネル名" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:6px 8px;font-size:13px;font-family:inherit">
+          <input type="text" id="f-slack-add-url" placeholder="https://app.slack.com/..." style="flex:2;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:6px 8px;font-size:13px;font-family:inherit">
+        </div>
+        <div style="display:flex;gap:6px">
+          <button type="button" onclick="_addSlackChFromEdit()" style="flex:1;padding:6px;border-radius:var(--radius-sm);border:1px solid var(--slack);background:rgba(74,185,95,0.1);color:var(--slack);cursor:pointer;font-size:12px;font-family:inherit">追加</button>
+          <button type="button" onclick="document.getElementById('f-slack-add-row').style.display='none';document.getElementById('f-slack-add-toggle').style.display=''" style="padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit">キャンセル</button>
+        </div>`;
+      urlEl.parentNode.appendChild(addRow);
+    }
+    let addToggle = document.getElementById('f-slack-add-toggle');
+    if (!addToggle) {
+      addToggle = document.createElement('button');
+      addToggle.id = 'f-slack-add-toggle';
+      addToggle.type = 'button';
+      addToggle.textContent = '+ チャンネルを追加';
+      addToggle.style.cssText = 'margin-top:4px;padding:4px 0;background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-family:inherit;text-align:left';
+      addToggle.onclick = () => { addRow.style.display = 'flex'; addToggle.style.display = 'none'; };
+      urlEl.parentNode.appendChild(addToggle);
+    }
     if (channels.length > 0) {
-      // チャンネルリストがある場合はselectに切り替え
-      let sel = document.getElementById('f-slack-ch-select');
-      if (!sel) {
-        sel = document.createElement('select');
-        sel.id = 'f-slack-ch-select';
-        sel.className = 'form-input';
-        sel.onchange = () => { urlEl.value = sel.value; };
-        urlEl.parentNode.insertBefore(sel, urlEl);
-      }
       sel.style.display = '';
       urlEl.style.display = 'none';
       const curUrl = urlEl.value || (state.editId ? '' : (localStorage.getItem('mydash_last_slack_url') || ''));
@@ -3365,10 +3392,13 @@ function selectType(type) {
         `<option value="${esc(ch.url)}"${ch.url === curUrl ? ' selected' : ''}># ${esc(ch.name)}</option>`
       ).join('');
       urlEl.value = sel.value;
+      addToggle.style.display = '';
+      addRow.style.display = 'none';
     } else {
-      const sel = document.getElementById('f-slack-ch-select');
-      if (sel) { sel.style.display = 'none'; }
+      sel.style.display = 'none';
       urlEl.style.display = '';
+      addToggle.style.display = '';
+      addRow.style.display = 'none';
       if (!state.editId) {
         const lastUrl = localStorage.getItem('mydash_last_slack_url') || '';
         if (lastUrl) urlEl.value = lastUrl;
@@ -4609,6 +4639,21 @@ function _toggleSlackChForm() {
   form.style.display = open ? 'none' : 'flex';
   btn.style.display  = open ? '' : 'none';
   if (!open) setTimeout(() => document.getElementById('sqkp-ch-name')?.focus(), 50);
+}
+
+function _addSlackChFromEdit() {
+  const name = (document.getElementById('f-slack-add-name')?.value || '').trim();
+  const url  = (document.getElementById('f-slack-add-url')?.value || '').trim();
+  if (!name || !url) { toast('名前とURLを入力してください', '⚠️'); return; }
+  if (!db.slackChannels) db.slackChannels = [];
+  db.slackChannels.push({ id: genId(), name, url });
+  save();
+  // フォームリセット
+  document.getElementById('f-slack-add-name').value = '';
+  document.getElementById('f-slack-add-url').value = '';
+  // selectTypeを再実行してセレクトを更新
+  document.getElementById('f-url').value = url;
+  selectType('slack');
 }
 
 function _addSlackQPChannel() {
