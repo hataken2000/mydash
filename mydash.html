@@ -1414,7 +1414,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.4</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.5</div>
   </div>
 </aside>
 
@@ -2583,10 +2583,21 @@ function renderNodeView() {
         place:'var(--place)' }[item.type] || 'var(--border)';
       const iconVar = TYPE_DEF[item.type]?.iconVar || 'var(--icon-box)';
       const label = esc(item.title || '');
+      const hasItemIcon = !!item.icon;
+      const isImgIcon = hasItemIcon && /^https?:|^\/|^data:/.test(item.icon);
+      const textX = nx + (hasItemIcon ? 38 : 22);
+      const textW = ITEM_W - (hasItemIcon ? 43 : 27);
       islandsSvg += `<g onclick="nodeItemClick('${item.id}')" style="cursor:pointer" class="nv-item">`;
       islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${tc}" fill-opacity="0.2" stroke="${tc}" stroke-width="1.5" class="nv-rect"/>`;
       islandsSvg += `<foreignObject x="${nx+5}" y="${ny+7}" width="14" height="14"><span xmlns="http://www.w3.org/1999/xhtml" class="app-icon" style="-webkit-mask-image:${iconVar};mask-image:${iconVar};background-color:${tc};width:14px;height:14px;display:inline-block"></span></foreignObject>`;
-      islandsSvg += `<foreignObject x="${nx+22}" y="${ny+5}" width="${ITEM_W-27}" height="18" pointer-events="none"><span xmlns="http://www.w3.org/1999/xhtml" style="display:block;font-size:10px;color:var(--text);font-family:system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:18px">${label}</span></foreignObject>`;
+      if (hasItemIcon) {
+        if (isImgIcon) {
+          islandsSvg += `<foreignObject x="${nx+21}" y="${ny+7}" width="14" height="14" pointer-events="none"><img xmlns="http://www.w3.org/1999/xhtml" src="${esc(item.icon)}" style="width:14px;height:14px;object-fit:contain;border-radius:2px" onerror="this.style.display='none'"/></foreignObject>`;
+        } else {
+          islandsSvg += `<foreignObject x="${nx+21}" y="${ny+5}" width="14" height="18" pointer-events="none"><span xmlns="http://www.w3.org/1999/xhtml" style="font-size:12px;line-height:18px;display:block;text-align:center">${esc(item.icon)}</span></foreignObject>`;
+        }
+      }
+      islandsSvg += `<foreignObject x="${textX}" y="${ny+5}" width="${textW}" height="18" pointer-events="none"><span xmlns="http://www.w3.org/1999/xhtml" style="display:block;font-size:10px;color:var(--text);font-family:system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:18px">${label}</span></foreignObject>`;
       islandsSvg += `</g>`;
     });
     islandsSvg += `</g>`;
