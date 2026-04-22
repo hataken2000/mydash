@@ -102,6 +102,8 @@
   --set: #80cbc4;
   --slack: #4ab95f;
   --window-session: #90a4ae;
+  --place: #43a047;
+  --icon-place: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMCAxMGMwIDYtOCAxMi04IDEycy04LTYtOC0xMmE4IDggMCAwIDEgMTYgMFoiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEwIiByPSIzIi8+PC9zdmc+');
   --radius: 12px;
   --radius-sm: 8px;
   --icon-active: var(--accent);
@@ -772,6 +774,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .type-set      { color: var(--set);      background: rgba(128,203,196,0.14); }
 .type-slack           { color: var(--slack);          background: rgba(74,185,95,0.14); }
 .type-window-session  { color: var(--window-session); background: rgba(144,164,174,0.14); }
+.type-place           { color: var(--place);          background: rgba(67,160,71,0.14); }
 .icon-bg-bookmark { background: rgba(79,195,247,0.10); }
 .icon-bg-tool     { background: rgba(129,199,132,0.10); }
 .icon-bg-task     { background: rgba(255,183,77,0.10); }
@@ -780,6 +783,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .icon-bg-set      { background: rgba(128,203,196,0.10); }
 .icon-bg-slack           { background: rgba(74,185,95,0.10); }
 .icon-bg-window-session  { background: rgba(144,164,174,0.10); }
+.icon-bg-place           { background: rgba(67,160,71,0.10); }
 .status-todo  { background: rgba(139,144,170,0.18); color: var(--text-muted); }
 .status-doing { background: rgba(255,183,77,0.18);  color: var(--task); }
 .status-done  { background: rgba(102,187,106,0.18); color: var(--success); }
@@ -1350,6 +1354,11 @@ body.hide-server .launch-btn { display: none !important; }
     <div class="sidebar-subitem" data-tsf="overdue" onclick="setTaskSubFilter('overdue')"><span class="app-icon" style="-webkit-mask-image:var(--icon-alert-triangle);mask-image:var(--icon-alert-triangle);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>期限超過<span class="count-badge" id="cnt-tsf-overdue" style="margin-left:auto">0</span></div>
     <div class="sidebar-subitem" data-tsf="doing"   onclick="setTaskSubFilter('doing')"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>進行中<span class="count-badge" id="cnt-tsf-doing" style="margin-left:auto">0</span></div>
   </div>
+  <div class="sidebar-item" data-filter="place" onclick="setFilter('place')">
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place)"></span></span><span class="si-label">場所</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('place')" title="場所追加">＋</button>
+    <span class="count-badge" id="cnt-place">0</span>
+  </div>
   <div class="sidebar-item" data-filter="memo" onclick="setFilter('memo')">
     <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo)"></span></span><span class="si-label">メモ</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('memo')" title="メモ追加">＋</button>
@@ -1376,7 +1385,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.16</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.17</div>
   </div>
 </aside>
 
@@ -1608,6 +1617,9 @@ body.hide-server .launch-btn { display: none !important; }
           <div class="type-option" data-type="slack" onclick="selectType('slack')">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack)"></span></span>Slack送信
           </div>
+          <div class="type-option" data-type="place" onclick="selectType('place')">
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place)"></span></span>場所
+          </div>
         </div>
       </div>
       <!-- Title -->
@@ -1630,6 +1642,17 @@ body.hide-server .launch-btn { display: none !important; }
         <div class="form-label">Macアプリ名（ローカル起動）</div>
         <input class="form-input" id="f-appname" placeholder="例: Blender, Adobe Photoshop 2025, Slack">
         <div class="icon-hint">Dockに表示されているアプリ名をそのまま入力。URLより優先して起動します。</div>
+      </div>
+      <!-- Place fields -->
+      <div class="form-group" id="f-place-group" style="display:none">
+        <div class="form-label">住所</div>
+        <input class="form-input" id="f-place-address" placeholder="〒000-0000 東京都...">
+        <div class="form-label" style="margin-top:8px">GoogleマップURL</div>
+        <input class="form-input" id="f-place-mapurl" placeholder="https://maps.google.com/..." style="margin-top:4px">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+          <button type="button" onclick="getGeoLocation()" class="btn-secondary" style="font-size:12px;padding:5px 10px;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:13px;height:13px;background-color:currentColor"></span>現在地を取得</button>
+          <span id="f-place-latlng" style="font-size:11px;color:var(--text-muted)"></span>
+        </div>
       </div>
       <!-- Description -->
       <div class="form-group">
@@ -1959,6 +1982,7 @@ const TYPE_DEF = {
   set:      { icon: '🚀', label: 'セット',        iconVar: 'var(--icon-set)' },
   slack:           { icon: '💬', label: 'Slack送信',     iconVar: 'var(--icon-slack)' },
   'window-session': { icon: '🖥️', label: 'ウィンドウ復元', iconVar: 'var(--icon-monitor)' },
+  place:            { icon: '📍', label: '場所',          iconVar: 'var(--icon-place)' },
 };
 function _iconFallback(el, type) {
   const v = TYPE_DEF[type]?.iconVar;
@@ -2237,6 +2261,42 @@ function setMemberBadge(item) {
   return `<span class="set-member-badge" onclick="${onclick}" title="セット: ${esc(titles)}">${sets.length}</span>`;
 }
 
+function placeMapHtml(item) {
+  if (item.type !== 'place') return '';
+  const mapUrl = item.mapUrl || '';
+  const addr   = item.address || '';
+  if (mapUrl && /maps\.google\.com|google\.com\/maps/.test(mapUrl)) {
+    let embedUrl = mapUrl;
+    try { const u = new URL(mapUrl); u.searchParams.set('output', 'embed'); embedUrl = u.toString(); } catch(e) {}
+    return `<div class="memo-map-embed"><a href="${esc(mapUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-embed-label">📍 ${esc(addr || 'Google マップ')}</a><iframe src="${esc(embedUrl)}" loading="lazy" allowfullscreen></iframe></div>`;
+  }
+  if (addr) {
+    const query = encodeURIComponent(addr);
+    return `<div class="memo-map-embed"><a href="https://maps.google.com/maps?q=${query}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-embed-label">📍 ${esc(addr)}</a><iframe src="https://maps.google.com/maps?q=${query}&output=embed" loading="lazy" allowfullscreen></iframe></div>`;
+  }
+  if (item.lat && item.lng) {
+    const query = `${item.lat},${item.lng}`;
+    return `<div class="memo-map-embed"><a href="https://maps.google.com/maps?q=${query}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="memo-map-embed-label">📍 ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</a><iframe src="https://maps.google.com/maps?q=${query}&output=embed" loading="lazy" allowfullscreen></iframe></div>`;
+  }
+  return '';
+}
+
+function getGeoLocation() {
+  if (!navigator.geolocation) { toast('このブラウザは位置情報に対応していません', '⚠️'); return; }
+  toast('位置情報を取得中…', '📍');
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      const ll = document.getElementById('f-place-latlng');
+      ll.textContent = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      ll.dataset.lat = lat;
+      ll.dataset.lng = lng;
+      toast('位置情報を取得しました', '✅');
+    },
+    err => toast('位置情報の取得に失敗: ' + err.message, '⚠️')
+  );
+}
+
 function setCountBadge(item) {
   if (item.type !== 'set') return '';
   const count = (item.setItems || []).filter(si => db.items.find(i => i.id === si.itemId)).length;
@@ -2389,9 +2449,9 @@ function typeColor(item) {
   const isLight = document.body.classList.contains('light');
   return isLight
     ? ({ bookmark:'var(--bookmark)', tool:'var(--tool)', task:'var(--task)',
-         memo:'var(--memo)', other:'var(--other)', set:'var(--set)', slack:'var(--slack)' }[item.type] || 'var(--border)')
+         memo:'var(--memo)', other:'var(--other)', set:'var(--set)', slack:'var(--slack)', place:'var(--place)' }[item.type] || 'var(--border)')
     : ({ bookmark:'rgba(79,195,247,0.45)', tool:'rgba(129,199,132,0.45)', task:'rgba(255,183,77,0.45)',
-         memo:'rgba(244,143,177,0.45)', other:'rgba(206,147,216,0.45)', set:'rgba(128,203,196,0.45)', slack:'rgba(74,185,95,0.45)' }[item.type] || 'var(--border)');
+         memo:'rgba(244,143,177,0.45)', other:'rgba(206,147,216,0.45)', set:'rgba(128,203,196,0.45)', slack:'rgba(74,185,95,0.45)', place:'rgba(67,160,71,0.45)' }[item.type] || 'var(--border)');
 }
 
 function gridCard(item) {
@@ -2406,6 +2466,7 @@ function gridCard(item) {
     (item.type === 'memo' && item.desc) ||
     item.type === 'set' ||
     (item.type === 'slack' && item.slackMessage) ||
+    (item.type === 'place' && (item.address || item.mapUrl || item.lat)) ||
     (['bookmark','tool','task','other'].includes(item.type) && item.desc)
   );
   const expandBtn = hasExpand
@@ -2428,6 +2489,8 @@ function gridCard(item) {
       expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
         ${preview}${alarmHtml}
       </div>`;
+    } else if (item.type === 'place') {
+      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">${placeMapHtml(item)}</div>`;
     } else if (item.type === 'slack') {
       const msg = item.slackMessage || '';
       expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
@@ -2574,7 +2637,7 @@ function listCard(item) {
     <div class="list-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
     <div class="list-info">
       <div class="list-title">${esc(item.title)}</div>
-      <div class="list-desc">${esc(item.desc || item.url || (item.tags||[]).join(', ') || '')}</div>
+      <div class="list-desc">${item.type === 'place' ? esc(item.address || item.mapUrl || '') : esc(item.desc || item.url || (item.tags||[]).join(', ') || '')}</div>
     </div>
     <div class="list-meta">
       ${pri} ${typeBadge(item)} ${dueBadge(item)} ${cat}
@@ -2596,7 +2659,7 @@ function updateCounts() {
   const visibleItems = showServer ? db.items : db.items.filter(i => !i.appName && i.type !== 'window-session');
   document.getElementById('cnt-all').textContent = visibleItems.length;
   document.getElementById('cnt-starred').textContent = visibleItems.filter(i => i.starred).length;
-  ['bookmark','tool','task','memo','other','set','slack','window-session'].forEach(t => {
+  ['bookmark','tool','task','place','memo','other','set','slack','window-session'].forEach(t => {
     const count = visibleItems.filter(i => i.type === t).length;
     document.getElementById(`cnt-${t}`).textContent = count;
     const sidebarEl = document.querySelector(`.sidebar-item[data-filter="${t}"]`);
@@ -3198,6 +3261,7 @@ function selectType(type) {
   const isTask  = type === 'task';
   const isTool  = type === 'tool';
   const isSet   = type === 'set';
+  const isPlace = type === 'place';
   document.getElementById('f-url-group').style.display = hasUrl ? '' : 'none';
   document.getElementById('f-url-label').textContent   = isSlack ? 'チャンネルURL' : 'URL / パス';
   document.getElementById('f-url').placeholder         = isSlack ? 'https://app.slack.com/client/...' : 'https://...';
@@ -3218,6 +3282,8 @@ function selectType(type) {
   document.getElementById('f-set-items-group').style.display = isSet ? '' : 'none';
   document.getElementById('f-set-alarm-group').style.display = isSet ? '' : 'none';
   if (isSet) renderSetItemsList();
+  document.getElementById('f-place-group').style.display = isPlace ? '' : 'none';
+  if (!isPlace) { document.getElementById('f-place-latlng').textContent = ''; document.getElementById('f-place-latlng').dataset.lat = ''; document.getElementById('f-place-latlng').dataset.lng = ''; }
   updateIconPreview();
 }
 
@@ -3276,6 +3342,16 @@ function editItem(id) {
   document.getElementById('f-priority').value = item.priority || 'medium';
   document.getElementById('f-due').value = item.dueDate || (item.type === 'task' ? new Date().toISOString().slice(0, 10) : '');
   document.getElementById('f-due-time').value = item.dueTime || '';
+  if (item.type === 'place') {
+    document.getElementById('f-place-address').value = item.address || '';
+    document.getElementById('f-place-mapurl').value = item.mapUrl || '';
+    const ll = document.getElementById('f-place-latlng');
+    if (item.lat && item.lng) {
+      ll.textContent = `📍 ${item.lat.toFixed(5)}, ${item.lng.toFixed(5)}`;
+      ll.dataset.lat = item.lat;
+      ll.dataset.lng = item.lng;
+    }
+  }
   renderTags();
   updateIconPreview();
   // セットのアラーム設定を復元
@@ -3346,6 +3422,13 @@ function saveItem() {
     dueDate:  document.getElementById('f-due').value || null,
     dueTime:  document.getElementById('f-due-time').value || null,
   };
+
+  if (state.type === 'place') {
+    data.address = document.getElementById('f-place-address').value.trim() || null;
+    data.mapUrl  = document.getElementById('f-place-mapurl').value.trim() || null;
+    const ll = document.getElementById('f-place-latlng');
+    if (ll.dataset.lat) { data.lat = parseFloat(ll.dataset.lat); data.lng = parseFloat(ll.dataset.lng); }
+  }
 
   if (state.type === 'set') {
     data.setItems = [...state.setItems];
