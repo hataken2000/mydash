@@ -1397,7 +1397,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.20</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.21</div>
   </div>
 </aside>
 
@@ -4748,14 +4748,12 @@ function renderItemInsertList() {
 function insertItemEmbed(itemId) {
   const ta = document.getElementById('qe-desc');
   if (!ta) return;
+  // プレビュー→編集モードに切り替えてから挿入
+  _qeShowEdit(_iimTargetId);
   const embed = `[[${itemId}]]`;
-  const start = ta.selectionStart ?? ta.value.length;
-  const end = ta.selectionEnd ?? ta.value.length;
-  const before = ta.value.slice(0, start);
-  const after = ta.value.slice(end);
-  const newline = (before && !before.endsWith('\n')) ? '\n' : '';
-  ta.value = before + newline + embed + '\n' + after;
-  ta.selectionStart = ta.selectionEnd = before.length + newline.length + embed.length + 1;
+  const val = ta.value;
+  const newline = (val && !val.endsWith('\n')) ? '\n' : '';
+  ta.value = val + newline + embed + '\n';
   closeItemInsertModal();
   ta.focus();
 }
