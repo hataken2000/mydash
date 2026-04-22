@@ -2803,6 +2803,7 @@ function startCatRename(btnEl, oldName) {
   const currentColor = getCatColor(oldName) || CAT_COLORS[0];
 
   // カラーピッカー: body直下に配置してアイコン位置に合わせる
+  let colorPickerOpen = false;
   const colorInput = document.createElement('input');
   colorInput.type = 'color';
   colorInput.value = currentColor;
@@ -2810,6 +2811,7 @@ function startCatRename(btnEl, oldName) {
   document.body.appendChild(colorInput);
 
   colorInput.addEventListener('change', e => {
+    colorPickerOpen = false;
     if (!db.catColors) db.catColors = {};
     db.catColors[oldName] = e.target.value;
     save();
@@ -2820,6 +2822,10 @@ function startCatRename(btnEl, oldName) {
       .find(b => b.parentElement.dataset.cat === oldName);
     if (newBtn) startCatRename(newBtn, oldName);
   });
+  // キャンセル時（Escape等）の後処理
+  colorInput.addEventListener('blur', () => {
+    setTimeout(() => { if (colorPickerOpen) { colorPickerOpen = false; input.focus(); } }, 150);
+  });
 
   // フォルダアイコン
   const folderIcon = document.createElement('span');
@@ -2829,10 +2835,11 @@ function startCatRename(btnEl, oldName) {
   folderIcon.addEventListener('mousedown', e => {
     e.preventDefault();
     e.stopPropagation();
+    colorPickerOpen = true;
     const rect = folderIcon.getBoundingClientRect();
     colorInput.style.left = rect.left + 'px';
     colorInput.style.top = rect.bottom + 'px';
-    colorInput.click();
+    try { colorInput.showPicker(); } catch(_) { colorInput.click(); }
   });
   dotEl.replaceWith(folderIcon);
 
@@ -2854,7 +2861,7 @@ function startCatRename(btnEl, oldName) {
 
   let deleting = false;
   const commit = () => {
-    if (deleting) return;
+    if (deleting || colorPickerOpen) return;
     colorInput.remove();
     const newName = input.value.trim();
     if (newName && newName !== oldName) renameCategory(oldName, newName);
