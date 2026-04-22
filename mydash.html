@@ -1411,7 +1411,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.35</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.36</div>
   </div>
 </aside>
 
@@ -2799,20 +2799,48 @@ function startCatRename(btnEl, oldName) {
   const input = document.createElement('input');
   input.value = oldName;
   input.style.cssText = 'flex:1;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:4px;padding:0 4px;font-size:13px;min-width:0';
+
+  const delBtn = document.createElement('button');
+  delBtn.title = 'カテゴリを削除';
+  delBtn.style.cssText = 'background:none;border:none;cursor:pointer;padding:0 2px;flex-shrink:0;line-height:1;display:flex;align-items:center';
+  delBtn.innerHTML = `<span class="app-icon" style="-webkit-mask-image:var(--icon-close);mask-image:var(--icon-close);background-color:#e74c3c;width:13px;height:13px;display:inline-block"></span>`;
+
   btnEl.style.display = 'none';
   labelEl.replaceWith(input);
+  input.after(delBtn);
   input.focus();
   input.select();
+
+  let deleting = false;
   const commit = () => {
+    if (deleting) return;
     const newName = input.value.trim();
     if (newName && newName !== oldName) renameCategory(oldName, newName);
     else render();
   };
+  delBtn.addEventListener('mousedown', e => {
+    e.preventDefault();
+    deleting = true;
+    const cnt = db.items.filter(i => i.category === oldName).length;
+    const msg = cnt > 0
+      ? `「${oldName}」を削除しますか？\n${cnt}件のアイテムからカテゴリが外れます。`
+      : `「${oldName}」を削除しますか？`;
+    if (confirm(msg)) deleteCategory(oldName);
+    else { deleting = false; render(); }
+  });
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); commit(); }
     if (e.key === 'Escape') render();
   });
   input.addEventListener('blur', commit);
+}
+
+function deleteCategory(name) {
+  db.items.forEach(item => { if (item.category === name) item.category = ''; });
+  if (state.filter === 'cat:' + name) state.filter = 'all';
+  save();
+  render();
+  toast(`「${name}」を削除しました`);
 }
 
 function renameCategory(oldName, newName) {
