@@ -1412,7 +1412,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.39</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.40</div>
   </div>
 </aside>
 
@@ -2817,10 +2817,12 @@ function startCatRename(btnEl, oldName) {
     const palette = [...CAT_COLORS, '#FF5722','#795548','#607D8B','#E91E63','#9C27B0','#00BCD4','#8BC34A','#FF9800','#9E9E9E','#333333'];
     const popup = document.createElement('div');
     popup.id = 'cat-color-popup';
-    popup.style.cssText = 'position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;z-index:100000;box-shadow:0 4px 20px rgba(0,0,0,0.35)';
+    popup.style.cssText = 'position:fixed;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:7px;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;z-index:100000;box-shadow:0 4px 20px rgba(0,0,0,0.35)';
     palette.forEach(c => {
-      const sw = document.createElement('span');
-      sw.style.cssText = `width:20px;height:20px;border-radius:4px;display:inline-block;cursor:pointer;box-shadow:0 0 0 20px ${c} inset${c === currentColor ? ',0 0 0 2px var(--accent)' : ''}`;
+      const sw = document.createElement('div');
+      sw.style.cssText = 'width:20px;height:20px;cursor:pointer;flex-shrink:0';
+      const stroke = c === currentColor ? ' stroke="#7c83fd" stroke-width="2.5"' : '';
+      sw.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" style="display:block"><rect width="20" height="20" rx="3" fill="${c}"${stroke}/></svg>`;
       sw.addEventListener('mousedown', ev => {
         ev.preventDefault();
         ev.stopPropagation();
