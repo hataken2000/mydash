@@ -1411,7 +1411,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.31</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.32</div>
   </div>
 </aside>
 
@@ -5602,6 +5602,7 @@ async function gistDownload() {
     const localOnlyIds = merged.map(i => i.id).filter(id => !remoteOrder.includes(id));
     db.items = merged;
     db.itemOrder = [...remoteOrder, ...localOnlyIds];
+    if (remote.slackChannels) db.slackChannels = remote.slackChannels;
 
     save();
     render();
