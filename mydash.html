@@ -1414,7 +1414,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.3</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.4</div>
   </div>
 </aside>
 
@@ -2604,10 +2604,17 @@ function renderNodeView() {
 }
 
 function nodeItemClick(id) {
+  if (state.selectMode) { toggleItemSelect(id, !state.selectedIds.has(id)); return; }
   const item = db.items.find(i => i.id === id);
   if (!item) return;
   if (item.type === 'set') { showSetQuickPanel(id); return; }
-  openQuickEdit(id);
+  if (item.type === 'place') { showPlaceQuickPanel(id); return; }
+  if (item.type === 'slack') { showSlackQuickPanel(id); return; }
+  if (item.type === 'window-session') { launchWindowSession(item); return; }
+  if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
+  if (item.appName) { openWithServer(item.appName); return; }
+  if (item.url) { window.open(item.url, '_blank'); return; }
+  editItem(id);
 }
 
 function initNodeViewPan() {
