@@ -2802,29 +2802,54 @@ function startCatRename(btnEl, oldName) {
   const dotEl = sidebarItem.querySelector('.si-icon .app-icon');
   const currentColor = getCatColor(oldName) || CAT_COLORS[0];
 
-  // カラーピッカー: visible なスウォッチとして配置（設定画面と同じ方式）
+  // カラースウォッチ（クリックでカスタムパレットポップアップ）
   let colorPickerOpen = false;
-  const colorInput = document.createElement('input');
-  colorInput.type = 'color';
-  colorInput.value = currentColor;
-  colorInput.title = '色を変更';
-  colorInput.style.cssText = 'width:16px;height:16px;border-radius:3px;border:1px solid var(--border);cursor:pointer;padding:0;flex-shrink:0';
-  colorInput.addEventListener('mousedown', e => { e.stopPropagation(); colorPickerOpen = true; });
-  colorInput.addEventListener('change', e => {
-    colorPickerOpen = false;
-    if (!db.catColors) db.catColors = {};
-    db.catColors[oldName] = e.target.value;
-    save();
-    render();
-    // 色変更後も rename モードを継続
-    const newBtn = [...document.querySelectorAll('.cat-rename-btn')]
-      .find(b => b.parentElement.dataset.cat === oldName);
-    if (newBtn) startCatRename(newBtn, oldName);
+  const swatch = document.createElement('span');
+  swatch.title = '色を変更';
+  swatch.style.cssText = `width:14px;height:14px;border-radius:3px;background:${currentColor};border:1px solid rgba(255,255,255,0.3);cursor:pointer;flex-shrink:0;display:inline-block`;
+  swatch.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    colorPickerOpen = true;
+    const existing = document.getElementById('cat-color-popup');
+    if (existing) { existing.remove(); colorPickerOpen = false; return; }
+    const palette = [...CAT_COLORS, '#FF5722','#795548','#607D8B','#E91E63','#9C27B0','#00BCD4','#8BC34A','#FF9800','#ffffff','#888888'];
+    const popup = document.createElement('div');
+    popup.id = 'cat-color-popup';
+    popup.style.cssText = 'position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px;display:grid;grid-template-columns:repeat(6,1fr);gap:5px;z-index:100000;box-shadow:0 4px 20px rgba(0,0,0,0.35)';
+    palette.forEach(c => {
+      const sw = document.createElement('span');
+      sw.style.cssText = `width:18px;height:18px;border-radius:4px;background:${c};cursor:pointer;border:2px solid ${c === currentColor ? 'var(--accent)' : 'transparent'};box-sizing:border-box`;
+      sw.addEventListener('mousedown', ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        popup.remove();
+        colorPickerOpen = false;
+        if (!db.catColors) db.catColors = {};
+        db.catColors[oldName] = c;
+        save();
+        render();
+        const newBtn = [...document.querySelectorAll('.cat-rename-btn')]
+          .find(b => b.parentElement.dataset.cat === oldName);
+        if (newBtn) startCatRename(newBtn, oldName);
+      });
+      popup.appendChild(sw);
+    });
+    document.body.appendChild(popup);
+    const rect = swatch.getBoundingClientRect();
+    popup.style.left = Math.min(rect.left, window.innerWidth - popup.offsetWidth - 8) + 'px';
+    popup.style.top = (rect.bottom + 4) + 'px';
+    setTimeout(() => {
+      document.addEventListener('mousedown', function close(ev) {
+        if (!popup.contains(ev.target)) {
+          popup.remove();
+          colorPickerOpen = false;
+          document.removeEventListener('mousedown', close);
+        }
+      });
+    }, 0);
   });
-  colorInput.addEventListener('blur', () => {
-    setTimeout(() => { if (colorPickerOpen) { colorPickerOpen = false; input.focus(); } }, 150);
-  });
-  dotEl.replaceWith(colorInput);
+  dotEl.replaceWith(swatch);
 
   // 名前入力欄
   const input = document.createElement('input');
