@@ -1411,7 +1411,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.26</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.27</div>
   </div>
 </aside>
 
@@ -1533,16 +1533,6 @@ body.hide-server .launch-btn { display: none !important; }
             <button class="io-btn" style="flex:1;justify-content:center;display:flex;align-items:center;gap:5px" onclick="gistDownload()"><span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px"></span>Gistから読込</button>
           </div>
           <div id="gist-status" style="font-size:11px;color:var(--text-muted);text-align:center;min-height:14px"></div>
-        </div>
-
-        <div class="settings-section-title" style="margin-top:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;margin-right:5px"></span>Slack チャンネル</div>
-        <div class="settings-section-body">
-          <div id="slack-ch-settings-list" style="display:flex;flex-direction:column;gap:4px"></div>
-          <div style="display:flex;gap:6px;margin-top:4px">
-            <input type="text" id="new-ch-name" placeholder="チャンネル名" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 8px;font-size:12px;font-family:inherit">
-            <input type="text" id="new-ch-url" placeholder="https://app.slack.com/..." style="flex:2;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 8px;font-size:12px;font-family:inherit">
-            <button onclick="addSlackChannel()" style="padding:5px 10px;border-radius:var(--radius-sm);border:1px solid var(--slack);background:rgba(74,185,95,0.1);color:var(--slack);cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap">追加</button>
-          </div>
         </div>
 
         <div class="settings-section-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:13px;height:13px;margin-right:5px"></span>動作</div>
@@ -1958,27 +1948,15 @@ body.hide-server .launch-btn { display: none !important; }
   </div>
 </div>
 
-<!-- Slack Confirm Modal -->
-<div class="modal-overlay" id="slack-modal" style="display:none" onclick="if(event.target===this)closeSlackModal()">
-  <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
+<!-- Slack Quick Panel -->
+<div class="modal-overlay" id="slack-quick-panel" style="display:none" onclick="if(event.target===this)closeSlackQuickPanel()">
+  <div class="modal" style="max-width:480px" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <div class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>Slack に送信</div>
-      <button class="modal-close" onclick="closeSlackModal()">✕</button>
+      <div class="modal-title" id="sqkp-title" style="display:flex;align-items:center;gap:8px"></div>
+      <button class="modal-close" onclick="closeSlackQuickPanel()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <div class="form-label">送信先チャンネル</div>
-        <div id="slack-channel-select" style="display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto"></div>
-      </div>
-      <div class="form-group">
-        <div class="form-label">送信テキスト</div>
-        <div id="slack-confirm-msg" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-size:13px;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto"></div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeSlackModal()">キャンセル</button>
-      <button class="btn-primary" onclick="execSlackSend()" style="background:var(--slack);display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);width:14px;height:14px;background-color:white"></span>送信</button>
-    </div>
+    <div class="modal-body" id="sqkp-body"></div>
+    <div class="modal-footer" id="sqkp-footer"></div>
   </div>
 </div>
 
@@ -2596,7 +2574,7 @@ function gridCard(item) {
       const msg = item.slackMessage || '';
       expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
         ${msg ? `<div style="margin-bottom:8px;white-space:pre-wrap;word-break:break-word">${esc(msg)}</div>` : ''}
-        <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border:1px solid rgba(74,185,95,0.4);width:100%" onclick="event.stopPropagation();sendSlackMessage('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
+        <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border:1px solid rgba(74,185,95,0.4);width:100%" onclick="event.stopPropagation();showSlackQuickPanel('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
       </div>`;
     } else if (item.desc) {
       expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">${esc(item.desc)}</div>`;
@@ -2650,7 +2628,7 @@ function listCard(item) {
       </div>
       <div class="list-meta">
         ${typeBadge(item)}
-        <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();sendSlackMessage('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
+        <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();showSlackQuickPanel('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
         <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
         <div class="list-actions">
           <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
@@ -4508,9 +4486,15 @@ function _toSlackDeepLink(url) {
   return url || '';
 }
 
-function sendSlackMessage(id) {
+// ═══════════════════════════════════════════
+// Slack クイックパネル
+// ═══════════════════════════════════════════
+let _sqkpItemId = null;
+let _sqkpSelectedUrl = null;
+
+function showSlackQuickPanel(id) {
   const item = db.items.find(i => i.id === id);
-  if (!item) return;
+  if (!item || item.type !== 'slack') return;
 
   // スマホ: クリップボードにコピー → Slackアプリをdeep linkで開く
   if (navigator.maxTouchPoints > 0 && window.innerWidth < 1024) {
@@ -4526,51 +4510,114 @@ function sendSlackMessage(id) {
     return;
   }
 
-  // PC: 確認モーダル → Chrome拡張で送信
-  _slackSendTarget = { url: item.url, message: item.slackMessage || '' };
-  _renderSlackChannelSelect(item.url);
-  document.getElementById('slack-confirm-msg').textContent = item.slackMessage || '（メッセージなし）';
-  document.getElementById('slack-modal').style.display = 'flex';
+  _sqkpItemId = id;
+  const channels = db.slackChannels || [];
+  const defIdx = channels.findIndex(c => c.url === item.url);
+  _sqkpSelectedUrl = channels.length > 0 ? channels[Math.max(0, defIdx)].url : (item.url || '');
+
+  const tc = typeColor(item);
+  document.getElementById('sqkp-title').innerHTML =
+    `<span style="color:${tc};display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;font-size:16px">${iconHtml(item,'sm')}</span>${esc(item.title)}`;
+
+  _renderSlackQPBody(item);
+
+  document.getElementById('sqkp-footer').innerHTML =
+    `<button class="btn-secondary" onclick="closeSlackQuickPanel();editItem('${id}')">詳細編集</button>
+     <button class="btn-primary" onclick="_execSlackQPSend()" style="background:var(--slack);display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);width:14px;height:14px;background-color:white"></span>送信</button>`;
+
+  document.getElementById('slack-quick-panel').style.display = 'flex';
 }
 
-function _renderSlackChannelSelect(defaultUrl) {
+function _renderSlackQPBody(item) {
   const channels = db.slackChannels || [];
-  const el = document.getElementById('slack-channel-select');
-  if (!el) return;
-  if (channels.length === 0) {
-    el.innerHTML = `<div style="font-size:12px;color:var(--text-muted);padding:4px 0;word-break:break-all">${esc(defaultUrl || '（URLなし）')}</div>`;
-    return;
-  }
-  let selIdx = channels.findIndex(c => c.url === defaultUrl);
-  if (selIdx < 0) selIdx = 0;
-  _slackSendTarget.url = channels[selIdx].url;
-  el.innerHTML = channels.map((ch, i) =>
-    `<div class="slack-ch-item${i === selIdx ? ' active' : ''}" onclick="_selectSlackChannel(${i})">
-      <span class="ch-name"># ${esc(ch.name)}</span>
-      <span class="ch-url">${esc(ch.url)}</span>
-    </div>`
-  ).join('');
+  const chListHtml = channels.length > 0
+    ? channels.map((ch, i) =>
+        `<div class="slack-ch-item${ch.url === _sqkpSelectedUrl ? ' active' : ''}" onclick="_selectSlackQPChannel(${i})">
+          <span class="ch-name"># ${esc(ch.name)}</span>
+          <span class="ch-url">${esc(ch.url)}</span>
+          <button onmousedown="event.preventDefault()" onclick="event.stopPropagation();_deleteSlackQPChannel('${ch.id}')" style="flex-shrink:0;padding:1px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:11px;margin-left:4px">×</button>
+        </div>`
+      ).join('')
+    : `<div style="font-size:12px;color:var(--text-muted);padding:2px 0">まだチャンネルが登録されていません</div>`;
+
+  document.getElementById('sqkp-body').innerHTML = `
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px">送信先チャンネル</div>
+      <div id="sqkp-ch-list" style="display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto">${chListHtml}</div>
+      <div id="sqkp-ch-form" style="display:none;flex-direction:column;gap:6px;margin-top:8px">
+        <div style="display:flex;gap:6px">
+          <input type="text" id="sqkp-ch-name" placeholder="チャンネル名" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:6px 8px;font-size:13px;font-family:inherit">
+          <input type="text" id="sqkp-ch-url" placeholder="https://app.slack.com/..." style="flex:2;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:6px 8px;font-size:13px;font-family:inherit">
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="_addSlackQPChannel()" style="flex:1;padding:6px;border-radius:var(--radius-sm);border:1px solid var(--slack);background:rgba(74,185,95,0.1);color:var(--slack);cursor:pointer;font-size:12px;font-family:inherit">追加</button>
+          <button onclick="_toggleSlackChForm()" style="padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit">キャンセル</button>
+        </div>
+      </div>
+      <button id="sqkp-ch-add-btn" onclick="_toggleSlackChForm()" style="margin-top:6px;width:100%;padding:5px;border-radius:var(--radius-sm);border:1px dashed var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px"><span style="font-size:14px;line-height:1">+</span>チャンネルを追加</button>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px">メッセージ</div>
+      <textarea id="sqkp-msg" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;line-height:1.7;min-height:80px;resize:vertical;box-sizing:border-box;outline:none;font-family:inherit">${esc(item.slackMessage || '')}</textarea>
+    </div>`;
 }
 
-function _selectSlackChannel(idx) {
+function _selectSlackQPChannel(idx) {
   const channels = db.slackChannels || [];
-  if (!channels[idx] || !_slackSendTarget) return;
-  _slackSendTarget.url = channels[idx].url;
-  document.querySelectorAll('#slack-channel-select .slack-ch-item').forEach((el, i) => {
+  if (!channels[idx]) return;
+  _sqkpSelectedUrl = channels[idx].url;
+  document.querySelectorAll('#sqkp-ch-list .slack-ch-item').forEach((el, i) => {
     el.classList.toggle('active', i === idx);
   });
 }
 
-function closeSlackModal() {
-  document.getElementById('slack-modal').style.display = 'none';
-  _slackSendTarget = null;
+function _toggleSlackChForm() {
+  const form = document.getElementById('sqkp-ch-form');
+  const btn  = document.getElementById('sqkp-ch-add-btn');
+  if (!form || !btn) return;
+  const open = form.style.display === 'flex';
+  form.style.display = open ? 'none' : 'flex';
+  btn.style.display  = open ? '' : 'none';
+  if (!open) setTimeout(() => document.getElementById('sqkp-ch-name')?.focus(), 50);
 }
 
-function execSlackSend() {
-  if (!_slackSendTarget) return;
-  window.dispatchEvent(new CustomEvent('mydash-slack-send', { detail: _slackSendTarget }));
-  closeSlackModal();
+function _addSlackQPChannel() {
+  const name = (document.getElementById('sqkp-ch-name')?.value || '').trim();
+  const url  = (document.getElementById('sqkp-ch-url')?.value || '').trim();
+  if (!name || !url) { toast('名前とURLを入力してください', '⚠️'); return; }
+  if (!db.slackChannels) db.slackChannels = [];
+  db.slackChannels.push({ id: genId(), name, url });
+  save();
+  _sqkpSelectedUrl = url;
+  const item = db.items.find(i => i.id === _sqkpItemId);
+  if (item) _renderSlackQPBody(item);
+}
+
+function _deleteSlackQPChannel(chId) {
+  if (!db.slackChannels) return;
+  const deleted = db.slackChannels.find(c => c.id === chId);
+  db.slackChannels = db.slackChannels.filter(c => c.id !== chId);
+  save();
+  if (deleted?.url === _sqkpSelectedUrl) {
+    _sqkpSelectedUrl = db.slackChannels.length > 0 ? db.slackChannels[0].url : '';
+  }
+  const item = db.items.find(i => i.id === _sqkpItemId);
+  if (item) _renderSlackQPBody(item);
+}
+
+function _execSlackQPSend() {
+  const url = _sqkpSelectedUrl;
+  const msg = document.getElementById('sqkp-msg')?.value || '';
+  if (!url) { toast('送信先チャンネルを選択または追加してください', '⚠️'); return; }
+  window.dispatchEvent(new CustomEvent('mydash-slack-send', { detail: { url, message: msg } }));
+  closeSlackQuickPanel();
   toast('Chrome拡張にSlack送信リクエストを送りました', '💬');
+}
+
+function closeSlackQuickPanel() {
+  document.getElementById('slack-quick-panel').style.display = 'none';
+  _sqkpItemId = null;
+  _sqkpSelectedUrl = null;
 }
 
 // ═══════════════════════════════════════════
@@ -5362,45 +5409,6 @@ function openSettingsModal() {
     document.getElementById('pi-' + level).value = val;
     updatePiPreview(level);
   });
-  renderSlackChannelSettings();
-}
-
-function renderSlackChannelSettings() {
-  const list = document.getElementById('slack-ch-settings-list');
-  if (!list) return;
-  const channels = db.slackChannels || [];
-  if (channels.length === 0) {
-    list.innerHTML = '<div style="font-size:12px;color:var(--text-muted)">チャンネルが未登録です</div>';
-    return;
-  }
-  list.innerHTML = channels.map(ch =>
-    `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm)">
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600"># ${esc(ch.name)}</div>
-        <div style="font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(ch.url)}</div>
-      </div>
-      <button onclick="deleteSlackChannel('${ch.id}')" style="padding:3px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit">削除</button>
-    </div>`
-  ).join('');
-}
-
-function addSlackChannel() {
-  const name = (document.getElementById('new-ch-name').value || '').trim();
-  const url  = (document.getElementById('new-ch-url').value || '').trim();
-  if (!name || !url) { toast('名前とURLを入力してください', '⚠️'); return; }
-  if (!db.slackChannels) db.slackChannels = [];
-  db.slackChannels.push({ id: genId(), name, url });
-  save();
-  document.getElementById('new-ch-name').value = '';
-  document.getElementById('new-ch-url').value = '';
-  renderSlackChannelSettings();
-}
-
-function deleteSlackChannel(id) {
-  if (!db.slackChannels) return;
-  db.slackChannels = db.slackChannels.filter(c => c.id !== id);
-  save();
-  renderSlackChannelSettings();
 }
 
 function applyServerFeatureVisibility() {
