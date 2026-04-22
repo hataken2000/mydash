@@ -1411,7 +1411,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.33</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.34</div>
   </div>
 </aside>
 
@@ -5648,19 +5648,7 @@ async function gistAutoDownload() {
   if (!token || !gistId) return;
   _gistSyncing = true;
   try {
-    // ローカルの最終更新時刻
-    const lastSync = localStorage.getItem('mydash_gist_last_sync') || '';
-    const localLatest = db.items.reduce((m, i) => {
-      const t = i.updatedAt || i.createdAt || '';
-      return t > m ? t : m;
-    }, '');
-
-    // ローカルにlastSync以降の変更があれば先にアップロード
-    if (localLatest > lastSync) {
-      await gistAutoUpload();
-      return;
-    }
-
+    // 常にリモートを取得（slackChannels等の設定を先にマージするため）
     const res = await fetch(`https://api.github.com/gists/${gistId}`, {
       headers: { 'Authorization': `token ${token}` }
     });
@@ -5669,6 +5657,22 @@ async function gistAutoDownload() {
     const raw = data.files['mydash-data.json']?.content;
     if (!raw) return;
     const remote = JSON.parse(raw);
+
+    // slackChannels はリモート優先で常に適用
+    if (remote.slackChannels?.length) db.slackChannels = remote.slackChannels;
+
+    // ローカルの最終更新時刻
+    const lastSync = localStorage.getItem('mydash_gist_last_sync') || '';
+    const localLatest = db.items.reduce((m, i) => {
+      const t = i.updatedAt || i.createdAt || '';
+      return t > m ? t : m;
+    }, '');
+
+    // ローカルにlastSync以降の変更があればアップロード（slackChannels込みで）
+    if (localLatest > lastSync) {
+      await gistAutoUpload();
+      return;
+    }
 
     const localMap = new Map(db.items.map(i => [i.id, i]));
     const remoteMap = new Map((remote.items || []).map(i => [i.id, i]));
@@ -5692,7 +5696,6 @@ async function gistAutoDownload() {
 
     db.items = merged;
     db.itemOrder = [...remoteOrder, ...localOnlyIds];
-    if (remote.slackChannels) db.slackChannels = remote.slackChannels;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
     rebuildIndex();
     render();
