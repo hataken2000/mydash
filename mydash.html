@@ -1385,7 +1385,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.17</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.18</div>
   </div>
 </aside>
 
@@ -1891,6 +1891,18 @@ body.hide-server .launch-btn { display: none !important; }
     </div>
     <div class="modal-body" id="sqp-body"></div>
     <div class="modal-footer" id="sqp-footer"></div>
+  </div>
+</div>
+
+<!-- Place Quick Panel -->
+<div class="modal-overlay" id="place-quick-panel" style="display:none" onclick="if(event.target===this)closePlaceQuickPanel()">
+  <div class="modal" style="max-width:480px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="pqp-title" style="display:flex;align-items:center;gap:8px"></div>
+      <button class="modal-close" onclick="closePlaceQuickPanel()">✕</button>
+    </div>
+    <div class="modal-body" id="pqp-body"></div>
+    <div class="modal-footer" id="pqp-footer"></div>
   </div>
 </div>
 
@@ -3009,6 +3021,7 @@ function cardClick(e, id) {
   const item = db.items.find(i => i.id === id);
   if (!item) return;
   if (item.type === 'set') { showSetQuickPanel(id); return; }
+  if (item.type === 'place') { showPlaceQuickPanel(id); return; }
   if (item.type === 'slack') { sendSlackMessage(id); return; }
   if (item.type === 'window-session') { launchWindowSession(item); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
@@ -3583,6 +3596,7 @@ function iconCardClick(event, id) {
   const item = db.items.find(i => i.id === id);
   if (!item) return;
   if (item.type === 'set') { showSetQuickPanel(id); return; }
+  if (item.type === 'place') { showPlaceQuickPanel(id); return; }
   if (item.type === 'slack') { sendSlackMessage(id); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   cardClick(event, id);
@@ -4582,6 +4596,46 @@ function showSetQuickPanel(id) {
 
 function closeSetQuickPanel() {
   document.getElementById('set-quick-panel').style.display = 'none';
+}
+
+function showPlaceQuickPanel(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item || item.type !== 'place') return;
+  const tc = typeColor(item);
+
+  document.getElementById('pqp-title').innerHTML =
+    `<span style="color:${tc};display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;font-size:16px">${iconHtml(item,'sm')}</span>${esc(item.title)}`;
+
+  // 住所・地図
+  const mapHtml = placeMapHtml(item);
+  const addrLine = item.address
+    ? `<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);background-color:currentColor;width:13px;height:13px;flex-shrink:0"></span>${esc(item.address)}</div>`
+    : '';
+  document.getElementById('pqp-body').innerHTML = addrLine + (mapHtml || '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">地図情報がありません</div>');
+
+  // フッターボタン
+  const navDest = item.lat && item.lng
+    ? `${item.lat},${item.lng}`
+    : item.address ? encodeURIComponent(item.address) : '';
+  const navBtn = navDest
+    ? `<button class="btn-primary" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${navDest}','_blank')" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:14px;height:14px;background-color:white"></span>ナビ</button>`
+    : '';
+  const mapOpenBtn = item.mapUrl
+    ? `<button class="btn-secondary" onclick="window.open('${esc(item.mapUrl)}','_blank')" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:13px;height:13px"></span>マップで開く</button>`
+    : '';
+  const copyBtn = item.address
+    ? `<button class="btn-secondary" onclick="navigator.clipboard.writeText('${esc(item.address)}').then(()=>toast('住所をコピーしました','📋'))" style="display:flex;align-items:center;gap:4px">住所コピー</button>`
+    : '';
+
+  document.getElementById('pqp-footer').innerHTML =
+    `<button class="btn-secondary" onclick="closePlaceQuickPanel();editItem('${id}')">詳細編集</button>
+     ${copyBtn}${mapOpenBtn}${navBtn}`;
+
+  document.getElementById('place-quick-panel').style.display = 'flex';
+}
+
+function closePlaceQuickPanel() {
+  document.getElementById('place-quick-panel').style.display = 'none';
 }
 
 async function launchSet(id) {
