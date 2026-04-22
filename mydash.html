@@ -2807,7 +2807,7 @@ function startCatRename(btnEl, oldName) {
   const colorInput = document.createElement('input');
   colorInput.type = 'color';
   colorInput.value = currentColor;
-  colorInput.style.cssText = 'display:none';
+  colorInput.style.cssText = 'position:fixed;width:0;height:0;padding:0;border:0;opacity:0;top:0;left:0;pointer-events:none';
   const folderIcon = document.createElement('span');
   folderIcon.className = 'app-icon';
   folderIcon.title = '色を変更';
