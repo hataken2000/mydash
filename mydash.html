@@ -1411,7 +1411,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.27</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.28</div>
   </div>
 </aside>
 
@@ -3345,9 +3345,39 @@ function selectType(type) {
   document.getElementById('f-url-group').style.display = hasUrl ? '' : 'none';
   document.getElementById('f-url-label').textContent   = isSlack ? 'チャンネルURL' : 'URL / パス';
   document.getElementById('f-url').placeholder         = isSlack ? 'https://app.slack.com/client/...' : 'https://...';
-  if (isSlack && !state.editId) {
-    const lastUrl = localStorage.getItem('mydash_last_slack_url') || '';
-    if (lastUrl) document.getElementById('f-url').value = lastUrl;
+  if (isSlack) {
+    const channels = db.slackChannels || [];
+    const urlEl = document.getElementById('f-url');
+    if (channels.length > 0) {
+      // チャンネルリストがある場合はselectに切り替え
+      let sel = document.getElementById('f-slack-ch-select');
+      if (!sel) {
+        sel = document.createElement('select');
+        sel.id = 'f-slack-ch-select';
+        sel.className = 'form-input';
+        sel.onchange = () => { urlEl.value = sel.value; };
+        urlEl.parentNode.insertBefore(sel, urlEl);
+      }
+      sel.style.display = '';
+      urlEl.style.display = 'none';
+      const curUrl = urlEl.value || (state.editId ? '' : (localStorage.getItem('mydash_last_slack_url') || ''));
+      sel.innerHTML = channels.map(ch =>
+        `<option value="${esc(ch.url)}"${ch.url === curUrl ? ' selected' : ''}># ${esc(ch.name)}</option>`
+      ).join('');
+      urlEl.value = sel.value;
+    } else {
+      const sel = document.getElementById('f-slack-ch-select');
+      if (sel) { sel.style.display = 'none'; }
+      urlEl.style.display = '';
+      if (!state.editId) {
+        const lastUrl = localStorage.getItem('mydash_last_slack_url') || '';
+        if (lastUrl) urlEl.value = lastUrl;
+      }
+    }
+  } else {
+    const sel = document.getElementById('f-slack-ch-select');
+    if (sel) sel.style.display = 'none';
+    document.getElementById('f-url').style.display = '';
   }
   document.getElementById('f-slack-msg-group').style.display = isSlack ? '' : 'none';
   document.getElementById('f-appname-group').style.display = isTool ? '' : 'none';
@@ -4609,12 +4639,23 @@ function _execSlackQPSend() {
   const url = _sqkpSelectedUrl;
   const msg = document.getElementById('sqkp-msg')?.value || '';
   if (!url) { toast('送信先チャンネルを選択または追加してください', '⚠️'); return; }
+  _saveSlackQPMessage();
   window.dispatchEvent(new CustomEvent('mydash-slack-send', { detail: { url, message: msg } }));
   closeSlackQuickPanel();
   toast('Chrome拡張にSlack送信リクエストを送りました', '💬');
 }
 
+function _saveSlackQPMessage() {
+  if (!_sqkpItemId) return;
+  const item = db.items.find(i => i.id === _sqkpItemId);
+  if (!item) return;
+  const msg = document.getElementById('sqkp-msg')?.value ?? item.slackMessage;
+  item.slackMessage = msg;
+  save();
+}
+
 function closeSlackQuickPanel() {
+  _saveSlackQPMessage();
   document.getElementById('slack-quick-panel').style.display = 'none';
   _sqkpItemId = null;
   _sqkpSelectedUrl = null;
