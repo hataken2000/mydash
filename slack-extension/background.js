@@ -116,7 +116,7 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Slackページのコンテキストで実行: 入力欄にテキストを入れて送信ボタンをクリック
+// Slackページのコンテキストで実行: 入力欄にテキストを入れる（送信はユーザーが行う）
 function typeAndSendSlack(message) {
   const inputSelectors = [
     '[data-qa="message_input"] .ql-editor',
@@ -140,30 +140,4 @@ function typeAndSendSlack(message) {
   input.focus();
   document.execCommand('selectAll', false, null);
   document.execCommand('insertText', false, message);
-
-  // 送信ボタンをクリック
-  setTimeout(() => {
-    const sendBtnSelectors = [
-      '[data-qa="texty_send_button"]',
-      'button[data-qa="send-button"]',
-      '.c-icon_button[aria-label="Send Now"]',
-      'button[aria-label="メッセージを送信"]',
-      'button[aria-label="Send message"]',
-    ];
-    let sendBtn = null;
-    for (const sel of sendBtnSelectors) {
-      sendBtn = document.querySelector(sel);
-      if (sendBtn) break;
-    }
-
-    if (sendBtn) {
-      sendBtn.click();
-    } else {
-      // ボタンが見つからない場合はEnterキーで試みる
-      input.dispatchEvent(new KeyboardEvent('keydown', {
-        bubbles: true, cancelable: true,
-        key: 'Enter', code: 'Enter', keyCode: 13, which: 13
-      }));
-    }
-  }, 300);
 }
