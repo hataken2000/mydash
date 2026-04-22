@@ -432,15 +432,19 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   min-width: 80px;
   white-space: nowrap;
 }
-.main-tabs { display: flex; gap: 2px; align-items: center; }
+.main-tabs {
+  display: flex; gap: 0; align-items: center;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 2px;
+}
 .main-tab {
-  padding: 5px 14px; border-radius: var(--radius-sm);
+  padding: 4px 14px; border-radius: calc(var(--radius-sm) - 2px);
   border: none; background: none; cursor: pointer;
   font-size: 13px; font-weight: 600; color: var(--text-muted);
   font-family: inherit; transition: all 0.15s; white-space: nowrap;
 }
 .main-tab:hover { color: var(--text); background: var(--hover); }
-.main-tab.active { background: var(--accent); color: #fff; }
+.main-tab.active { background: var(--accent); color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 
 /* ── 今日ビュー ────────────────────────── */
 .today-view { padding: 16px 20px; max-width: 800px; }
@@ -1397,7 +1401,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.23</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.10.24</div>
   </div>
 </aside>
 
