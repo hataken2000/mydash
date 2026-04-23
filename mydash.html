@@ -1414,7 +1414,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.7</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.8</div>
   </div>
 </aside>
 
@@ -2405,7 +2405,9 @@ function filteredItems() {
   const sort = document.getElementById('sort-select').value;
 
   let items = db.items.filter(item => {
-    if (item.hidden && !state.selectMode && !state.filter.startsWith('set-member:')) return false;
+    const showHidden = state.selectMode ||
+      (state.filter !== 'all' && state.filter !== 'starred' && !state.filter.startsWith('set-member:'));
+    if (item.hidden && !showHidden) return false;
     if (state.filter !== 'all') {
       if (state.filter === 'starred') {
         if (!item.starred) return false;
@@ -2502,7 +2504,7 @@ function render() {
   const sort = document.getElementById('sort-select').value;
   if (sort === 'category') {
     const grouped = [];
-    let lastCat = null;
+    let lastCat = Symbol();
     items.forEach(item => {
       const cat = item.category || null;
       if (cat !== lastCat) { grouped.push({ cat, items: [] }); lastCat = cat; }
@@ -2587,8 +2589,13 @@ function renderNodeView() {
       const isImgIcon = hasItemIcon && /^https?:|^\/|^data:/.test(item.icon);
       const textX = nx + (hasItemIcon ? 38 : 22);
       const textW = ITEM_W - (hasItemIcon ? 43 : 27);
-      islandsSvg += `<g onclick="nodeItemClick('${item.id}')" style="cursor:pointer" class="nv-item">`;
-      islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${tc}" fill-opacity="0.2" stroke="${tc}" stroke-width="1.5" class="nv-rect"/>`;
+      const isSelected = state.selectedIds.has(item.id);
+      const hiddenAttr = item.hidden ? ' opacity="0.4"' : '';
+      const selStroke = isSelected ? 'var(--accent)' : tc;
+      const selStrokeW = isSelected ? 3 : 1.5;
+      const selDash = item.hidden ? ' stroke-dasharray="4,3"' : '';
+      islandsSvg += `<g data-id="${item.id}" onclick="nodeItemClick('${item.id}')" style="cursor:pointer" class="nv-item"${hiddenAttr}>`;
+      islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${isSelected ? 'var(--accent)' : tc}" fill-opacity="${isSelected ? 0.35 : 0.2}" stroke="${selStroke}" stroke-width="${selStrokeW}"${selDash} data-tc="${tc}" class="nv-rect"/>`;
       islandsSvg += `<foreignObject x="${nx+5}" y="${ny+7}" width="14" height="14"><span xmlns="http://www.w3.org/1999/xhtml" class="app-icon" style="-webkit-mask-image:${iconVar};mask-image:${iconVar};background-color:${tc};width:14px;height:14px;display:inline-block"></span></foreignObject>`;
       if (hasItemIcon) {
         if (isImgIcon) {
@@ -3967,6 +3974,15 @@ function toggleItemSelect(id, checked) {
     const chk = el.querySelector('input[type="checkbox"]');
     if (chk) chk.checked = checked;
   });
+  // ノードビューSVGアイテムの選択状態を直接更新
+  const nvRect = document.querySelector(`g.nv-item[data-id="${id}"] .nv-rect`);
+  if (nvRect) {
+    const tc = nvRect.getAttribute('data-tc') || 'var(--border)';
+    nvRect.setAttribute('fill', checked ? 'var(--accent)' : tc);
+    nvRect.setAttribute('fill-opacity', checked ? '0.35' : '0.2');
+    nvRect.setAttribute('stroke', checked ? 'var(--accent)' : tc);
+    nvRect.setAttribute('stroke-width', checked ? '3' : '1.5');
+  }
 }
 
 function toggleSelectAll(checked) {
@@ -5662,7 +5678,7 @@ function groupICSEvents(events) {
   return {recurring, single};
 }
 
-let _icsGroups=null, _icsSelR=new Set(), _icsSelS=new Set(), _icsMeetR=new Set(), _icsDescR=new Set();
+let _icsGroups=null, _icsSelR=new Set(), _icsSelS=new Set(), _icsMeetR=new Set(), _icsDescR=new Set(), _icsSDescR=new Set();
 
 function openCalImportModal() {
   renderCalStep1();
@@ -5724,8 +5740,9 @@ function addCalNg(summary) {
   // プレビューから該当行を削除
   _icsGroups.recurring = _icsGroups.recurring.filter(e => e.summary !== summary);
   _icsGroups.single = _icsGroups.single.filter(e => e.summary !== summary);
-  _icsSelR = new Set(_icsGroups.recurring.map((_,i)=>i));
-  _icsSelS = new Set(_icsGroups.single.map((_,i)=>i));
+  _icsSelR   = new Set(_icsGroups.recurring.map((_,i)=>i));
+  _icsSelS   = new Set(_icsGroups.single.map((_,i)=>i));
+  _icsSDescR = new Set(_icsGroups.single.map((_,i)=>i).filter(i => _icsGroups.single[i].hasTime && !isBoilerplateDescription(_icsGroups.single[i].description||'')));
   toast(`「${summary}」をNGリストに追加`, '🚫');
   renderCalStep2();
 }
@@ -6336,7 +6353,8 @@ async function fetchCalendar() {
     _icsSelR  = new Set(_icsGroups.recurring.map((_,i)=>i));
     _icsSelS  = new Set(_icsGroups.single.map((_,i)=>i));
     _icsMeetR = new Set(_icsGroups.recurring.map((_,i)=>i).filter(i => extractMeetUrl(_icsGroups.recurring[i].description||'',_icsGroups.recurring[i].location||'')));
-    _icsDescR = new Set(_icsGroups.recurring.map((_,i)=>i).filter(i => !isBoilerplateDescription(_icsGroups.recurring[i].description||'')));
+    _icsDescR  = new Set(_icsGroups.recurring.map((_,i)=>i).filter(i => !isBoilerplateDescription(_icsGroups.recurring[i].description||'')));
+    _icsSDescR = new Set(_icsGroups.single.map((_,i)=>i).filter(i => _icsGroups.single[i].hasTime && !isBoilerplateDescription(_icsGroups.single[i].description||'')));
     clearInterval(ani);
     renderCalStep2();
   } catch(e) {
@@ -6382,10 +6400,13 @@ function renderCalStep2() {
         const i=single.indexOf(ev);
         const d=ev.dtStart;
         const ds=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        const hasDesc = !isBoilerplateDescription(ev.description||'');
+        const descBadge = hasDesc ? `<label onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:3px;flex-shrink:0;cursor:pointer;font-size:10px;color:var(--memo);background:rgba(244,143,177,0.12);border:1px solid rgba(244,143,177,0.35);border-radius:4px;padding:1px 5px;white-space:nowrap"><input type="checkbox" checked onchange="if(this.checked)_icsSDescR.add(${i});else _icsSDescR.delete(${i})" style="accent-color:var(--memo);width:10px;height:10px;margin:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo);width:10px;height:10px;background-color:currentColor"></span>メモ</label>` : '';
         html+=`<div class="set-item-row" style="gap:4px">
           <label style="display:flex;align-items:center;gap:6px;flex:1;cursor:pointer;min-width:0">
             <input type="checkbox" checked onchange="if(this.checked)_icsSelS.add(${i});else _icsSelS.delete(${i})" style="accent-color:var(--set);flex-shrink:0">
             <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(ev.summary)}</span>
+            ${descBadge}
             <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${ds}</span>
           </label>
           <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
@@ -6451,6 +6472,39 @@ function extractMeetUrl(description, location) {
   return m ? m[0] : null;
 }
 
+function buildDescItems(desc, category, excludeUrls) {
+  if (!desc || !desc.trim()) return { bookmarks: [], memoText: '' };
+  const excludeSet = new Set(excludeUrls || []);
+  const lines = desc.split('\n');
+  const bookmarks = [];
+  const processedLines = [];
+  for (const line of lines) {
+    const re = /https?:\/\/[^\s\]]+/g;
+    const matches = [];
+    let m;
+    while ((m = re.exec(line)) !== null) {
+      if (!excludeSet.has(m[0])) matches.push({ url: m[0], index: m.index });
+    }
+    if (!matches.length) { processedLines.push(line); continue; }
+    let pl = line;
+    for (let j = matches.length - 1; j >= 0; j--) {
+      const { url, index } = matches[j];
+      const bmId = genId();
+      let hostname = url;
+      try { hostname = new URL(url).hostname.replace(/^www\./, ''); } catch(e) {}
+      bookmarks.push({
+        id: bmId, type: 'bookmark', title: hostname, url,
+        icon: `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`,
+        desc: '', category, tags: [], starred: false, hidden: true,
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+      });
+      pl = pl.slice(0, index) + `[[${bmId}]]` + pl.slice(index + url.length);
+    }
+    processedLines.push(pl);
+  }
+  return { bookmarks, memoText: processedLines.join('\n').trim() };
+}
+
 function importCalendarEvents() {
   const {recurring,single} = _icsGroups;
   if (!Array.isArray(db.alarms)) db.alarms=[];
@@ -6475,14 +6529,21 @@ function importCalendarEvents() {
       setItems.push({ itemId: bmId, notionTodayPage: false });
     }
     if (_icsDescR.has(i) && (ev.description||'').trim()) {
-      const memoId = genId();
-      db.items.push({
-        id: memoId, type: 'memo', title: ev.summary,
-        desc: (ev.description||'').trim(),
-        url: '', icon: '', category: 'カレンダー', tags: [], starred: false, hidden: true,
-        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-      });
-      setItems.push({ itemId: memoId, notionTodayPage: false });
+      const { bookmarks, memoText } = buildDescItems(ev.description||'', 'カレンダー', meetUrl ? [meetUrl] : []);
+      for (const bm of bookmarks) {
+        db.items.push(bm);
+        setItems.push({ itemId: bm.id, notionTodayPage: false });
+      }
+      if (memoText) {
+        const memoId = genId();
+        db.items.push({
+          id: memoId, type: 'memo', title: ev.summary,
+          desc: memoText,
+          url: '', icon: '', category: 'カレンダー', tags: [], starred: false, hidden: true,
+          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+        });
+        setItems.push({ itemId: memoId, notionTodayPage: false });
+      }
     }
     // 繰り返しイベント → アラーム内蔵セットとして作成
     db.items.push({
@@ -6502,9 +6563,27 @@ function importCalendarEvents() {
     if (existingCalUids.has(uidKey)) { skipped++; continue; }
     if (ev.hasTime) {
       const time=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      const setItems=[];
+      if (_icsSDescR.has(i) && (ev.description||'').trim()) {
+        const { bookmarks, memoText } = buildDescItems(ev.description||'', 'カレンダー', []);
+        for (const bm of bookmarks) {
+          db.items.push(bm);
+          setItems.push({ itemId: bm.id, notionTodayPage: false });
+        }
+        if (memoText) {
+          const memoId = genId();
+          db.items.push({
+            id: memoId, type: 'memo', title: ev.summary,
+            desc: memoText,
+            url: '', icon: '', category: 'カレンダー', tags: [], starred: false, hidden: true,
+            createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+          });
+          setItems.push({ itemId: memoId, notionTodayPage: false });
+        }
+      }
       db.items.push({
         id:genId(), type:'set', title:ev.summary, desc:'', url:'', icon:'',
-        category:'カレンダー', tags:[], starred:false, setItems:[],
+        category:'カレンダー', tags:[], starred:false, setItems,
         alarm:{enabled:true, schedule:{type:'once', date:due, time}, lastFired:null},
         createdAt:new Date().toISOString(), updatedAt:new Date().toISOString(), calUid:uidKey
       });
