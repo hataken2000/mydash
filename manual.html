@@ -19,6 +19,34 @@
   --teal: #80cbc4;
   --purple: #ce93d8;
   --radius: 10px;
+  --icon-alarm: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEzIiByPSI4IiAvPgogIDxwYXRoIGQ9Ik0xMiA5djRsMiAyIiAvPgogIDxwYXRoIGQ9Ik01IDMgMiA2IiAvPgogIDxwYXRoIGQ9Im0yMiA2LTMtMyIgLz4KICA8cGF0aCBkPSJNNi4zOCAxOC43IDQgMjEiIC8+CiAgPHBhdGggZD0iTTE3LjY0IDE4LjY3IDIwIDIxIiAvPgo8L3N2Zz4=');
+  --icon-all: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTIuODMgMi4xOGEyIDIgMCAwIDAtMS42NiAwTDIuNiA2LjA4YTEgMSAwIDAgMCAwIDEuODNsOC41OCAzLjkxYTIgMiAwIDAgMCAxLjY2IDBsOC41OC0zLjlhMSAxIDAgMCAwIDAtMS44M3oiIC8+CiAgPHBhdGggZD0iTTIgMTJhMSAxIDAgMCAwIC41OC45MWw4LjYgMy45MWEyIDIgMCAwIDAgMS42NSAwbDguNTgtMy45QTEgMSAwIDAgMCAyMiAxMiIgLz4KICA8cGF0aCBkPSJNMiAxN2ExIDEgMCAwIDAgLjU4LjkxbDguNiAzLjkxYTIgMiAwIDAgMCAxLjY1IDBsOC41OC0zLjlBMSAxIDAgMCAwIDIyIDE3IiAvPgo8L3N2Zz4=');
+  --icon-bell: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAuMjY4IDIxYTIgMiAwIDAgMCAzLjQ2NCAwIiAvPgogIDxwYXRoIGQ9Ik0zLjI2MiAxNS4zMjZBMSAxIDAgMCAwIDQgMTdoMTZhMSAxIDAgMCAwIC43NC0xLjY3M0MxOS40MSAxMy45NTYgMTggMTIuNDk5IDE4IDhBNiA2IDAgMCAwIDYgOGMwIDQuNDk5LTEuNDExIDUuOTU2LTIuNzM4IDcuMzI2IiAvPgo8L3N2Zz4=');
+  --icon-bookmark: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTcgM2EyIDIgMCAwIDEgMiAydjE1YTEgMSAwIDAgMS0xLjQ5Ni44NjhsLTQuNTEyLTIuNTc4YTIgMiAwIDAgMC0xLjk4NCAwbC00LjUxMiAyLjU3OEExIDEgMCAwIDEgNSAyMFY1YTIgMiAwIDAgMSAyLTJ6IiAvPgo8L3N2Zz4=');
+  --icon-box: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjEgOGEyIDIgMCAwIDAtMS0xLjczbC03LTRhMiAyIDAgMCAwLTIgMGwtNyA0QTIgMiAwIDAgMCAzIDh2OGEyIDIgMCAwIDAgMSAxLjczbDcgNGEyIDIgMCAwIDAgMiAwbDctNEEyIDIgMCAwIDAgMjEgMTZaIiAvPgogIDxwYXRoIGQ9Im0zLjMgNyA4LjcgNSA4LjctNSIgLz4KICA8cGF0aCBkPSJNMTIgMjJWMTIiIC8+Cjwvc3ZnPg==');
+  --icon-calendar: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNOCAydjQiIC8+CiAgPHBhdGggZD0iTTE2IDJ2NCIgLz4KICA8cmVjdCB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHg9IjMiIHk9IjQiIHJ4PSIyIiAvPgogIDxwYXRoIGQ9Ik0zIDEwaDE4IiAvPgo8L3N2Zz4=');
+  --icon-download: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTIgMTVWMyIgLz4KICA8cGF0aCBkPSJNMjEgMTV2NGEyIDIgMCAwIDEtMiAySDVhMiAyIDAgMCAxLTItMnYtNCIgLz4KICA8cGF0aCBkPSJtNyAxMCA1IDUgNS01IiAvPgo8L3N2Zz4=');
+  --icon-edit: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTMgMjFoOCIgLz4KICA8cGF0aCBkPSJtMTUgNSA0IDQiIC8+CiAgPHBhdGggZD0iTTIxLjE3NCA2LjgxMmExIDEgMCAwIDAtMy45ODYtMy45ODdMMy44NDIgMTYuMTc0YTIgMiAwIDAgMC0uNS44M2wtMS4zMjEgNC4zNTJhLjUuNSAwIDAgMCAuNjIzLjYyMmw0LjM1My0xLjMyYTIgMiAwIDAgMCAuODMtLjQ5N3oiIC8+Cjwvc3ZnPg==');
+  --icon-eye: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMi4wNjIgMTIuMzQ4YTEgMSAwIDAgMSAwLS42OTYgMTAuNzUgMTAuNzUgMCAwIDEgMTkuODc2IDAgMSAxIDAgMCAxIDAgLjY5NiAxMC43NSAxMC43NSAwIDAgMS0xOS44NzYgMCIgLz4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIzIiAvPgo8L3N2Zz4=');
+  --icon-folder: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMCAyMGEyIDIgMCAwIDAgMi0yVjhhMiAyIDAgMCAwLTItMmgtNy45YTIgMiAwIDAgMS0xLjY5LS45TDkuNiAzLjlBMiAyIDAgMCAwIDcuOTMgM0g0YTIgMiAwIDAgMC0yIDJ2MTNhMiAyIDAgMCAwIDIgMloiLz48L3N2Zz4=');
+  --icon-grid: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTIgM3YxOCIgLz4KICA8cGF0aCBkPSJNMyAxMmgxOCIgLz4KICA8cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiAvPgo8L3N2Zz4=');
+  --icon-icon-view: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI3IiB4PSIzIiB5PSIzIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI3IiB4PSIxNCIgeT0iMyIgcng9IjEiIC8+CiAgPHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iNyIgeD0iMTQiIHk9IjE0IiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI3IiB4PSIzIiB5PSIxNCIgcng9IjEiIC8+Cjwvc3ZnPg==');
+  --icon-list: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMyA1aC4wMSIgLz4KICA8cGF0aCBkPSJNMyAxMmguMDEiIC8+CiAgPHBhdGggZD0iTTMgMTloLjAxIiAvPgogIDxwYXRoIGQ9Ik04IDVoMTMiIC8+CiAgPHBhdGggZD0iTTggMTJoMTMiIC8+CiAgPHBhdGggZD0iTTggMTloMTMiIC8+Cjwvc3ZnPg==');
+  --icon-memo: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNNiAyMmEyIDIgMCAwIDEtMi0yVjRhMiAyIDAgMCAxIDItMmg4YTIuNCAyLjQgMCAwIDEgMS43MDQuNzA2bDMuNTg4IDMuNTg4QTIuNCAyLjQgMCAwIDEgMjAgOHYxMmEyIDIgMCAwIDEtMiAyeiIgLz4KICA8cGF0aCBkPSJNMTQgMnY1YTEgMSAwIDAgMCAxIDFoNSIgLz4KICA8cGF0aCBkPSJNMTAgOUg4IiAvPgogIDxwYXRoIGQ9Ik0xNiAxM0g4IiAvPgogIDxwYXRoIGQ9Ik0xNiAxN0g4IiAvPgo8L3N2Zz4=');
+  --icon-monitor: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTQiIHg9IjIiIHk9IjMiIHJ4PSIyIiAvPgogIDxsaW5lIHgxPSI4IiB4Mj0iMTYiIHkxPSIyMSIgeTI9IjIxIiAvPgogIDxsaW5lIHgxPSIxMiIgeDI9IjEyIiB5MT0iMTciIHkyPSIyMSIgLz4KPC9zdmc+');
+  --icon-node: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjE4IiBjeT0iNSIgcj0iMyIvPjxjaXJjbGUgY3g9IjYiIGN5PSIxMiIgcj0iMyIvPjxjaXJjbGUgY3g9IjE4IiBjeT0iMTkiIHI9IjMiLz48bGluZSB4MT0iOC41OSIgeTE9IjEzLjUxIiB4Mj0iMTUuNDIiIHkyPSIxNy40OSIvPjxsaW5lIHgxPSIxNS40MSIgeTE9IjYuNTEiIHgyPSI4LjU5IiB5Mj0iMTAuNDkiLz48L3N2Zz4=');
+  --icon-place: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMCAxMGMwIDYtOCAxMi04IDEycy04LTYtOC0xMmE4IDggMCAwIDEgMTYgMFoiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEwIiByPSIzIi8+PC9zdmc+');
+  --icon-select: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNNC4wMzcgNC42ODhhLjQ5NS40OTUgMCAwIDEgLjY1MS0uNjUxbDE2IDYuNWEuNS41IDAgMCAxLS4wNjMuOTQ3bC02LjEyNCAxLjU4YTIgMiAwIDAgMC0xLjQzOCAxLjQzNWwtMS41NzkgNi4xMjZhLjUuNSAwIDAgMS0uOTQ3LjA2M3oiIC8+Cjwvc3ZnPg==');
+  --icon-set: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAgNUgzIiAvPgogIDxwYXRoIGQ9Ik0xMiAxOUgzIiAvPgogIDxwYXRoIGQ9Ik0xNCAzdjQiIC8+CiAgPHBhdGggZD0iTTE2IDE3djQiIC8+CiAgPHBhdGggZD0iTTIxIDEyaC05IiAvPgogIDxwYXRoIGQ9Ik0yMSAxOWgtNSIgLz4KICA8cGF0aCBkPSJNMjEgNWgtNyIgLz4KICA8cGF0aCBkPSJNOCAxMHY0IiAvPgogIDxwYXRoIGQ9Ik04IDEySDMiIC8+Cjwvc3ZnPg==');
+  --icon-settings: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNOS42NzEgNC4xMzZhMi4zNCAyLjM0IDAgMCAxIDQuNjU5IDAgMi4zNCAyLjM0IDAgMCAwIDMuMzE5IDEuOTE1IDIuMzQgMi4zNCAwIDAgMSAyLjMzIDQuMDMzIDIuMzQgMi4zNCAwIDAgMCAwIDMuODMxIDIuMzQgMi4zNCAwIDAgMS0yLjMzIDQuMDMzIDIuMzQgMi4zNCAwIDAgMC0zLjMxOSAxLjkxNSAyLjM0IDIuMzQgMCAwIDEtNC42NTkgMCAyLjM0IDIuMzQgMCAwIDAtMy4zMi0xLjkxNSAyLjM0IDIuMzQgMCAwIDEtMi4zMy00LjAzMyAyLjM0IDIuMzQgMCAwIDAgMC0zLjgzMUEyLjM0IDIuMzQgMCAwIDEgNi4zNSA2LjA1MWEyLjM0IDIuMzQgMCAwIDAgMy4zMTktMS45MTUiIC8+CiAgPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMyIgLz4KPC9zdmc+');
+  --icon-slack: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjIgMTdhMiAyIDAgMCAxLTIgMkg2LjgyOGEyIDIgMCAwIDAtMS40MTQuNTg2bC0yLjIwMiAyLjIwMkEuNzEuNzEgMCAwIDEgMiAyMS4yODZWNWEyIDIgMCAwIDEgMi0yaDE2YTIgMiAwIDAgMSAyIDJ6IiAvPgo8L3N2Zz4=');
+  --icon-star: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTEuNTI1IDIuMjk1YS41My41MyAwIDAgMSAuOTUgMGwyLjMxIDQuNjc5YTIuMTIzIDIuMTIzIDAgMCAwIDEuNTk1IDEuMTZsNS4xNjYuNzU2YS41My41MyAwIDAgMSAuMjk0LjkwNGwtMy43MzYgMy42MzhhMi4xMjMgMi4xMjMgMCAwIDAtLjYxMSAxLjg3OGwuODgyIDUuMTRhLjUzLjUzIDAgMCAxLS43NzEuNTZsLTQuNjE4LTIuNDI4YTIuMTIyIDIuMTIyIDAgMCAwLTEuOTczIDBMNi4zOTYgMjEuMDFhLjUzLjUzIDAgMCAxLS43Ny0uNTZsLjg4MS01LjEzOWEyLjEyMiAyLjEyMiAwIDAgMC0uNjExLTEuODc5TDIuMTYgOS43OTVhLjUzLjUzIDAgMCAxIC4yOTQtLjkwNmw1LjE2NS0uNzU1YTIuMTIyIDIuMTIyIDAgMCAwIDEuNTk3LTEuMTZ6IiAvPgo8L3N2Zz4=');
+  --icon-star-filled: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0iY3VycmVudENvbG9yIgogIHN0cm9rZT0iY3VycmVudENvbG9yIgogIHN0cm9rZS13aWR0aD0iMiIKICBzdHJva2UtbGluZWNhcD0icm91bmQiCiAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKPgogIDxwYXRoIGQ9Ik0xMS41MjUgMi4yOTVhLjUzLjUzIDAgMCAxIC45NSAwbDIuMzEgNC42NzlhMi4xMjMgMi4xMjMgMCAwIDAgMS41OTUgMS4xNmw1LjE2Ni43NTZhLjUzLjUzIDAgMCAxIC4yOTQuOTA0bC0zLjczNiAzLjYzOGEyLjEyMyAyLjEyMyAwIDAgMC0uNjExIDEuODc4bC44ODIgNS4xNGEuNTMuNTMgMCAwIDEtLjc3MS41NmwtNC42MTgtMi40MjhhMi4xMjIgMi4xMjIgMCAwIDAtMS45NzMgMEw2LjM5NiAyMS4wMWEuNTMuNTMgMCAwIDEtLjc3LS41NmwuODgxLTUuMTM5YTIuMTIyIDIuMTIyIDAgMCAwLS42MTEtMS44NzlMMi4xNiA5Ljc5NWEuNTMuNTMgMCAwIDEgLjI5NC0uOTA2bDUuMTY1LS43NTVhMi4xMjIgMi4xMjIgMCAwIDAgMS41OTctMS4xNnoiIC8+Cjwvc3ZnPg==');
+  --icon-task: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI0IiB4PSI4IiB5PSIyIiByeD0iMSIgcnk9IjEiIC8+CiAgPHBhdGggZD0iTTE2IDRoMmEyIDIgMCAwIDEgMiAydjE0YTIgMiAwIDAgMS0yIDJINmEyIDIgMCAwIDEtMi0yVjZhMiAyIDAgMCAxIDItMmgyIiAvPgogIDxwYXRoIGQ9Im05IDE0IDIgMiA0LTQiIC8+Cjwvc3ZnPg==');
+  --icon-tool: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTQuNyA2LjNhMSAxIDAgMCAwIDAgMS40bDEuNiAxLjZhMSAxIDAgMCAwIDEuNCAwbDMuMTA2LTMuMTA1Yy4zMi0uMzIyLjg2My0uMjIuOTgzLjIxOGE2IDYgMCAwIDEtOC4yNTkgNy4wNTdsLTcuOTEgNy45MWExIDEgMCAwIDEtMi45OTktM2w3LjkxLTcuOTFhNiA2IDAgMCAxIDcuMDU3LTguMjU5Yy40MzguMTIuNTQuNjYyLjIxOS45ODR6IiAvPgo8L3N2Zz4=');
+  --icon-trash: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAgMTF2NiIgLz4KICA8cGF0aCBkPSJNMTQgMTF2NiIgLz4KICA8cGF0aCBkPSJNMTkgNnYxNGEyIDIgMCAwIDEtMiAySDdhMiAyIDAgMCAxLTItMlY2IiAvPgogIDxwYXRoIGQ9Ik0zIDZoMTgiIC8+CiAgPHBhdGggZD0iTTggNlY0YTIgMiAwIDAgMSAyLTJoNGEyIDIgMCAwIDEgMiAydjIiIC8+Cjwvc3ZnPg==');
+  --icon-upload: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTIgM3YxMiIgLz4KICA8cGF0aCBkPSJtMTcgOC01LTUtNSA1IiAvPgogIDxwYXRoIGQ9Ik0yMSAxNXY0YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0ydi00IiAvPgo8L3N2Zz4=');
+  --icon-widget: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI5IiB4PSIzIiB5PSIzIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI1IiB4PSIxNCIgeT0iMyIgcng9IjEiIC8+CiAgPHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iOSIgeD0iMTQiIHk9IjEyIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI1IiB4PSIzIiB5PSIxNiIgcng9IjEiIC8+Cjwvc3ZnPg==');
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -86,7 +114,17 @@ p strong { color: var(--text); }
   border-radius: var(--radius); padding: 14px 16px;
   display: flex; flex-direction: column; gap: 4px;
 }
-.type-card .icon { font-size: 22px; margin-bottom: 4px; }
+.app-icon {
+  display: inline-block;
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  background-color: currentColor;
+  width: 16px; height: 16px;
+  flex-shrink: 0; vertical-align: middle;
+}
+.type-card .icon { margin-bottom: 6px; display: flex; align-items: center; min-height: 28px; }
+.type-card .icon .app-icon { width: 24px; height: 24px; }
 .type-card .name { font-size: 13px; font-weight: 700; color: var(--text); }
 .type-card .desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
 
@@ -240,22 +278,22 @@ code {
 
   <div class="card-grid">
     <div class="type-card">
-      <div class="icon">📁</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-folder);mask-image:var(--icon-folder);background-color:var(--accent)"></span></div>
       <div class="name">HTMLファイル</div>
       <div class="desc">インストール不要。ブラウザで開くだけで動く</div>
     </div>
     <div class="type-card">
-      <div class="icon">💾</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);background-color:var(--accent)"></span></div>
       <div class="name">ローカル保存</div>
       <div class="desc">データはブラウザの localStorage に自動保存</div>
     </div>
     <div class="type-card">
-      <div class="icon">🖥</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);background-color:var(--accent)"></span></div>
       <div class="name">ローカルサーバー</div>
       <div class="desc">port 3737 でアプリ起動・カレンダー取得を中継</div>
     </div>
     <div class="type-card">
-      <div class="icon">☁️</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-upload);mask-image:var(--icon-upload);background-color:var(--accent)"></span></div>
       <div class="name">Gist同期</div>
       <div class="desc">GitHub Gistを使って複数端末でデータを同期</div>
     </div>
@@ -296,7 +334,7 @@ code {
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>⚙️ 設定を開いて「ローカルサーバー」欄の ● が緑になれば OK</strong>
+        <strong><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);background-color:var(--muted);margin-right:3px"></span>設定を開いて「ローカルサーバー」欄の ● が緑になれば OK</strong>
         <p>「サーバー確認中…」→「サーバー稼働中」に変わる。アプリ起動・カレンダー機能が使える状態</p>
       </div>
     </div>
@@ -312,74 +350,74 @@ code {
   <p>左のサイドバーでフィルタリングできる。</p>
   <table>
     <tr><th>項目</th><th>内容</th></tr>
-    <tr><td>🗂 すべて</td><td>全アイテムを表示</td></tr>
-    <tr><td>⭐ お気に入り</td><td>スター付きアイテムのみ</td></tr>
-    <tr><td>🔖 ブックマーク</td><td>種類別フィルター</td></tr>
-    <tr><td>🔧 ツール/アプリ</td><td>種類別フィルター</td></tr>
-    <tr><td>✅ タスク</td><td>種類別フィルター。期限切れ・今日締切の未完了タスクがある場合、赤いバッジで件数表示。タブタイトルも <code>(N) MyDash</code> に変わる。選択するとツールバー下にクイックフィルター（<strong>すべて・📅 今日締切・🔴 期限超過・⚡ 進行中</strong>）が表示される</td></tr>
-    <tr><td>📝 メモ</td><td>種類別フィルター</td></tr>
-    <tr><td>📦 その他</td><td>種類別フィルター</td></tr>
-    <tr><td>🚀 セット</td><td>種類別フィルター。選択するとツールバー下にセット名でのサブフィルターが表示される</td></tr>
-    <tr><td>💬 Slack送信</td><td>種類別フィルター</td></tr>
-    <tr><td>📍 場所</td><td>種類別フィルター</td></tr>
-    <tr><td>🖥 ウィンドウ復元</td><td>種類別フィルター（Window Saver連携）</td></tr>
-    <tr><td>📁 カテゴリ名</td><td>カスタムカテゴリ別フィルター。カテゴリごとにフォルダアイコン（色付き）で表示。カテゴリ名にホバーすると ✏️ が表示され、クリックでリネームモードに入れる</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-all);mask-image:var(--icon-all);background-color:var(--muted);margin-right:5px"></span>すべて</td><td>全アイテムを表示</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-star-filled);mask-image:var(--icon-star-filled);background-color:#ffb74d;margin-right:5px"></span>お気に入り</td><td>スター付きアイテムのみ</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark);background-color:#4fc3f7;margin-right:5px"></span>ブックマーク</td><td>種類別フィルター</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-tool);mask-image:var(--icon-tool);background-color:#81c784;margin-right:5px"></span>ツール/アプリ</td><td>種類別フィルター</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);background-color:#ffb74d;margin-right:5px"></span>タスク</td><td>種類別フィルター。期限切れ・今日締切の未完了タスクがある場合、赤いバッジで件数表示。タブタイトルも <code>(N) MyDash</code> に変わる。選択するとツールバー下にクイックフィルター（<strong>すべて・📅 今日締切・🔴 期限超過・⚡ 進行中</strong>）が表示される</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo);background-color:#f48fb1;margin-right:5px"></span>メモ</td><td>種類別フィルター</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-box);mask-image:var(--icon-box);background-color:#ce93d8;margin-right:5px"></span>その他</td><td>種類別フィルター</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);background-color:#80cbc4;margin-right:5px"></span>セット</td><td>種類別フィルター。選択するとツールバー下にセット名でのサブフィルターが表示される</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:#4ab95f;margin-right:5px"></span>Slack送信</td><td>種類別フィルター</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);background-color:#43a047;margin-right:5px"></span>場所</td><td>種類別フィルター</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);background-color:#90a4ae;margin-right:5px"></span>ウィンドウ復元</td><td>種類別フィルター（Window Saver連携）</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-folder);mask-image:var(--icon-folder);background-color:var(--accent);margin-right:5px"></span>カテゴリ名</td><td>カスタムカテゴリ別フィルター。カテゴリごとにフォルダアイコン（色付き）で表示。カテゴリ名にホバーすると <span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--muted)"></span> が表示され、クリックでリネームモードに入れる</td></tr>
     <tr><td>○ 未設定</td><td>カテゴリ未設定のアイテム（整理漏れ確認用。件数が0のときは非表示）</td></tr>
   </table>
 
   <h3>カテゴリのリネーム・削除・色変更</h3>
-  <p>カテゴリ名横の ✏️ をクリックするとリネームモードに入る。</p>
+  <p>カテゴリ名横の <span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--muted)"></span> をクリックするとリネームモードに入る。</p>
   <div class="card-grid" style="grid-template-columns:1fr 1fr 1fr">
-    <div class="card"><strong>📝 リネーム</strong><p style="margin:4px 0 0">テキスト入力に切り替わり、Enter で確定・Esc でキャンセル。全アイテムのカテゴリが一括変更される</p></div>
+    <div class="card"><strong><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--text);margin-right:4px"></span>リネーム</strong><p style="margin:4px 0 0">テキスト入力に切り替わり、Enter で確定・Esc でキャンセル。全アイテムのカテゴリが一括変更される</p></div>
     <div class="card"><strong>🎨 色変更</strong><p style="margin:4px 0 0">フォルダアイコンをクリックするとカラーパレットが表示される。選択した色がフォルダアイコンとノードマップの島の枠色に反映される</p></div>
-    <div class="card"><strong>🗑 削除</strong><p style="margin:4px 0 0">リネームモード中の × ボタンをクリック。確認ダイアログの後、カテゴリと全アイテムのカテゴリ設定を削除</p></div>
+    <div class="card"><strong><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:var(--text);margin-right:4px"></span>削除</strong><p style="margin:4px 0 0">リネームモード中の × ボタンをクリック。確認ダイアログの後、カテゴリと全アイテムのカテゴリ設定を削除</p></div>
   </div>
 
   <!-- ── アイテムの種類 ── -->
   <h2 id="items">アイテムの種類</h2>
   <div class="card-grid">
     <div class="type-card">
-      <div class="icon">🔖</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark);background-color:#4fc3f7"></span></div>
       <div class="name"><span class="badge badge-bookmark">ブックマーク</span></div>
       <div class="desc">URLをお気に入り登録。クリックで開く。favicon自動取得。</div>
     </div>
     <div class="type-card">
-      <div class="icon">🔧</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-tool);mask-image:var(--icon-tool);background-color:#81c784"></span></div>
       <div class="name"><span class="badge badge-tool">ツール/アプリ</span></div>
       <div class="desc">MacアプリをDock名で登録。サーバー経由でワンクリック起動。URLも設定可。</div>
     </div>
     <div class="type-card">
-      <div class="icon">✅</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);background-color:#ffb74d"></span></div>
       <div class="name"><span class="badge badge-task">タスク</span></div>
       <div class="desc">ステータス（未着手/進行中/完了）・優先度・締切日時を管理。時刻も設定可能。</div>
     </div>
     <div class="type-card">
-      <div class="icon">📝</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo);background-color:#f48fb1"></span></div>
       <div class="name"><span class="badge badge-memo">メモ</span></div>
       <div class="desc">Markdown対応のメモ。画像・Google Mapsカード・住所の地図埋め込みに自動変換。</div>
     </div>
     <div class="type-card">
-      <div class="icon">📦</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-box);mask-image:var(--icon-box);background-color:#ce93d8"></span></div>
       <div class="name"><span class="badge badge-other">その他</span></div>
       <div class="desc">上記に当てはまらない汎用アイテム。</div>
     </div>
     <div class="type-card">
-      <div class="icon">🚀</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);background-color:#80cbc4"></span></div>
       <div class="name"><span class="badge badge-set">セット</span></div>
       <div class="desc">複数アイテムを一括起動。会議資料・朝のルーティンなどに。アラームと組み合わせて自動起動も可能。</div>
     </div>
     <div class="type-card">
-      <div class="icon">💬</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:#4ab95f"></span></div>
       <div class="name"><span class="badge" style="background:rgba(74,185,95,0.14);color:#4ab95f">Slack送信</span></div>
       <div class="desc">Slackの特定チャンネルに定型文を素早く送信。Chrome拡張あり：入力欄に自動入力。なし（スマホ等）：クリップボードにコピーしてSlackを開く。</div>
     </div>
     <div class="type-card">
-      <div class="icon">📍</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);background-color:#43a047"></span></div>
       <div class="name"><span class="badge" style="background:rgba(67,160,71,0.14);color:#43a047">場所</span></div>
       <div class="desc">住所・Google MapsのURLを登録。クリックでMapsを開く。説明欄に住所を書くと地図を自動表示。</div>
     </div>
     <div class="type-card">
-      <div class="icon">🖥</div>
+      <div class="icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);background-color:#90a4ae"></span></div>
       <div class="name"><span class="badge" style="background:rgba(144,164,174,0.14);color:#90a4ae">ウィンドウ復元</span></div>
       <div class="desc">Window Saver拡張機能と連携して保存済みのウィンドウセッションを復元。Chrome拡張が必要。</div>
     </div>
@@ -410,17 +448,17 @@ code {
   <p>カードをクリックすると種類に応じた操作が行われる。</p>
   <table>
     <tr><th>種類</th><th>クリック時の動作</th></tr>
-    <tr><td>🚀 セット</td><td>セットクイックパネルを開く（メンバー一覧・起動ボタン）</td></tr>
-    <tr><td>💬 Slack送信</td><td>Slackクイックパネルを開く（チャンネル選択・メッセージ送信）</td></tr>
-    <tr><td>📍 場所</td><td>場所パネルを開く（地図・リンク表示）</td></tr>
-    <tr><td>🖥 ウィンドウ復元</td><td>ウィンドウセッションを復元</td></tr>
-    <tr><td>✅ タスク・📝 メモ</td><td>クイック編集パネルを開く</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);background-color:#80cbc4;margin-right:5px"></span>セット</td><td>セットクイックパネルを開く（メンバー一覧・起動ボタン）</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:#4ab95f;margin-right:5px"></span>Slack送信</td><td>Slackクイックパネルを開く（チャンネル選択・メッセージ送信）</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);background-color:#43a047;margin-right:5px"></span>場所</td><td>場所パネルを開く（地図・リンク表示）</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);background-color:#90a4ae;margin-right:5px"></span>ウィンドウ復元</td><td>ウィンドウセッションを復元</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);background-color:#ffb74d;margin-right:5px"></span>タスク・<span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo);background-color:#f48fb1;margin-right:5px"></span>メモ</td><td>クイック編集パネルを開く</td></tr>
     <tr><td>URLあり</td><td>新しいタブでURLを開く</td></tr>
-    <tr><td>🔧 ツール/アプリ</td><td>サーバー経由でMacアプリを起動</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-tool);mask-image:var(--icon-tool);background-color:#81c784;margin-right:5px"></span>ツール/アプリ</td><td>サーバー経由でMacアプリを起動</td></tr>
   </table>
   <div class="tip">
     <span class="tip-icon">💡</span>
-    <span>詳細編集ダイアログはカードのホバー時に表示される ✏️ ボタンから開ける。</span>
+    <span>詳細編集ダイアログはカードのホバー時に表示される <span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--muted)"></span> ボタンから開ける。</span>
   </div>
 
   <h3>タスクのステータス切り替え</h3>
@@ -443,7 +481,7 @@ code {
   <p>非表示アイテムを再表示するには、選択モードに入ると薄く表示されるので選択して「表示にする」を押す。</p>
 
   <h3>ホバーボタン（リスト表示）</h3>
-  <p>リスト表示でカードにホバーすると、編集・削除・複製などのアイコンボタンが右端に表示される。⭐ は左端に表示される。</p>
+  <p>リスト表示でカードにホバーすると、編集・削除・複製などのアイコンボタンが右端に表示される。<span class="app-icon" style="-webkit-mask-image:var(--icon-star-filled);mask-image:var(--icon-star-filled);background-color:#ffb74d;margin-right:2px"></span>は左端に表示される。</p>
 
   <h3>選択モード</h3>
   <p>ツールバーの選択ボタンで選択モードに入ると複数アイテムを一括操作できる。選択後のアクションは「表示にする」「非表示にする」「削除」の3種類。</p>
@@ -472,14 +510,14 @@ code {
 
   <table>
     <tr><th>ボタン</th><th>モード</th><th>Enter の動作</th></tr>
-    <tr><td>🔍</td><td>検索</td><td>リアルタイム検索（通常モード）。タイトル・説明・URL・カテゴリ・タグが対象。セットはセット内アイテムのタイトル・説明・URLも検索される</td></tr>
-    <tr><td>📝</td><td>メモ追加</td><td>入力テキストをメモとして即登録</td></tr>
-    <tr><td>✅</td><td>タスク追加</td><td>入力テキストを今日締切のタスクとして即登録</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-search);mask-image:var(--icon-search);background-color:var(--muted)"></span></td><td>検索</td><td>リアルタイム検索（通常モード）。タイトル・説明・URL・カテゴリ・タグが対象。セットはセット内アイテムのタイトル・説明・URLも検索される</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo);background-color:#f48fb1"></span></td><td>メモ追加</td><td>入力テキストをメモとして即登録</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);background-color:#ffb74d"></span></td><td>タスク追加</td><td>入力テキストを今日締切のタスクとして即登録</td></tr>
   </table>
 
   <div class="tip">
     <span class="tip-icon">💡</span>
-    <span>ボタンをクリックするたびに 🔍 → 📝 → ✅ → 🔍 と循環。<kbd>⌘K</kbd> を押すと常に検索モードに戻ってフォーカス。登録後は入力欄がクリアされ連続入力できる。</span>
+    <span>ボタンをクリックするたびに <span class="app-icon" style="-webkit-mask-image:var(--icon-search);mask-image:var(--icon-search);background-color:var(--muted)"></span> → <span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo);background-color:#f48fb1"></span> → <span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);background-color:#ffb74d"></span> → <span class="app-icon" style="-webkit-mask-image:var(--icon-search);mask-image:var(--icon-search);background-color:var(--muted)"></span> と循環。<kbd>⌘K</kbd> を押すと常に検索モードに戻ってフォーカス。登録後は入力欄がクリアされ連続入力できる。</span>
   </div>
 
   <!-- ── アイコン ── -->
@@ -489,7 +527,7 @@ code {
     <tr><td>絵文字</td><td>入力欄に絵文字を直接入力（例: 📊）</td></tr>
     <tr><td>画像URL</td><td>https:// または / で始まる画像URLを入力</td></tr>
     <tr><td>クリップボード貼り付け</td><td>アイコン入力欄にフォーカスして <kbd>⌘V</kbd>。画像があれば自動変換</td></tr>
-    <tr><td>📋 ボタン</td><td>入力欄右の 📋 ボタンをクリックしてクリップボードから取得</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:var(--muted);margin-right:4px"></span>ボタン</td><td>入力欄右の <span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:var(--muted)"></span> ボタンをクリックしてクリップボードから取得</td></tr>
     <tr><td>自動取得（空欄）</td><td>ブックマーク・ツールはURLのfaviconを自動取得</td></tr>
   </table>
 
@@ -506,11 +544,11 @@ code {
     <tr><td>A→Z / Z→A</td><td>タイトル順（日本語対応）</td></tr>
     <tr><td>種類順</td><td>アイテムの種類でグループ化</td></tr>
     <tr><td>カテゴリ順</td><td>カテゴリ別にグループ化して表示</td></tr>
-    <tr><td>優先度順</td><td>⭐お気に入り → 優先度（高→中→低→なし） → 期限日の順。タスク管理に最適</td></tr>
+    <tr><td>優先度順</td><td><span class="app-icon" style="-webkit-mask-image:var(--icon-star-filled);mask-image:var(--icon-star-filled);background-color:#ffb74d;margin-right:4px"></span>お気に入り → 優先度（高→中→低→なし） → 期限日の順。タスク管理に最適</td></tr>
   </table>
 
   <h3>カテゴリ変更（サイドバーへドロップ）</h3>
-  <p>カードをドラッグして、サイドバーの <strong>📁 カテゴリ名</strong> にドロップするとそのカテゴリに変更される。<strong>📂 未設定</strong> にドロップするとカテゴリをクリアできる。</p>
+  <p>カードをドラッグして、サイドバーの <strong><span class="app-icon" style="-webkit-mask-image:var(--icon-folder);mask-image:var(--icon-folder);background-color:var(--accent);margin-right:3px"></span>カテゴリ名</strong> にドロップするとそのカテゴリに変更される。<strong>○ 未設定</strong> にドロップするとカテゴリをクリアできる。</p>
 
   <div class="tip">
     <span class="tip-icon">💡</span>
@@ -527,13 +565,13 @@ code {
       <div class="step-num">1</div>
       <div class="step-body">
         <strong>セットを作成 or 既存セットを編集</strong>
-        <p>「＋ 追加」→ 種類「🚀 セット」、または既存セットの ✏️ ボタン</p>
+        <p>「＋ 追加」→ 種類「<span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);background-color:#80cbc4;margin-right:3px"></span>セット」、または既存セットの <span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--muted)"></span> ボタン</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>フォーム下部「🔔 アラーム」のトグルをONにする</strong>
+        <strong>フォーム下部「<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--yellow);margin-right:3px"></span>アラーム」のトグルをONにする</strong>
         <p>繰り返し・時刻の設定欄が展開する</p>
       </div>
     </div>
@@ -564,15 +602,15 @@ code {
   </table>
 
   <h3>アラームの確認・管理</h3>
-  <p>アラームを設定したセットはカードに <strong>🔔 毎週 月・水…</strong> のようにスケジュールが表示される。</p>
+  <p>アラームを設定したセットはカードに <strong><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--yellow);margin-right:3px"></span>毎週 月・水…</strong> のようにスケジュールが表示される。</p>
   <div class="card-grid" style="grid-template-columns:1fr 1fr">
     <div class="card">
       <strong>「アラーム管理」クリック</strong>
-      <p style="margin:4px 0 0">サイドバー上部の「アラーム管理」または🔔バッジをクリックすると、セット一覧が「🔔 アラームあり」でフィルタされる。</p>
+      <p style="margin:4px 0 0">サイドバー上部の「アラーム管理」または<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--yellow)"></span>バッジをクリックすると、セット一覧が「<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--yellow);margin-right:3px"></span>アラームあり」でフィルタされる。</p>
     </div>
     <div class="card">
       <strong>選択モードで一括ON/OFF</strong>
-      <p style="margin:4px 0 0">セットを選択モードで複数選択すると「🔔 ON」「🔕 OFF」ボタンが表示される。</p>
+      <p style="margin:4px 0 0">セットを選択モードで複数選択すると「<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--yellow);margin-right:3px"></span>ON」「🔕 OFF」ボタンが表示される。</p>
     </div>
   </div>
 
@@ -582,9 +620,9 @@ code {
   </div>
 
   <h3>集中モード（アラーム一時停止）</h3>
-  <p>サイドバー上部の <strong>🔔 アイコン</strong>（アラーム管理の左）をクリックすると、全アラームを一時無効にできる。もう一度クリックで解除。</p>
+  <p>サイドバー上部の <strong><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--yellow);margin-right:3px"></span>アイコン</strong>（アラーム管理の左）をクリックすると、全アラームを一時無効にできる。もう一度クリックで解除。</p>
   <div class="card-grid" style="grid-template-columns:1fr 1fr">
-    <div class="card"><strong>🔔 アラームON</strong><p style="margin:4px 0 0">通常状態。設定した時刻に発火する。</p></div>
+    <div class="card"><strong><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--yellow);margin-right:4px"></span>アラームON</strong><p style="margin:4px 0 0">通常状態。設定した時刻に発火する。</p></div>
     <div class="card" style="border-color:rgba(239,83,80,0.4);background:rgba(239,83,80,0.07)"><strong>🔕 集中モード中</strong><p style="margin:4px 0 0">アラームが発火しない。赤みがかった表示になる。</p></div>
   </div>
 
@@ -597,7 +635,7 @@ code {
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
-        <strong>「＋ 追加」→ 種類「🚀 セット」を選択</strong>
+        <strong>「＋ 追加」→ 種類「<span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);background-color:#80cbc4;margin-right:3px"></span>セット」を選択</strong>
       </div>
     </div>
     <div class="step">
@@ -610,7 +648,7 @@ code {
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <strong>🔔 アラームを設定（任意）</strong>
+        <strong><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--yellow);margin-right:4px"></span>アラームを設定（任意）</strong>
         <p>フォーム下部のアラームトグルをONにすると繰り返し・時刻を設定できる</p>
       </div>
     </div>
@@ -618,7 +656,7 @@ code {
       <div class="step-num">4</div>
       <div class="step-body">
         <strong>保存 → セットカードをクリックしてクイックパネルを開く</strong>
-        <p>パネル内の「🚀 起動」ボタンで一括実行。URLはChromeの新ウィンドウでタブグループとして開く。アプリはサーバー経由で起動。</p>
+        <p>パネル内の「<span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);background-color:#80cbc4;margin-right:3px"></span>起動」ボタンで一括実行。URLはChromeの新ウィンドウでタブグループとして開く。アプリはサーバー経由で起動。</p>
       </div>
     </div>
   </div>
@@ -648,7 +686,7 @@ code {
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
-        <strong>「＋ 追加」→ 種類「💬 Slack送信」を選択</strong>
+        <strong>「＋ 追加」→ 種類「<span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:#4ab95f;margin-right:3px"></span>Slack送信」を選択</strong>
       </div>
     </div>
     <div class="step">
@@ -698,18 +736,18 @@ code {
 
   <div class="card-grid" style="grid-template-columns:1fr 1fr">
     <div class="card">
-      <strong>📝 メモ</strong>
+      <strong><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo);background-color:#f48fb1;margin-right:3px"></span>メモ</strong>
       <p style="margin:4px 0 0">タイトル・説明の編集。別の項目をタップするか閉じると自動保存。</p>
     </div>
     <div class="card">
-      <strong>✅ タスク</strong>
+      <strong><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);background-color:#ffb74d;margin-right:3px"></span>タスク</strong>
       <p style="margin:4px 0 0">タイトル・説明・ステータス（未着手/進行中/完了）・期日の編集。自動保存。</p>
     </div>
   </div>
 
   <div class="tip">
     <span class="tip-icon">💡</span>
-    <span>アイコン・カテゴリ・タグなど詳細設定の変更は、ホバー時に表示される ✏️ ボタンからフル編集ダイアログを開いて行う。</span>
+    <span>アイコン・カテゴリ・タグなど詳細設定の変更は、ホバー時に表示される <span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--muted)"></span> ボタンからフル編集ダイアログを開いて行う。</span>
   </div>
 
   <!-- ── スマホショートカット連携 ── -->
@@ -763,7 +801,7 @@ code {
       <p style="margin:4px 0 0">「毎朝9時に今日のタスクを開く」「会議15分前にセットを起動」など</p>
     </div>
     <div class="card">
-      <strong>📍 位置情報トリガー</strong>
+      <strong><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);background-color:#43a047;margin-right:3px"></span>位置情報トリガー</strong>
       <p style="margin:4px 0 0">「会社に到着したらブックマークを開く」「自宅に帰ったらメモを表示」など</p>
     </div>
   </div>
@@ -782,7 +820,7 @@ code {
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>MyDash → 設定（⚙️）→「📅 カレンダーインポート」→ URLを貼り付けて「取得」</strong>
+        <strong>MyDash → 設定（<span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);background-color:var(--muted)"></span>）→「📅 カレンダーインポート」→ URLを貼り付けて「取得」</strong>
       </div>
     </div>
     <div class="step">
@@ -801,7 +839,7 @@ code {
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
-        <strong>設定（⚙️）→「🖥 Dockインポート」</strong>
+        <strong>設定（<span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);background-color:var(--muted)"></span>）→「<span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);background-color:#90a4ae;margin-right:3px"></span>Dockインポート」</strong>
         <p>ローカルサーバーが起動している必要がある</p>
       </div>
     </div>
@@ -840,7 +878,7 @@ code {
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>設定（⚙️）→「☁️ Gist同期」→ TokenとGist IDを入力して保存</strong>
+        <strong>設定（<span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);background-color:var(--muted)"></span>）→「☁️ Gist同期」→ TokenとGist IDを入力して保存</strong>
         <p>Gist IDは空欄で保存すると新規作成される</p>
       </div>
     </div>
@@ -861,7 +899,7 @@ code {
   <h2 id="settings">設定</h2>
   <table>
     <tr><th>設定項目</th><th>内容</th></tr>
-    <tr><td>🖥 ローカルサーバー</td><td>サーバーの稼働状態を表示（稼働中 / 確認中 / 停止中）</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);background-color:#90a4ae;margin-right:4px"></span>ローカルサーバー</td><td>サーバーの稼働状態を表示（稼働中 / 確認中 / 停止中）</td></tr>
     <tr><td>🌙 ダーク / ☀️ ライト</td><td>テーマの切り替え</td></tr>
     <tr><td>アクセントカラー</td><td>メインカラーをプリセットまたはカスタムで変更</td></tr>
     <tr><td>🔒 編集中の確認</td><td>編集ダイアログを外クリックで閉じる前に確認を出す（ON/OFF）</td></tr>
@@ -869,7 +907,7 @@ code {
     <tr><td>優先度アイコン</td><td>低・中・高それぞれのアイコンを変更できる。絵文字・テキスト・画像URL・クリップボード画像に対応</td></tr>
     <tr><td>☁️ Gist同期</td><td>GitHub GistでデータをバックアップしてPC・スマホ間で同期する</td></tr>
     <tr><td>📅 カレンダーインポート</td><td>GoogleカレンダーのICS URLを登録して予定をインポート</td></tr>
-    <tr><td>🖥 Dockインポート</td><td>macOS DockのアプリをMyDashにインポート（サーバー必要）</td></tr>
+    <tr><td><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);background-color:#90a4ae;margin-right:4px"></span>Dockインポート</td><td>macOS DockのアプリをMyDashにインポート（サーバー必要）</td></tr>
   </table>
   <div class="tip">
     <span class="tip-icon">💡</span>
@@ -881,7 +919,7 @@ code {
   <p>時計と今日・期限超過のタスクだけを表示する小ウィンドウ。MyDashを操作しながら常にタスクを確認できる。</p>
 
   <h3>起動方法</h3>
-  <p>サイドバー上部の <strong>📌 ウィジェット</strong> をクリック → 別ウィンドウで起動する。</p>
+  <p>サイドバー上部の <strong><span class="app-icon" style="-webkit-mask-image:var(--icon-widget);mask-image:var(--icon-widget);background-color:var(--accent);margin-right:3px"></span>ウィジェット</strong> をクリック → 別ウィンドウで起動する。</p>
 
   <div class="card-grid" style="grid-template-columns:1fr 1fr 1fr">
     <div class="card"><strong>🕐 時計</strong><p style="margin:4px 0 0">現在時刻と日付をリアルタイム表示。</p></div>
@@ -933,7 +971,7 @@ code {
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <strong>「🚀 セット」を作成して必要なアイテムにチェック</strong>
+        <strong>「<span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);background-color:#80cbc4;margin-right:3px"></span>セット」を作成して必要なアイテムにチェック</strong>
         <p>例：「週次ミーティングセット」→ Google スライド + Zoom + Slack にチェック</p>
       </div>
     </div>

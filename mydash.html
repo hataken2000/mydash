@@ -1414,7 +1414,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.5</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.7</div>
   </div>
 </aside>
 
@@ -1576,6 +1576,7 @@ body.hide-server .launch-btn { display: none !important; }
       </div>
     </div>
     <button class="add-btn" onclick="openModal()" title="新規追加 (⌘N)"><span class="app-icon" style="-webkit-mask-image:var(--icon-plus);mask-image:var(--icon-plus);width:14px;height:14px;background-color:white"></span><span class="add-text">追加</span></button>
+    <button class="view-btn" id="btn-select" onclick="toggleSelectMode()" title="選択モード"><span class="app-icon" style="-webkit-mask-image:var(--icon-select);mask-image:var(--icon-select)"></span></button>
   </div>
   <div class="toolbar toolbar-row2">
     <select class="sort-select" id="sort-select" onchange="onSortChange()">
@@ -1592,7 +1593,6 @@ body.hide-server .launch-btn { display: none !important; }
     <button class="view-btn" id="btn-list" onclick="setView('list')" title="リスト表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-list);mask-image:var(--icon-list)"></span></button>
     <button class="view-btn" id="btn-icon" onclick="setView('icon')" title="アイコンのみ表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-icon-view);mask-image:var(--icon-icon-view)"></span></button>
     <button class="view-btn" id="btn-node" onclick="setView('node')" title="ノードマップ"><span class="app-icon" style="-webkit-mask-image:var(--icon-node);mask-image:var(--icon-node)"></span></button>
-    <button class="view-btn" id="btn-select" onclick="toggleSelectMode()" title="選択モード"><span class="app-icon" style="-webkit-mask-image:var(--icon-select);mask-image:var(--icon-select)"></span></button>
   </div>
   <!-- Filter tag chips -->
   <div class="filter-tags-row" id="filter-tags-row" style="display:none"></div>
@@ -2573,7 +2573,7 @@ function renderNodeView() {
     const color = getCatColor(cat) || CAT_COLORS[catIdx % CAT_COLORS.length];
     islandsSvg += `<g>`;
     islandsSvg += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="var(--card-bg)" stroke="${color}" stroke-width="2"/>`;
-    islandsSvg += `<text x="${x+10}" y="${y+18}" fill="${color}" font-size="12" font-weight="bold" font-family="system-ui,sans-serif">${esc(cat.slice(0,24))}</text>`;
+    islandsSvg += `<foreignObject x="${x+6}" y="${y+4}" width="${w-12}" height="24" pointer-events="none"><span xmlns="http://www.w3.org/1999/xhtml" style="display:block;font-size:12px;color:${color};font-family:system-ui,sans-serif;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:24px">${esc(cat.slice(0,24))}</span></foreignObject>`;
     gitems.forEach((item, idx) => {
       const c = idx % PER_ROW, r = Math.floor(idx / PER_ROW);
       const nx = x + PAD + c * (ITEM_W + ITEM_GAP);
