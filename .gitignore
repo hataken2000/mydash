@@ -1,5 +1,6 @@
 backup Hatakeyama/
 .DS_Store
 .window-state.json
-mydash-server.js
 *.app
+node_modules/
+package-lock.json
