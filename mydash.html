@@ -184,6 +184,21 @@ body {
   text-transform: uppercase;
   letter-spacing: 1.2px;
 }
+.sidebar-section.collapsible {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-section.collapsible:hover { color: var(--text); }
+.section-chevron {
+  width: 14px; height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  display: block;
+}
+.section-chevron.collapsed { transform: rotate(-90deg); }
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -1351,78 +1366,84 @@ body.hide-server .launch-btn { display: none !important; }
     </div>
   </div>
 
-  <div class="sidebar-section">すべて</div>
-  <div class="sidebar-item active" data-filter="all" onclick="setFilter('all')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-all);mask-image:var(--icon-all)"></span></span><span class="si-label">すべて</span>
-    <span class="count-badge" id="cnt-all">0</span>
-  </div>
-  <div class="sidebar-item" data-filter="starred" onclick="setFilter('starred')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-star-filled);mask-image:var(--icon-star-filled)"></span></span><span class="si-label">お気に入り</span>
-    <span class="count-badge" id="cnt-starred">0</span>
-  </div>
-
-  <div class="sidebar-section">種類</div>
-  <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set)"></span></span><span class="si-label">セット</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('set')" title="セット追加">＋</button>
-    <span class="count-badge" id="cnt-set">0</span>
-  </div>
-  <div id="set-subfilter-section" style="display:none">
-    <div class="sidebar-subitem" data-ssf="alarm" onclick="setSetSubFilter('alarm')"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>アラームあり<span class="count-badge" id="cnt-ssf-alarm" style="margin-left:auto">0</span></div>
-  </div>
-  <div class="sidebar-item" data-filter="bookmark" onclick="setFilter('bookmark')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark)"></span></span><span class="si-label">ブックマーク</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('bookmark')" title="ブックマーク追加">＋</button>
-    <span class="count-badge" id="cnt-bookmark">0</span>
-  </div>
-  <div class="sidebar-item" data-filter="tool" onclick="setFilter('tool')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-tool);mask-image:var(--icon-tool)"></span></span><span class="si-label">ツール/アプリ</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('tool')" title="ツール/アプリ追加">＋</button>
-    <span class="count-badge" id="cnt-tool">0</span>
-  </div>
-  <div class="sidebar-item" data-filter="task" onclick="setFilter('task')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task)"></span></span><span class="si-label">タスク</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('task')" title="タスク追加">＋</button>
-    <span class="count-badge" id="cnt-task">0</span>
-  </div>
-  <div id="task-subfilter-section" style="display:none">
-    <div class="sidebar-subitem" data-tsf="today"   onclick="setTaskSubFilter('today')"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>今日締切<span class="count-badge" id="cnt-tsf-today" style="margin-left:auto">0</span></div>
-    <div class="sidebar-subitem" data-tsf="overdue" onclick="setTaskSubFilter('overdue')"><span class="app-icon" style="-webkit-mask-image:var(--icon-alert-triangle);mask-image:var(--icon-alert-triangle);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>期限超過<span class="count-badge" id="cnt-tsf-overdue" style="margin-left:auto">0</span></div>
-    <div class="sidebar-subitem" data-tsf="doing"   onclick="setTaskSubFilter('doing')"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>進行中<span class="count-badge" id="cnt-tsf-doing" style="margin-left:auto">0</span></div>
-  </div>
-  <div class="sidebar-item" data-filter="place" onclick="setFilter('place')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place)"></span></span><span class="si-label">場所</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('place')" title="場所追加">＋</button>
-    <span class="count-badge" id="cnt-place">0</span>
-  </div>
-  <div class="sidebar-item" data-filter="memo" onclick="setFilter('memo')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo)"></span></span><span class="si-label">メモ</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('memo')" title="メモ追加">＋</button>
-    <span class="count-badge" id="cnt-memo">0</span>
-  </div>
-  <div class="sidebar-item" data-filter="other" onclick="setFilter('other')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-box);mask-image:var(--icon-box)"></span></span><span class="si-label">その他</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('other')" title="その他追加">＋</button>
-    <span class="count-badge" id="cnt-other">0</span>
-  </div>
-  <div class="sidebar-item" data-filter="slack" onclick="setFilter('slack')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack)"></span></span><span class="si-label">Slack送信</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('slack')" title="Slack送信追加">＋</button>
-    <span class="count-badge" id="cnt-slack">0</span>
-  </div>
-  <div class="sidebar-item server-feature" data-filter="script" onclick="setFilter('script')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script)"></span></span><span class="si-label">スクリプト</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openModal('script')" title="スクリプト追加">＋</button>
-    <span class="count-badge" id="cnt-script">0</span>
-  </div>
-  <div class="sidebar-item server-feature" data-filter="window-session" onclick="setFilter('window-session')">
-    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor)"></span></span><span class="si-label">ウィンドウ復元</span>
-    <button class="type-add-btn" onclick="event.stopPropagation();openWindowSaverModal()" title="ウィンドウ復元追加">＋</button>
-    <span class="count-badge" id="cnt-window-session">0</span>
+  <div class="sidebar-section collapsible" onclick="toggleSidebarSection('all')">すべて<svg class="section-chevron" id="arrow-all" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  <div id="body-section-all">
+    <div class="sidebar-item active" data-filter="all" onclick="setFilter('all')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-all);mask-image:var(--icon-all)"></span></span><span class="si-label">すべて</span>
+      <span class="count-badge" id="cnt-all">0</span>
+    </div>
+    <div class="sidebar-item" data-filter="starred" onclick="setFilter('starred')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-star-filled);mask-image:var(--icon-star-filled)"></span></span><span class="si-label">お気に入り</span>
+      <span class="count-badge" id="cnt-starred">0</span>
+    </div>
   </div>
 
-  <div class="sidebar-section" id="cat-section" style="display:none">カテゴリ</div>
-  <div id="cat-list"></div>
+  <div class="sidebar-section collapsible" onclick="toggleSidebarSection('type')">種類<svg class="section-chevron" id="arrow-type" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  <div id="body-section-type">
+    <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set)"></span></span><span class="si-label">セット</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openModal('set')" title="セット追加">＋</button>
+      <span class="count-badge" id="cnt-set">0</span>
+    </div>
+    <div id="set-subfilter-section" style="display:none">
+      <div class="sidebar-subitem" data-ssf="alarm" onclick="setSetSubFilter('alarm')"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>アラームあり<span class="count-badge" id="cnt-ssf-alarm" style="margin-left:auto">0</span></div>
+    </div>
+    <div class="sidebar-item" data-filter="bookmark" onclick="setFilter('bookmark')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark)"></span></span><span class="si-label">ブックマーク</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openModal('bookmark')" title="ブックマーク追加">＋</button>
+      <span class="count-badge" id="cnt-bookmark">0</span>
+    </div>
+    <div class="sidebar-item" data-filter="tool" onclick="setFilter('tool')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-tool);mask-image:var(--icon-tool)"></span></span><span class="si-label">ツール/アプリ</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openModal('tool')" title="ツール/アプリ追加">＋</button>
+      <span class="count-badge" id="cnt-tool">0</span>
+    </div>
+    <div class="sidebar-item" data-filter="task" onclick="setFilter('task')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task)"></span></span><span class="si-label">タスク</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openModal('task')" title="タスク追加">＋</button>
+      <span class="count-badge" id="cnt-task">0</span>
+    </div>
+    <div id="task-subfilter-section" style="display:none">
+      <div class="sidebar-subitem" data-tsf="today"   onclick="setTaskSubFilter('today')"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>今日締切<span class="count-badge" id="cnt-tsf-today" style="margin-left:auto">0</span></div>
+      <div class="sidebar-subitem" data-tsf="overdue" onclick="setTaskSubFilter('overdue')"><span class="app-icon" style="-webkit-mask-image:var(--icon-alert-triangle);mask-image:var(--icon-alert-triangle);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>期限超過<span class="count-badge" id="cnt-tsf-overdue" style="margin-left:auto">0</span></div>
+      <div class="sidebar-subitem" data-tsf="doing"   onclick="setTaskSubFilter('doing')"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>進行中<span class="count-badge" id="cnt-tsf-doing" style="margin-left:auto">0</span></div>
+    </div>
+    <div class="sidebar-item" data-filter="place" onclick="setFilter('place')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place)"></span></span><span class="si-label">場所</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openModal('place')" title="場所追加">＋</button>
+      <span class="count-badge" id="cnt-place">0</span>
+    </div>
+    <div class="sidebar-item" data-filter="memo" onclick="setFilter('memo')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo)"></span></span><span class="si-label">メモ</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openModal('memo')" title="メモ追加">＋</button>
+      <span class="count-badge" id="cnt-memo">0</span>
+    </div>
+    <div class="sidebar-item" data-filter="other" onclick="setFilter('other')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-box);mask-image:var(--icon-box)"></span></span><span class="si-label">その他</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openModal('other')" title="その他追加">＋</button>
+      <span class="count-badge" id="cnt-other">0</span>
+    </div>
+    <div class="sidebar-item" data-filter="slack" onclick="setFilter('slack')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack)"></span></span><span class="si-label">Slack送信</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openModal('slack')" title="Slack送信追加">＋</button>
+      <span class="count-badge" id="cnt-slack">0</span>
+    </div>
+    <div class="sidebar-item server-feature" data-filter="script" onclick="setFilter('script')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script)"></span></span><span class="si-label">スクリプト</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openModal('script')" title="スクリプト追加">＋</button>
+      <span class="count-badge" id="cnt-script">0</span>
+    </div>
+    <div class="sidebar-item server-feature" data-filter="window-session" onclick="setFilter('window-session')">
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor)"></span></span><span class="si-label">ウィンドウ復元</span>
+      <button class="type-add-btn" onclick="event.stopPropagation();openWindowSaverModal()" title="ウィンドウ復元追加">＋</button>
+      <span class="count-badge" id="cnt-window-session">0</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section collapsible" id="cat-section" style="display:none" onclick="toggleSidebarSection('cat')">カテゴリ<svg class="section-chevron" id="arrow-cat" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  <div id="body-section-cat">
+    <div id="cat-list"></div>
+  </div>
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
@@ -2146,6 +2167,7 @@ function load() {
   if (!db.settings.priorityIcons) db.settings.priorityIcons = { low:'▂', medium:'▄', high:'█' };
   if (!db.settings.view) db.settings.view = 'grid';
   if (!db.settings.sort) db.settings.sort = 'manual';
+  if (!db.settings.sidebarCollapsed) db.settings.sidebarCollapsed = {};
   state.expandedMemos = new Set(Array.isArray(db.expandedMemos) ? db.expandedMemos : []);
   state.expandedCards = new Set(Array.isArray(db.expandedCards) ? db.expandedCards : []);
 }
@@ -2969,6 +2991,26 @@ function updateCounts() {
   document.title = 'MyDash';
 
   updateAlarmBadge();
+  applySidebarCollapsed();
+}
+
+function toggleSidebarSection(key) {
+  if (!db.settings.sidebarCollapsed) db.settings.sidebarCollapsed = {};
+  db.settings.sidebarCollapsed[key] = !db.settings.sidebarCollapsed[key];
+  save();
+  applySidebarCollapsed();
+}
+
+function applySidebarCollapsed() {
+  const c = db.settings.sidebarCollapsed || {};
+  ['all', 'type', 'cat'].forEach(key => {
+    const body = document.getElementById(`body-section-${key}`);
+    const arrow = document.getElementById(`arrow-${key}`);
+    if (!body) return;
+    const collapsed = !!c[key];
+    body.style.display = collapsed ? 'none' : '';
+    if (arrow) arrow.classList.toggle('collapsed', collapsed);
+  });
 }
 
 function updateCatList() {
@@ -2976,7 +3018,10 @@ function updateCatList() {
   const uncatCount = db.items.filter(i => !i.category).length;
   const sec = document.getElementById('cat-section');
   const list = document.getElementById('cat-list');
-  sec.style.display = (cats.length || uncatCount) ? '' : 'none';
+  const hasContent = !!(cats.length || uncatCount);
+  sec.style.display = hasContent ? '' : 'none';
+  if (!hasContent) document.getElementById('body-section-cat').style.display = 'none';
+  applySidebarCollapsed();
   const uncatActive = state.filter === 'cat:' ? ' active' : '';
   const uncatItem = uncatCount > 0 || state.filter === 'cat:' ? `<div class="sidebar-item${uncatActive}" data-filter="cat:" data-cat="" onclick="setFilter('cat:')"
       ondragover="catDragOver(this,event)" ondragleave="catDragLeave(this)" ondrop="catDrop(this)">
