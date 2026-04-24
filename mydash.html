@@ -1414,7 +1414,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.8</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.11.9</div>
   </div>
 </aside>
 
@@ -7166,6 +7166,58 @@ if (SERVER_BASE) {
     const w = window.outerWidth, h = window.outerHeight, x = window.screenX, y = window.screenY;
     fetch(`${SERVER_BASE}/save-position?x=${x}&y=${y}&w=${w}&h=${h}`).catch(() => {});
   }, 10000);
+}
+
+// Slack後で読むアイテムをサーバーからポーリングしてインポート
+function importSlackSaved(rawItems) {
+  if (!rawItems?.length) return;
+  const existingUrls = new Set(db.items.map(i => i.url).filter(Boolean));
+  let added = 0;
+  for (const raw of rawItems) {
+    if (raw.is_archived) continue;
+    const { item_id, ts, date_created } = raw;
+    if (!item_id || !ts) continue;
+    const permalink = `https://app.slack.com/archives/${item_id}/p${ts.replace('.', '')}?no_macapp=1`;
+    if (existingUrls.has(permalink)) continue;
+    const date = new Date((date_created || Date.now() / 1000) * 1000);
+    const ymd = `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')}`;
+    const hm = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+    const title = `${ymd} ${hm}-Slack後`;
+    db.items.unshift({
+      id: 'sl_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+      type: 'bookmark',
+      title,
+      url: permalink,
+      category: 'Slack後で読む',
+      hidden: false,
+      starred: false,
+      priority: 'none',
+      memo: '',
+      createdAt: Date.now(),
+    });
+    existingUrls.add(permalink);
+    added++;
+  }
+  if (added > 0) {
+    save();
+    render();
+    updateCounts();
+    toast(`Slack後で読む: ${added}件追加`, '📌');
+  }
+}
+
+async function pollSlackSaved() {
+  if (!SERVER_BASE) return;
+  try {
+    const res = await fetch(`${SERVER_BASE}/slack-saved`);
+    const data = await res.json();
+    if (data.ok) importSlackSaved(data.items);
+  } catch(_) {}
+}
+
+if (SERVER_BASE) {
+  pollSlackSaved();
+  setInterval(pollSlackSaved, 60000);
 }
 
 // ウィジェットからのBroadcastChannel受信

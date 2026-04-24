@@ -1,14 +1,16 @@
 {
   "manifest_version": 3,
   "name": "MyDash Slack Sender",
-  "version": "1.0",
-  "description": "MyDashからSlackに自動送信する拡張機能",
-  "permissions": ["tabs", "scripting", "tabGroups"],
+  "version": "1.1",
+  "description": "MyDashからSlackに自動送信・後で読むを取り込む拡張機能",
+  "permissions": ["tabs", "scripting", "tabGroups", "alarms"],
   "host_permissions": [
     "https://app.slack.com/*",
     "https://*.slack.com/*",
     "file://*/*",
-    "https://hataken2000.github.io/*"
+    "https://hataken2000.github.io/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -17,6 +19,11 @@
     {
       "matches": ["file://*/*", "https://hataken2000.github.io/*"],
       "js": ["content-mydash.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://app.slack.com/*", "https://*.slack.com/*"],
+      "js": ["content-slack.js"],
       "run_at": "document_idle"
     }
   ]

@@ -1,10 +1,73 @@
 const WINDOW_SAVER_EXT_ID = 'jjfmikbhobeolfbihplmklplpfmmfhnn';
+const MYDASH_SERVER = 'http://localhost:3737';
+
+// service worker起動時にアラームを確認・作成
+chrome.alarms.get('slackSavedPoll', (alarm) => {
+  if (!alarm) chrome.alarms.create('slackSavedPoll', { periodInMinutes: 1 });
+});
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'slackSavedPoll') pollSlackSaved();
+});
+
+async function pollSlackSaved() {
+  const tabs = await chrome.tabs.query({ url: ['https://app.slack.com/*'] });
+  for (const tab of tabs) {
+    try {
+      const results = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        world: 'MAIN',
+        func: async () => {
+          try {
+            const raw = localStorage.localConfig_v2 || localStorage.localConfig;
+            const teams = JSON.parse(raw || '{}').teams || {};
+            const teamId = Object.keys(teams)[0];
+            const token = teams[teamId]?.token;
+            const domain = teams[teamId]?.domain || 'slack';
+            if (!token) return null;
+            const fd = new FormData();
+            fd.append('token', token);
+            fd.append('limit', '15');
+            fd.append('filter', 'saved');
+            fd.append('_x_app_name', 'client');
+            const res = await fetch(`https://${domain}.slack.com/api/saved.list?slack_route=${teamId}&_x_gantry=true`, {
+              method: 'POST',
+              credentials: 'include',
+              body: fd
+            });
+            const data = await res.json();
+            return data.ok ? (data.saved_items || []) : null;
+          } catch(_) { return null; }
+        }
+      });
+      const items = results?.[0]?.result;
+      if (items?.length) {
+        sendSavedToMyDash(items);
+        return;
+      }
+    } catch(e) {}
+  }
+}
+
+async function sendSavedToMyDash(items) {
+  try {
+    await fetch(`${MYDASH_SERVER}/slack-saved`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items })
+    });
+  } catch(e) {
+    console.warn('[MyDash] ローカルサーバーへの送信失敗:', e);
+  }
+}
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg.type === 'SLACK_SEND') {
     openSlackAndSend(msg.url, msg.message);
   } else if (msg.type === 'OPEN_SET') {
     openSetInTabGroup(msg.urls, msg.title);
+  } else if (msg.type === 'SLACK_SAVED_ITEMS') {
+    sendSavedToMyDash(msg.items);
   } else if (msg.type === 'WS_GET_SESSIONS') {
     chrome.runtime.sendMessage(WINDOW_SAVER_EXT_ID, { type: 'GET_SESSIONS' }, (resp) => {
       sendResponse(resp ?? { sessions: [] });
