@@ -106,6 +106,8 @@
   --window-session: #90a4ae;
   --place: #43a047;
   --icon-place: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMCAxMGMwIDYtOCAxMi04IDEycy04LTYtOC0xMmE4IDggMCAwIDEgMTYgMFoiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEwIiByPSIzIi8+PC9zdmc+');
+  --script: #4dd0e1;
+  --icon-script: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjQgMTcgMTAgMTEgNCA1Ij48L3BvbHlsaW5lPjxsaW5lIHgxPSIxMiIgeTE9IjE5IiB4Mj0iMjAiIHkyPSIxOSI+PC9saW5lPjwvc3ZnPg==');
   --radius: 12px;
   --radius-sm: 8px;
   --icon-active: var(--accent);
@@ -379,6 +381,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .sidebar-item[data-filter="other"]          { border-left-color: rgba(206,147,216,0.4); }
 .sidebar-item[data-filter="slack"]          { border-left-color: rgba(74,185,95,0.4); }
 .sidebar-item[data-filter="window-session"] { border-left-color: rgba(144,164,174,0.4); }
+.sidebar-item[data-filter="script"]         { border-left-color: rgba(77,208,225,0.4); }
 /* アクティブ時は帯を濃く */
 .sidebar-item[data-filter="set"].active             { border-left-color: var(--set); }
 .sidebar-item[data-filter="bookmark"].active        { border-left-color: var(--bookmark); }
@@ -388,6 +391,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .sidebar-item[data-filter="other"].active           { border-left-color: var(--other); }
 .sidebar-item[data-filter="slack"].active           { border-left-color: var(--slack); }
 .sidebar-item[data-filter="window-session"].active  { border-left-color: var(--window-session); }
+.sidebar-item[data-filter="script"].active          { border-left-color: var(--script); }
 /* サイドバー種類ごとのタイプカラー（非アクティブ・非ホバー時） */
 .sidebar-item[data-filter="set"]:not(.active):not(:hover)            .app-icon { background-color: var(--set); }
 .sidebar-item[data-filter="bookmark"]:not(.active):not(:hover)       .app-icon { background-color: var(--bookmark); }
@@ -397,6 +401,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .sidebar-item[data-filter="other"]:not(.active):not(:hover)          .app-icon { background-color: var(--other); }
 .sidebar-item[data-filter="slack"]:not(.active):not(:hover)          .app-icon { background-color: var(--slack); }
 .sidebar-item[data-filter="window-session"]:not(.active):not(:hover) .app-icon { background-color: var(--window-session); }
+.sidebar-item[data-filter="script"]:not(.active):not(:hover)         .app-icon { background-color: var(--script); }
 /* カウントバッジをタイプカラーに */
 .sidebar-item[data-filter="set"]            .count-badge { background: rgba(128,203,196,0.18); color: var(--set); }
 .sidebar-item[data-filter="bookmark"]       .count-badge { background: rgba(79,195,247,0.18);  color: var(--bookmark); }
@@ -406,6 +411,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .sidebar-item[data-filter="other"]          .count-badge { background: rgba(206,147,216,0.18); color: var(--other); }
 .sidebar-item[data-filter="slack"]          .count-badge { background: rgba(74,185,95,0.18);   color: var(--slack); }
 .sidebar-item[data-filter="window-session"] .count-badge { background: rgba(144,164,174,0.18); color: var(--window-session); }
+.sidebar-item[data-filter="script"]         .count-badge { background: rgba(77,208,225,0.18);  color: var(--script); }
 .action-btn .app-icon { background-color: var(--text-muted); width:15px; height:15px; }
 .action-btn:hover .app-icon { background-color: var(--text); }
 .action-btn.danger:hover .app-icon { background-color: var(--danger); }
@@ -792,6 +798,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .type-slack           { color: var(--slack);          background: rgba(74,185,95,0.14); }
 .type-window-session  { color: var(--window-session); background: rgba(144,164,174,0.14); }
 .type-place           { color: var(--place);          background: rgba(67,160,71,0.14); }
+.type-script          { color: var(--script);         background: rgba(77,208,225,0.14); }
 .icon-bg-bookmark { background: rgba(79,195,247,0.10); }
 .icon-bg-tool     { background: rgba(129,199,132,0.10); }
 .icon-bg-task     { background: rgba(255,183,77,0.10); }
@@ -1403,6 +1410,11 @@ body.hide-server .launch-btn { display: none !important; }
     <button class="type-add-btn" onclick="event.stopPropagation();openModal('slack')" title="Slack送信追加">＋</button>
     <span class="count-badge" id="cnt-slack">0</span>
   </div>
+  <div class="sidebar-item server-feature" data-filter="script" onclick="setFilter('script')">
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script)"></span></span><span class="si-label">スクリプト</span>
+    <button class="type-add-btn" onclick="event.stopPropagation();openModal('script')" title="スクリプト追加">＋</button>
+    <span class="count-badge" id="cnt-script">0</span>
+  </div>
   <div class="sidebar-item server-feature" data-filter="window-session" onclick="setFilter('window-session')">
     <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor)"></span></span><span class="si-label">ウィンドウ復元</span>
     <button class="type-add-btn" onclick="event.stopPropagation();openWindowSaverModal()" title="ウィンドウ復元追加">＋</button>
@@ -1552,6 +1564,13 @@ body.hide-server .launch-btn { display: none !important; }
             <span style="white-space:nowrap;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-alarm);mask-image:var(--icon-alarm);width:13px;height:13px"></span>アラーム時刻ずらし（分）</span>
             <input type="number" id="alarm-offset-input" onchange="setAlarmOffset(this)" style="width:70px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:3px 6px;font-size:13px;font-family:inherit;text-align:right" placeholder="0">
           </div>
+          <div class="io-btn" style="justify-content:space-between;gap:10px" title="スクリプトアイテムで使うデフォルトのターミナルアプリ">
+            <span style="white-space:nowrap;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script);width:13px;height:13px"></span>デフォルトターミナル</span>
+            <select id="default-terminal-select" onchange="setDefaultTerminal(this)" style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:3px 6px;font-size:13px;font-family:inherit">
+              <option value="Terminal">Terminal.app</option>
+              <option value="iTerm2">iTerm2</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -1650,6 +1669,9 @@ body.hide-server .launch-btn { display: none !important; }
           <div class="type-option" data-type="place" onclick="selectType('place')">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place)"></span></span>場所
           </div>
+          <div class="type-option server-feature" data-type="script" onclick="selectType('script')">
+            <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script)"></span></span>スクリプト
+          </div>
         </div>
       </div>
       <!-- Title -->
@@ -1683,6 +1705,24 @@ body.hide-server .launch-btn { display: none !important; }
           <button type="button" onclick="getGeoLocation()" class="btn-secondary" style="font-size:12px;padding:5px 10px;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:13px;height:13px;background-color:currentColor"></span>現在地を取得</button>
           <span id="f-place-latlng" style="font-size:11px;color:var(--text-muted)"></span>
         </div>
+      </div>
+      <!-- Script fields -->
+      <div class="form-group" id="f-script-group" style="display:none">
+        <div class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+          コマンドテンプレート
+          <button type="button" onclick="showScriptHelp()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:11px;padding:2px 6px;border-radius:4px;border:1px solid var(--border)" title="クロードへの相談プロンプトを表示">？ クロードに相談</button>
+        </div>
+        <textarea class="form-textarea" id="f-script-command" placeholder="例: cd {DIR} && claude" style="min-height:80px;font-family:monospace"></textarea>
+        <div class="icon-hint"><code>{VAR}</code> と書いた部分が実行前に入力できます &nbsp;|&nbsp; <code>;</code> 常に次へ &nbsp;|&nbsp; <code>&&</code> 成功時だけ次へ</div>
+        <div class="form-label" style="margin-top:10px">パラメータ定義（任意）</div>
+        <div id="f-script-params-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px"></div>
+        <button type="button" onclick="addScriptParam()" class="btn-secondary" style="font-size:12px;padding:5px 10px">＋ パラメータ追加</button>
+        <div class="form-label" style="margin-top:10px">ターミナル</div>
+        <select class="form-select" id="f-script-terminal">
+          <option value="">全体設定に従う</option>
+          <option value="Terminal">Terminal.app</option>
+          <option value="iTerm2">iTerm2</option>
+        </select>
       </div>
       <!-- Description -->
       <div class="form-group">
@@ -2029,6 +2069,7 @@ const TYPE_DEF = {
   slack:           { icon: '💬', label: 'Slack送信',     iconVar: 'var(--icon-slack)' },
   'window-session': { icon: '🖥️', label: 'ウィンドウ復元', iconVar: 'var(--icon-monitor)' },
   place:            { icon: '📍', label: '場所',          iconVar: 'var(--icon-place)' },
+  script:           { icon: '⌨️', label: 'スクリプト',   iconVar: 'var(--icon-script)' },
 };
 function _iconFallback(el, type) {
   const v = TYPE_DEF[type]?.iconVar;
@@ -2078,6 +2119,7 @@ let state = {
   setItems: [], // セット型: [{ itemId, notionTodayPage }]
   selectMode: false,
   selectedIds: new Set(),
+  scriptParams: [], // script型: [{ name, type, options, lastValue }]
 };
 
 // ═══════════════════════════════════════════
@@ -2629,6 +2671,7 @@ function nodeItemClick(id) {
   if (item.type === 'place') { showPlaceQuickPanel(id); return; }
   if (item.type === 'slack') { showSlackQuickPanel(id); return; }
   if (item.type === 'window-session') { launchWindowSession(item); return; }
+  if (item.type === 'script') { execScriptItem(item); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   if (item.appName) { openWithServer(item.appName); return; }
   if (item.url) { window.open(item.url, '_blank'); return; }
@@ -2686,9 +2729,9 @@ function typeColor(item) {
   const isLight = document.body.classList.contains('light');
   return isLight
     ? ({ bookmark:'var(--bookmark)', tool:'var(--tool)', task:'var(--task)',
-         memo:'var(--memo)', other:'var(--other)', set:'var(--set)', slack:'var(--slack)', place:'var(--place)' }[item.type] || 'var(--border)')
+         memo:'var(--memo)', other:'var(--other)', set:'var(--set)', slack:'var(--slack)', place:'var(--place)', script:'var(--script)' }[item.type] || 'var(--border)')
     : ({ bookmark:'rgba(79,195,247,0.45)', tool:'rgba(129,199,132,0.45)', task:'rgba(255,183,77,0.45)',
-         memo:'rgba(244,143,177,0.45)', other:'rgba(206,147,216,0.45)', set:'rgba(128,203,196,0.45)', slack:'rgba(74,185,95,0.45)', place:'rgba(67,160,71,0.45)' }[item.type] || 'var(--border)');
+         memo:'rgba(244,143,177,0.45)', other:'rgba(206,147,216,0.45)', set:'rgba(128,203,196,0.45)', slack:'rgba(74,185,95,0.45)', place:'rgba(67,160,71,0.45)', script:'rgba(77,208,225,0.45)' }[item.type] || 'var(--border)');
 }
 
 function gridCard(item) {
@@ -2704,6 +2747,7 @@ function gridCard(item) {
     item.type === 'set' ||
     (item.type === 'slack' && item.slackMessage) ||
     (item.type === 'place' && (item.address || item.mapUrl || item.lat)) ||
+    (item.type === 'script' && item.scriptCommand) ||
     (['bookmark','tool','task','other'].includes(item.type) && item.desc)
   );
   const expandBtn = hasExpand
@@ -2733,6 +2777,10 @@ function gridCard(item) {
       expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
         ${msg ? `<div style="margin-bottom:8px;white-space:pre-wrap;word-break:break-word">${esc(msg)}</div>` : ''}
         <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border:1px solid rgba(74,185,95,0.4);width:100%" onclick="event.stopPropagation();showSlackQuickPanel('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
+      </div>`;
+    } else if (item.type === 'script' && item.scriptCommand) {
+      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
+        <div style="font-family:monospace;font-size:11px;background:var(--bg3);padding:6px 8px;border-radius:4px;word-break:break-all">${esc(item.scriptCommand)}</div>
       </div>`;
     } else if (item.desc) {
       expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">${esc(item.desc)}</div>`;
@@ -2893,10 +2941,10 @@ function listCard(item) {
 
 function updateCounts() {
   const showServer = db.settings?.showServerFeatures !== false;
-  const visibleItems = showServer ? db.items : db.items.filter(i => !i.appName && i.type !== 'window-session');
+  const visibleItems = showServer ? db.items : db.items.filter(i => !i.appName && i.type !== 'window-session' && i.type !== 'script');
   document.getElementById('cnt-all').textContent = visibleItems.length;
   document.getElementById('cnt-starred').textContent = visibleItems.filter(i => i.starred).length;
-  ['bookmark','tool','task','place','memo','other','set','slack','window-session'].forEach(t => {
+  ['bookmark','tool','task','place','memo','other','set','slack','window-session','script'].forEach(t => {
     const count = visibleItems.filter(i => i.type === t).length;
     document.getElementById(`cnt-${t}`).textContent = count;
     const sidebarEl = document.querySelector(`.sidebar-item[data-filter="${t}"]`);
@@ -3346,6 +3394,7 @@ function cardClick(e, id) {
   if (item.type === 'place') { showPlaceQuickPanel(id); return; }
   if (item.type === 'slack') { showSlackQuickPanel(id); return; }
   if (item.type === 'window-session') { launchWindowSession(item); return; }
+  if (item.type === 'script') { execScriptItem(item); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   if (item.appName) { openWithServer(item.appName); return; }
   if (item.url) { window.open(item.url, '_blank'); return; }
@@ -3576,6 +3625,7 @@ function resetForm() {
   document.getElementById('f-priority').value = 'medium';
   state.tags = [];
   state.setItems = [];
+  state.scriptParams = [];
   // セットアラームUIをリセット
   const alEn = document.getElementById('f-alarm-enabled');
   if (alEn) { alEn.checked = false; onSetAlarmToggle(false); }
@@ -3591,12 +3641,13 @@ function selectType(type) {
   document.querySelectorAll('.type-option').forEach(el => {
     el.classList.toggle('selected', el.dataset.type === type);
   });
-  const isSlack = type === 'slack';
-  const hasUrl  = type === 'bookmark' || type === 'tool' || isSlack;
-  const isTask  = type === 'task';
-  const isTool  = type === 'tool';
-  const isSet   = type === 'set';
-  const isPlace = type === 'place';
+  const isSlack  = type === 'slack';
+  const hasUrl   = type === 'bookmark' || type === 'tool' || isSlack;
+  const isTask   = type === 'task';
+  const isTool   = type === 'tool';
+  const isSet    = type === 'set';
+  const isPlace  = type === 'place';
+  const isScript = type === 'script';
   document.getElementById('f-url-group').style.display = hasUrl ? '' : 'none';
   document.getElementById('f-url-label').textContent   = isSlack ? 'チャンネルURL' : 'URL / パス';
   document.getElementById('f-url').placeholder         = isSlack ? 'https://app.slack.com/client/...' : 'https://...';
@@ -3636,6 +3687,8 @@ function selectType(type) {
   if (isSet) renderSetItemsList();
   document.getElementById('f-place-group').style.display = isPlace ? '' : 'none';
   if (!isPlace) { document.getElementById('f-place-latlng').textContent = ''; document.getElementById('f-place-latlng').dataset.lat = ''; document.getElementById('f-place-latlng').dataset.lng = ''; }
+  document.getElementById('f-script-group').style.display = isScript ? '' : 'none';
+  if (isScript) renderScriptParamsList();
   updateIconPreview();
 }
 
@@ -3703,6 +3756,12 @@ function editItem(id) {
       ll.dataset.lat = item.lat;
       ll.dataset.lng = item.lng;
     }
+  }
+  if (item.type === 'script') {
+    document.getElementById('f-script-command').value = item.scriptCommand || '';
+    document.getElementById('f-script-terminal').value = item.scriptTerminal || '';
+    state.scriptParams = (item.scriptParams || []).map(p => ({ ...p }));
+    renderScriptParamsList();
   }
   renderTags();
   updateIconPreview();
@@ -3824,6 +3883,11 @@ function saveItem() {
     data.slackMessage = document.getElementById('f-slack-msg').value.trim();
     if (data.url) localStorage.setItem('mydash_last_slack_url', data.url);
   }
+  if (state.type === 'script') {
+    data.scriptCommand = document.getElementById('f-script-command').value.trim();
+    data.scriptTerminal = document.getElementById('f-script-terminal').value || null;
+    data.scriptParams = state.scriptParams ? JSON.parse(JSON.stringify(state.scriptParams)) : [];
+  }
 
   if (state.editId) {
     const idx = db.items.findIndex(i => i.id === state.editId);
@@ -3937,6 +4001,7 @@ function iconCardClick(event, id) {
   if (item.type === 'set') { showSetQuickPanel(id); return; }
   if (item.type === 'place') { showPlaceQuickPanel(id); return; }
   if (item.type === 'slack') { showSlackQuickPanel(id); return; }
+  if (item.type === 'script') { execScriptItem(item); return; }
   if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
   cardClick(event, id);
 }
@@ -5188,6 +5253,167 @@ function closePlaceQuickPanel() {
 
 // ═══════════════════════════════════════════
 // アイテム挿入モーダル
+// ─── Script アイテム ─────────────────────────
+function execScriptItem(item) {
+  if (!SERVER_BASE) { toast('ローカルサーバーが必要です', '⚠️'); return; }
+  const params = item.scriptParams || [];
+  const hasParams = params.length > 0;
+  if (!hasParams) {
+    _runScriptCommand(item, {});
+    return;
+  }
+  // パラメータパネルを表示
+  _showScriptParamPanel(item);
+}
+
+function _buildCommand(template, values) {
+  return template.replace(/\{(\w+)\}/g, (_, k) => values[k] !== undefined ? values[k] : `{${k}}`);
+}
+
+function _runScriptCommand(item, values) {
+  const cmd = _buildCommand(item.scriptCommand || '', values);
+  const terminal = item.scriptTerminal || db.settings?.defaultTerminal || 'Terminal';
+  // 最後に使った値を保存
+  if (Object.keys(values).length > 0) {
+    const idx = db.items.findIndex(i => i.id === item.id);
+    if (idx >= 0) {
+      db.items[idx].scriptParams = (db.items[idx].scriptParams || []).map(p => ({
+        ...p, lastValue: values[p.name] !== undefined ? values[p.name] : p.lastValue
+      }));
+      save();
+    }
+  }
+  fetch(`${SERVER_BASE}/exec-terminal`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ command: cmd, terminal })
+  })
+    .then(r => r.json())
+    .then(d => { if (!d.ok) toast('実行に失敗しました', '❌'); else toast('ターミナルで実行中…', '▶️'); })
+    .catch(() => toast('サーバーに接続できません', '❌'));
+}
+
+function _showScriptParamPanel(item) {
+  const params = item.scriptParams || [];
+  const tc = typeColor(item);
+  const rows = params.map(p => {
+    const val = p.lastValue || (p.options && p.options[0]) || '';
+    if (p.type === 'select' && p.options && p.options.length > 0) {
+      const opts = p.options.map(o => `<option value="${esc(o)}"${o === val ? ' selected' : ''}>${esc(o)}</option>`).join('');
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <label style="font-size:12px;min-width:80px;color:var(--text-muted)">${esc(p.name)}</label>
+        <select class="form-select" id="spp-${esc(p.name)}" style="flex:1;font-size:13px">${opts}</select>
+      </div>`;
+    }
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <label style="font-size:12px;min-width:80px;color:var(--text-muted)">${esc(p.name)}</label>
+      <input class="form-input" id="spp-${esc(p.name)}" value="${esc(val)}" style="flex:1;font-size:13px">
+    </div>`;
+  }).join('');
+
+  const panelId = 'script-param-panel';
+  let panel = document.getElementById(panelId);
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = panelId;
+    panel.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.72);backdrop-filter:blur(4px);padding:20px';
+    document.body.appendChild(panel);
+  }
+  panel.innerHTML = `<div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 24px 64px rgba(0,0,0,0.55);width:340px;max-width:90vw">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script);background-color:${tc};width:16px;height:16px"></span>
+      <span style="font-weight:600;font-size:14px">${esc(item.title)}</span>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);background:var(--bg3);padding:8px 10px;border-radius:6px;font-family:monospace;margin-bottom:14px">${esc(item.scriptCommand || '')}</div>
+    ${rows}
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button onclick="document.getElementById('${panelId}').remove()" class="btn-secondary" style="flex:1">キャンセル</button>
+      <button onclick="_runScriptFromPanel('${item.id}')" class="btn-primary" style="flex:1">▶ 実行</button>
+    </div>
+  </div>`;
+  panel.style.display = 'flex';
+}
+
+function _runScriptFromPanel(itemId) {
+  const item = db.items.find(i => i.id === itemId);
+  if (!item) return;
+  const values = {};
+  (item.scriptParams || []).forEach(p => {
+    const el = document.getElementById(`spp-${p.name}`);
+    if (el) values[p.name] = el.value;
+  });
+  document.getElementById('script-param-panel')?.remove();
+  _runScriptCommand(item, values);
+}
+
+// 編集ダイアログ: パラメータリスト描画
+function renderScriptParamsList() {
+  const list = document.getElementById('f-script-params-list');
+  if (!list) return;
+  if (!state.scriptParams || state.scriptParams.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--text-muted)">パラメータなし</div>';
+    return;
+  }
+  list.innerHTML = state.scriptParams.map((p, i) => `
+    <div style="display:flex;gap:6px;align-items:flex-start;background:var(--bg3);padding:8px;border-radius:6px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+        <div style="display:flex;gap:4px">
+          <input class="form-input" value="${esc(p.name)}" placeholder="{VAR}名" style="flex:1;font-size:12px" oninput="state.scriptParams[${i}].name=this.value">
+          <select class="form-select" style="width:90px;font-size:12px" onchange="state.scriptParams[${i}].type=this.value;renderScriptParamsList()">
+            <option value="text"${p.type==='text'?' selected':''}>テキスト</option>
+            <option value="select"${p.type==='select'?' selected':''}>選択</option>
+          </select>
+        </div>
+        ${p.type === 'select' ? `<textarea class="form-textarea" placeholder="選択肢（1行1つ）" style="font-size:11px;min-height:54px" oninput="state.scriptParams[${i}].options=this.value.split('\\n').filter(Boolean)">${esc((p.options||[]).join('\n'))}</textarea>` : ''}
+      </div>
+      <button type="button" onclick="state.scriptParams.splice(${i},1);renderScriptParamsList()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:2px">✕</button>
+    </div>
+  `).join('');
+}
+
+function addScriptParam() {
+  if (!state.scriptParams) state.scriptParams = [];
+  state.scriptParams.push({ name: '', type: 'text', options: [], lastValue: '' });
+  renderScriptParamsList();
+}
+
+function showScriptHelp() {
+  const prompt = `MyDashのスクリプトアイテムを使って〇〇を自動化したい。
+
+【仕様】
+- コマンドテンプレート: {VAR} 形式で変数を埋め込める（例: cd {DIR} && node {FILE}）
+- パラメータ種別: text（自由入力）/ select（プルダウン選択肢を列挙）
+- 実行環境: zsh -l -c で実行（~/.zshrc のPATHが通っている）
+- ターミナル: Terminal.app または iTerm2 を選択可能
+- ; → 前のコマンドが失敗しても次を実行
+- && → 前のコマンドが成功したときだけ次を実行
+- || → 前のコマンドが失敗したときだけ次を実行
+
+【やりたいこと】
+（ここに何を自動化したいか書いてクロードに貼り付けてください）`;
+
+  const helpId = 'script-help-panel';
+  let panel = document.getElementById(helpId);
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = helpId;
+    panel.style.cssText = 'position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.72);backdrop-filter:blur(4px);padding:20px';
+    document.body.appendChild(panel);
+  }
+  panel.innerHTML = `<div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 24px 64px rgba(0,0,0,0.55);width:400px;max-width:90vw">
+    <div style="font-weight:600;font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+      <span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script);background-color:var(--script);width:15px;height:15px"></span>
+      クロードへの相談プロンプト
+    </div>
+    <textarea id="script-help-text" style="width:100%;min-height:200px;font-size:11.5px;font-family:monospace;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);resize:vertical;box-sizing:border-box" readonly>${prompt}</textarea>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button onclick="document.getElementById('${helpId}').remove()" class="btn-secondary" style="flex:1">閉じる</button>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('script-help-text').value).then(()=>toast('コピーしました','📋'))" class="btn-primary" style="flex:1">📋 コピー</button>
+    </div>
+  </div>`;
+  panel.style.display = 'flex';
+}
+
 // ═══════════════════════════════════════════
 let _iimTargetId = null;
 
@@ -5774,6 +6000,7 @@ function openSettingsModal() {
   document.getElementById('github-gist-id').value = gistId;
   document.getElementById('gist-status').textContent = '';
   document.getElementById('server-features-toggle').checked = db.settings.showServerFeatures;
+  document.getElementById('default-terminal-select').value = db.settings.defaultTerminal || 'Terminal';
   const pi = db.settings.priorityIcons || {};
   const legacy = { low: '▂', medium: '▄', high: '█' };
   ['low', 'medium', 'high'].forEach(level => {
@@ -5791,6 +6018,10 @@ function toggleServerFeatures(el) {
   db.settings.showServerFeatures = el.checked;
   save();
   applyServerFeatureVisibility();
+}
+function setDefaultTerminal(el) {
+  db.settings.defaultTerminal = el.value;
+  save();
 }
 function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
 
