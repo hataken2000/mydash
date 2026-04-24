@@ -71,16 +71,5 @@ launchctl load "$PLIST_PATH"
 sleep 1
 open "http://127.0.0.1:3737"
 
-# Chrome拡張インストールの確認
-ext_result=$(osascript -e 'display dialog "✅ セットアップ完了！\n\nMyDashを開きました。\n\nSlack連携用のChrome拡張もインストールしますか？" buttons {"スキップ", "インストール"} default button "インストール" with title "MyDash セットアップ"' 2>&1)
-
-if [[ "$ext_result" == *"インストール"* ]]; then
-  osascript << 'APPLESCRIPT'
-tell application "Google Chrome"
-  activate
-  open location "chrome://extensions"
-end tell
-APPLESCRIPT
-
-  osascript -e "display dialog \"Chrome拡張ページを開きました。\n\n① 右上の「デベロッパーモード」をON\n② 「パッケージ化されていない拡張機能を読み込む」をクリック\n③ 以下のフォルダを選択:\n\n$SCRIPT_DIR/slack-extension\" buttons {\"OK\"} default button \"OK\" with title \"Chrome拡張のインストール\""
-fi
+# 完了・次のステップ案内
+osascript -e 'display dialog "✅ セットアップ完了！\n\nMyDashを開きました。\n\n─ 次のステップ（README参照）─\n・Chrome拡張のインストール（Slack連携）\n・DockへのMyDash追加" buttons {"OK"} default button "OK" with title "MyDash セットアップ"'
