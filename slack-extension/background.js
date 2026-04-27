@@ -53,6 +53,7 @@ async function wsSaveSession(name) {
 async function wsRestoreSession(session) {
   const newWin = await chrome.windows.create({});
   const newWindowId = newWin.id;
+  const blankTabId = newWin.tabs[0].id;
   const groupIdMap = {};
   for (const tab of session.tabs) {
     let created;
@@ -75,9 +76,7 @@ async function wsRestoreSession(session) {
       }
     }
   }
-  const allTabs = await chrome.tabs.query({ windowId: newWindowId });
-  const emptyTab = allTabs.find(t => t.url === 'chrome://newtab/' && t.index === 0);
-  if (emptyTab && allTabs.length > 1) await chrome.tabs.remove(emptyTab.id);
+  try { await chrome.tabs.remove(blankTabId); } catch (_) {}
   return { ok: true };
 }
 // ────────────────────────────────────────────────────────
