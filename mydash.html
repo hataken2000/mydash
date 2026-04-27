@@ -1456,7 +1456,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.7</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.8</div>
   </div>
 </aside>
 
@@ -2612,12 +2612,23 @@ function render() {
   requestAnimationFrame(() => { if (contentEl) contentEl.scrollTop = savedScroll; });
 }
 
-function nvIconHref(iconVar) {
+const _nvIconCache = {};
+function nvIconDataUrl(iconVar, tc) {
+  const colorM = tc.match(/var\((--[^)]+)\)/);
+  const color = colorM ? (getComputedStyle(document.documentElement).getPropertyValue(colorM[1]).trim() || '#888') : tc;
+  const key = iconVar + '|' + color;
+  if (_nvIconCache[key]) return _nvIconCache[key];
   const prop = iconVar.match(/var\((--[^)]+)\)/)?.[1];
   if (!prop) return null;
-  const val = getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
-  const m = val.match(/url\(['"]?(data:[^'")\s]+)['"]?\)/);
-  return m ? m[1] : null;
+  const cssVal = getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+  const m = cssVal.match(/url\(['"]?(data:image\/svg\+xml;base64,([A-Za-z0-9+/=]+))['"]?\)/);
+  if (!m) return null;
+  try {
+    let svg = atob(m[2]);
+    svg = svg.replace(/stroke="currentColor"/g, `stroke="${color}"`).replace(/fill="currentColor"/g, `fill="${color}"`);
+    const url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+    return (_nvIconCache[key] = url);
+  } catch { return null; }
 }
 
 function renderNodeView() {
@@ -2681,13 +2692,11 @@ function renderNodeView() {
       const selStroke = isSelected ? 'var(--accent)' : tc;
       const selStrokeW = isSelected ? 3 : 1.5;
       const selDash = item.hidden ? ' stroke-dasharray="4,3"' : '';
-      const iconHref = nvIconHref(iconVar);
-      const maskId = `nvm-${item.id}`;
+      const iconUrl = nvIconDataUrl(iconVar, tc);
       islandsSvg += `<g data-id="${item.id}" onclick="nodeItemClick('${item.id}')" oncontextmenu="showCtx(event,'${item.id}')" style="cursor:pointer" class="nv-item"${hiddenAttr}>`;
       islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${isSelected ? 'var(--accent)' : tc}" fill-opacity="${isSelected ? 0.35 : 0.2}" stroke="${selStroke}" stroke-width="${selStrokeW}"${selDash} data-tc="${tc}" class="nv-rect"/>`;
-      if (iconHref) {
-        islandsSvg += `<mask id="${maskId}"><image href="${iconHref}" x="${nx+5}" y="${ny+7}" width="14" height="14"/></mask>`;
-        islandsSvg += `<rect x="${nx+5}" y="${ny+7}" width="14" height="14" fill="${tc}" mask="url(#${maskId})"/>`;
+      if (iconUrl) {
+        islandsSvg += `<image href="${iconUrl}" x="${nx+5}" y="${ny+7}" width="14" height="14"/>`;
       } else {
         islandsSvg += `<rect x="${nx+5}" y="${ny+7}" width="14" height="14" rx="2" fill="${tc}" fill-opacity="0.6"/>`;
       }
