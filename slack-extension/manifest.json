@@ -1,9 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "MyDash Slack Sender",
-  "version": "1.1",
-  "description": "MyDashからSlackに自動送信・後で読むを取り込む拡張機能",
-  "permissions": ["tabs", "scripting", "tabGroups", "alarms"],
+  "name": "MyDash",
+  "version": "1.2",
+  "description": "MyDashの補助拡張機能（Slack連携・ウィンドウ復元）",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["tabs", "scripting", "tabGroups", "alarms", "storage", "windows"],
   "host_permissions": [
     "https://app.slack.com/*",
     "https://*.slack.com/*",
@@ -12,12 +17,21 @@
     "http://localhost/*",
     "http://127.0.0.1/*"
   ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "MyDash",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["file://*/*", "https://hataken2000.github.io/*"],
+      "matches": ["file://*/*", "https://hataken2000.github.io/*", "http://127.0.0.1/*"],
       "js": ["content-mydash.js"],
       "run_at": "document_idle"
     },

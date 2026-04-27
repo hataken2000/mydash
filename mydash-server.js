@@ -162,6 +162,49 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // GET /open-mydash → MyDash本体を前面に（なければ新規ウィンドウ）
+  if (parsed.pathname === '/open-mydash' && req.method === 'GET') {
+    const scriptContent = `tell application "Google Chrome"
+  set foundWinIdx to 0
+  set foundTabIdx to 0
+  repeat with winIdx from 1 to count windows
+    set w to window winIdx
+    repeat with tabIdx from 1 to count tabs of w
+      set t to tab tabIdx of w
+      if URL of t contains "127.0.0.1:3737" and URL of t does not contain "widget" then
+        set foundWinIdx to winIdx
+        set foundTabIdx to tabIdx
+        exit repeat
+      end if
+    end repeat
+    if foundWinIdx > 0 then exit repeat
+  end repeat
+  if foundWinIdx > 0 then
+    set active tab index of window foundWinIdx to foundTabIdx
+    set index of window foundWinIdx to 1
+    set visible of window 1 to true
+    activate
+    return "found"
+  else
+    open location "http://127.0.0.1:3737"
+    activate
+    return "opened"
+  end if
+end tell`;
+    const tmpScript = '/tmp/mydash-open-mydash.scpt';
+    fs.writeFileSync(tmpScript, scriptContent);
+    execFile('osascript', [tmpScript], (err, stdout) => {
+      if (err) {
+        res.writeHead(500);
+        res.end(JSON.stringify({ error: 'failed', detail: err.message }));
+        return;
+      }
+      res.writeHead(200);
+      res.end(JSON.stringify({ ok: true, result: stdout.trim() }));
+    });
+    return;
+  }
+
   // POST /open-chrome → ChromeをAppleScriptで新しいウィンドウで開く
   // Body: { urls: ["https://...", ...] }
   if (parsed.pathname === '/open-chrome' && req.method === 'POST') {

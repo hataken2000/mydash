@@ -69,6 +69,12 @@ button:hover { border-color: var(--accent); color: var(--accent); }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 .w-svg { display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+#toast {
+  position: fixed; bottom: 52px; left: 50%; transform: translateX(-50%);
+  background: #2d3250; color: var(--text); font-size: 11px;
+  padding: 5px 12px; border-radius: 12px; border: 1px solid var(--border);
+  opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap;
+}
 </style>
 </head>
 <body>
@@ -77,9 +83,13 @@ button:hover { border-color: var(--accent); color: var(--accent); }
   <div id="date">----年--月--日（-）</div>
 </div>
 <div id="content"></div>
+<div id="toast"></div>
 <div id="footer">
   <span id="last-updated"></span>
-  <button onclick="window.close()">閉じる</button>
+  <div style="display:flex;gap:6px">
+    <button onclick="openMyDash()">MyDashを開く</button>
+    <button onclick="window.close()">閉じる</button>
+  </div>
 </div>
 <script>
 const KEY = 'mydash_v1';
@@ -193,6 +203,25 @@ function openPanel(id) {
 
 function openQuickEdit(id) {
   bc.postMessage({ cmd: 'openQuickEdit', id });
+}
+
+let _toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { el.style.opacity = '0'; }, 2000);
+}
+
+function openMyDash() {
+  fetch('http://127.0.0.1:3737/open-mydash')
+    .then(r => r.json())
+    .then(d => {
+      if (d.result === 'found') showToast('MyDashを前面に出しました');
+      else showToast('MyDashを開きました');
+    })
+    .catch(() => showToast('サーバーに接続できません'));
 }
 
 function esc(s) { return String(s).replace(/'/g, "\\'"); }

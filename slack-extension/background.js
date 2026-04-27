@@ -1,5 +1,189 @@
-const WINDOW_SAVER_EXT_ID = 'jjfmikbhobeolfbihplmklplpfmmfhnn';
 const MYDASH_SERVER = 'http://localhost:3737';
+
+// ── ウィンドウセッション管理（window-saverと同一ロジック）──
+let lastNormalWindowId = null;
+
+const WS_SKIP_SCHEMES = ['chrome-extension://', 'devtools://', 'about:'];
+const WS_SKIP_URLS    = ['chrome://settings', 'chrome://extensions', 'chrome://history', 'chrome://downloads'];
+
+async function wsGetSessionId(windowId) {
+  const r = await chrome.storage.session.get(`ws_${windowId}`);
+  return r[`ws_${windowId}`] || null;
+}
+async function wsSetSessionId(windowId, sessionId) {
+  await chrome.storage.session.set({ [`ws_${windowId}`]: sessionId });
+}
+async function wsGetWindowCache(windowId) {
+  const r = await chrome.storage.session.get(`wc_${windowId}`);
+  return r[`wc_${windowId}`] || null;
+}
+async function wsSetWindowCache(windowId, data) {
+  await chrome.storage.session.set({ [`wc_${windowId}`]: data });
+}
+async function wsClearWindowCache(windowId) {
+  await chrome.storage.session.remove(`wc_${windowId}`);
+}
+
+async function wsUpdateWindowCache(windowId) {
+  try {
+    const win = await chrome.windows.get(windowId, { populate: true });
+    if (win.type !== 'normal') return;
+    let groups = {};
+    try {
+      const tabGroups = await chrome.tabGroups.query({ windowId });
+      tabGroups.forEach(g => { groups[g.id] = { title: g.title, color: g.color, collapsed: g.collapsed }; });
+    } catch (_) {}
+    const tabs = win.tabs
+      .filter(t => !WS_SKIP_SCHEMES.some(s => t.url.startsWith(s)) && !WS_SKIP_URLS.some(u => t.url.startsWith(u)))
+      .map(t => ({ url: t.url, title: t.title, pinned: t.pinned, groupId: t.groupId >= 0 ? t.groupId : null }));
+    await wsSetWindowCache(windowId, { tabs, groups });
+  } catch (_) {}
+}
+
+chrome.tabs.onCreated.addListener(tab => wsUpdateWindowCache(tab.windowId));
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.url || changeInfo.title || changeInfo.pinned || changeInfo.status === 'complete') wsUpdateWindowCache(tab.windowId);
+});
+chrome.tabs.onMoved.addListener((tabId, { windowId }) => wsUpdateWindowCache(windowId));
+chrome.tabs.onAttached.addListener((tabId, { newWindowId }) => wsUpdateWindowCache(newWindowId));
+chrome.tabs.onDetached.addListener((tabId, { oldWindowId }) => wsUpdateWindowCache(oldWindowId));
+try {
+  chrome.tabGroups.onUpdated.addListener(group => wsUpdateWindowCache(group.windowId));
+  chrome.tabGroups.onRemoved.addListener(group => wsUpdateWindowCache(group.windowId));
+} catch (_) {}
+
+chrome.tabs.onRemoved.addListener(async (tabId, { windowId, isWindowClosing }) => {
+  if (!isWindowClosing) { wsUpdateWindowCache(windowId); return; }
+  const sessionId = await wsGetSessionId(windowId);
+  if (!sessionId) return;
+  await chrome.storage.session.remove(`ws_${windowId}`);
+  const snapshot = await wsGetWindowCache(windowId);
+  await wsClearWindowCache(windowId);
+  if (snapshot) await wsOverwriteSession(sessionId, snapshot);
+});
+
+chrome.windows.onFocusChanged.addListener(async (windowId) => {
+  if (windowId === chrome.windows.WINDOW_ID_NONE) return;
+  try {
+    const win = await chrome.windows.get(windowId);
+    if (win.type === 'normal') lastNormalWindowId = windowId;
+  } catch (_) {}
+});
+
+async function wsGetTargetWindow() {
+  if (lastNormalWindowId) {
+    try { return await chrome.windows.get(lastNormalWindowId, { populate: true }); } catch (_) {}
+  }
+  const windows = await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] });
+  return windows.find(w => w.focused) || windows[0];
+}
+
+async function wsGetSessions() {
+  const { sessions = [] } = await chrome.storage.local.get('sessions');
+  return sessions;
+}
+
+async function wsSaveSession(name) {
+  const win = await wsGetTargetWindow();
+  if (!win) return { ok: false };
+  let groups = {};
+  try {
+    const tabGroups = await chrome.tabGroups.query({ windowId: win.id });
+    tabGroups.forEach(g => { groups[g.id] = { title: g.title, color: g.color, collapsed: g.collapsed }; });
+  } catch (_) {}
+  const tabs = win.tabs
+    .filter(t => !WS_SKIP_SCHEMES.some(s => t.url.startsWith(s)))
+    .map(t => ({ url: t.url, title: t.title, pinned: t.pinned, groupId: t.groupId >= 0 ? t.groupId : null }));
+  const session = {
+    id: Date.now().toString(),
+    name: name || new Date().toLocaleString('ja-JP'),
+    savedAt: Date.now(),
+    tabs,
+    groups,
+  };
+  const { sessions = [] } = await chrome.storage.local.get('sessions');
+  sessions.unshift(session);
+  await chrome.storage.local.set({ sessions });
+  await wsSetSessionId(win.id, session.id);
+  await wsSetWindowCache(win.id, { tabs, groups });
+  return { ok: true, session };
+}
+
+async function wsOverwriteSession(sessionId, { tabs, groups }) {
+  const { sessions = [] } = await chrome.storage.local.get('sessions');
+  const session = sessions.find(s => s.id === sessionId);
+  if (!session) return;
+  session.tabs = tabs;
+  session.groups = groups;
+  session.savedAt = Date.now();
+  await chrome.storage.local.set({ sessions });
+}
+
+async function wsRestoreSession(session) {
+  try {
+    const windows = await chrome.windows.getAll({ windowTypes: ['normal'] });
+    for (const win of windows) {
+      const savedId = await wsGetSessionId(win.id);
+      if (savedId === session.id) {
+        await chrome.windows.update(win.id, { focused: true });
+        return { ok: true };
+      }
+    }
+  } catch (_) {}
+  const newWin = await chrome.windows.create({});
+  const newWindowId = newWin.id;
+  const groupIdMap = {};
+  for (const tab of session.tabs) {
+    let created;
+    try {
+      created = await chrome.tabs.create({
+        windowId: newWindowId,
+        url: tab.url === 'chrome://newtab/' ? undefined : tab.url,
+        pinned: tab.pinned,
+      });
+    } catch (_) { continue; }
+    if (tab.groupId !== null) {
+      const oldGroupId = tab.groupId;
+      if (!groupIdMap[oldGroupId]) {
+        const group = session.groups?.[oldGroupId];
+        const newGroupId = await chrome.tabs.group({ tabIds: [created.id], createProperties: { windowId: newWindowId } });
+        if (group) await chrome.tabGroups.update(newGroupId, { title: group.title || '', color: group.color || 'grey', collapsed: group.collapsed || false });
+        groupIdMap[oldGroupId] = newGroupId;
+      } else {
+        await chrome.tabs.group({ tabIds: [created.id], groupId: groupIdMap[oldGroupId] });
+      }
+    }
+  }
+  const allTabs = await chrome.tabs.query({ windowId: newWindowId });
+  const emptyTab = allTabs.find(t => t.url === 'chrome://newtab/' && t.index === 0);
+  if (emptyTab && allTabs.length > 1) await chrome.tabs.remove(emptyTab.id);
+  await wsSetSessionId(newWindowId, session.id);
+  return { ok: true };
+}
+
+async function wsDeleteSession(id) {
+  const { sessions = [] } = await chrome.storage.local.get('sessions');
+  await chrome.storage.local.set({ sessions: sessions.filter(s => s.id !== id) });
+  return { ok: true };
+}
+
+async function wsRenameSession(id, name) {
+  const { sessions = [] } = await chrome.storage.local.get('sessions');
+  const s = sessions.find(s => s.id === id);
+  if (s) s.name = name;
+  await chrome.storage.local.set({ sessions });
+  return { ok: true };
+}
+
+async function wsImportSessions(incoming) {
+  if (!Array.isArray(incoming)) return { ok: false };
+  const { sessions = [] } = await chrome.storage.local.get('sessions');
+  const existingIds = new Set(sessions.map(s => s.id));
+  const merged = [...sessions, ...incoming.filter(s => !existingIds.has(s.id))];
+  await chrome.storage.local.set({ sessions: merged });
+  return { ok: true };
+}
+// ────────────────────────────────────────────────────────
 
 // service worker起動時にアラームを確認・作成
 chrome.alarms.get('slackSavedPoll', (alarm) => {
@@ -69,14 +253,22 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   } else if (msg.type === 'SLACK_SAVED_ITEMS') {
     sendSavedToMyDash(msg.items);
   } else if (msg.type === 'WS_GET_SESSIONS') {
-    chrome.runtime.sendMessage(WINDOW_SAVER_EXT_ID, { type: 'GET_SESSIONS' }, (resp) => {
-      sendResponse(resp ?? { sessions: [] });
-    });
+    wsGetSessions().then(sendResponse);
+    return true;
+  } else if (msg.type === 'WS_SAVE_SESSION') {
+    wsSaveSession(msg.name).then(sendResponse);
     return true;
   } else if (msg.type === 'WS_RESTORE_SESSION') {
-    chrome.runtime.sendMessage(WINDOW_SAVER_EXT_ID, { type: 'RESTORE_SESSION', session: msg.session }, (resp) => {
-      sendResponse(resp ?? { success: false });
-    });
+    wsRestoreSession(msg.session).then(sendResponse);
+    return true;
+  } else if (msg.type === 'WS_DELETE_SESSION') {
+    wsDeleteSession(msg.id).then(sendResponse);
+    return true;
+  } else if (msg.type === 'WS_RENAME_SESSION') {
+    wsRenameSession(msg.id, msg.name).then(sendResponse);
+    return true;
+  } else if (msg.type === 'WS_IMPORT_SESSIONS') {
+    wsImportSessions(msg.sessions).then(sendResponse);
     return true;
   }
 });

@@ -33,11 +33,30 @@
   window.addEventListener('mydash-window-saver-restore', (e) => {
     try {
       chrome.runtime.sendMessage({ type: 'WS_RESTORE_SESSION', session: e.detail.session }, (resp) => {
-        window.postMessage({ type: 'WINDOW_SAVER_RESTORED', success: !!resp?.success }, '*');
+        window.postMessage({ type: 'WINDOW_SAVER_RESTORED', success: !!(resp?.ok) }, '*');
       });
     } catch (err) {
       console.warn('[MyDash] WindowSaver RESTORE_SESSION失敗:', err.message);
       window.postMessage({ type: 'WINDOW_SAVER_RESTORED', success: false }, '*');
+    }
+  });
+
+  window.addEventListener('mydash-window-saver-save', (e) => {
+    try {
+      chrome.runtime.sendMessage({ type: 'WS_SAVE_SESSION', name: e.detail?.name || '' }, (resp) => {
+        window.postMessage({ type: 'WINDOW_SAVER_SAVED', ok: !!(resp?.ok), session: resp?.session }, '*');
+      });
+    } catch (err) {
+      console.warn('[MyDash] WindowSaver SAVE_SESSION失敗:', err.message);
+      window.postMessage({ type: 'WINDOW_SAVER_SAVED', ok: false }, '*');
+    }
+  });
+
+  window.addEventListener('mydash-window-saver-delete', (e) => {
+    try {
+      chrome.runtime.sendMessage({ type: 'WS_DELETE_SESSION', id: e.detail.id });
+    } catch (err) {
+      console.warn('[MyDash] WindowSaver DELETE_SESSION失敗:', err.message);
     }
   });
 })();
