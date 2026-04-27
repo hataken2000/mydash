@@ -1461,7 +1461,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.13</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.14</div>
   </div>
 </aside>
 
@@ -2162,6 +2162,45 @@ let state = {
 // ═══════════════════════════════════════════
 // Persistence
 // ═══════════════════════════════════════════
+const UI_STATE_KEY = 'mydash_ui_state';
+
+function saveUiState() {
+  try {
+    localStorage.setItem(UI_STATE_KEY, JSON.stringify({
+      filter: state.filter,
+      mainTab: state.mainTab,
+      taskSubFilter: state.taskSubFilter,
+      setSubFilter: state.setSubFilter,
+      filterTags: state.filterTags,
+    }));
+  } catch(_) {}
+}
+
+function loadUiState() {
+  try {
+    const raw = localStorage.getItem(UI_STATE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s.filter) state.filter = s.filter;
+    if (s.mainTab) state.mainTab = s.mainTab;
+    if (s.taskSubFilter) state.taskSubFilter = s.taskSubFilter;
+    if (s.setSubFilter) state.setSubFilter = s.setSubFilter;
+    if (Array.isArray(s.filterTags)) state.filterTags = s.filterTags;
+    // サイドバーのアクティブクラスを更新
+    const activeKey = state.filter.startsWith('set-member:') ? 'set' : state.filter;
+    document.querySelectorAll('.sidebar-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.filter === activeKey);
+    });
+    // メインタブを更新
+    document.getElementById('tab-today')?.classList.toggle('active', state.mainTab === 'today');
+    document.getElementById('tab-library')?.classList.toggle('active', state.mainTab === 'library');
+    const row2 = document.querySelector('.toolbar.toolbar-row2');
+    if (row2) row2.style.opacity = state.mainTab === 'today' ? '0.35' : '';
+    // タグフィルターUIを更新
+    if (state.filterTags.length > 0) renderFilterTags();
+  } catch(_) {}
+}
+
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -2562,6 +2601,7 @@ function filteredItems() {
 }
 
 function render() {
+  saveUiState();
   const contentEl = document.getElementById('content');
   const savedScroll = contentEl ? contentEl.scrollTop : 0;
   _setMembership = buildSetMembership();
@@ -7347,6 +7387,7 @@ document.addEventListener('keydown', e => {
 // ═══════════════════════════════════════════
 window.name = 'mydash-main';
 load();
+loadUiState();
 rebuildIndex();
 if (SERVER_BASE && db.settings.windowSize) {
   const { w, h, x, y } = db.settings.windowSize;
