@@ -1456,7 +1456,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.4</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.5</div>
   </div>
 </aside>
 
@@ -2673,7 +2673,7 @@ function renderNodeView() {
       const selStroke = isSelected ? 'var(--accent)' : tc;
       const selStrokeW = isSelected ? 3 : 1.5;
       const selDash = item.hidden ? ' stroke-dasharray="4,3"' : '';
-      islandsSvg += `<g data-id="${item.id}" onclick="nodeItemClick('${item.id}')" style="cursor:pointer" class="nv-item"${hiddenAttr}>`;
+      islandsSvg += `<g data-id="${item.id}" onclick="nodeItemClick('${item.id}')" oncontextmenu="showCtx(event,'${item.id}')" style="cursor:pointer" class="nv-item"${hiddenAttr}>`;
       islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${isSelected ? 'var(--accent)' : tc}" fill-opacity="${isSelected ? 0.35 : 0.2}" stroke="${selStroke}" stroke-width="${selStrokeW}"${selDash} data-tc="${tc}" class="nv-rect"/>`;
       islandsSvg += `<foreignObject x="${nx+5}" y="${ny+7}" width="14" height="14"><span xmlns="http://www.w3.org/1999/xhtml" class="app-icon" style="-webkit-mask-image:${iconVar};mask-image:${iconVar};background-color:${tc};width:14px;height:14px;display:inline-block"></span></foreignObject>`;
       if (hasItemIcon) {
@@ -2724,8 +2724,14 @@ function initNodeViewPan() {
   applyT();
 
   wrap.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
     if (e.target.closest('.nv-item')) return;
     drag = true; sx = e.clientX - tx; sy = e.clientY - ty; wrap.style.cursor = 'grabbing';
+  });
+  wrap.addEventListener('contextmenu', e => {
+    const nvItem = e.target.closest('.nv-item');
+    if (!nvItem) return;
+    showCtx(e, nvItem.dataset.id);
   });
   window.addEventListener('mousemove', e => {
     if (!drag) return; tx = e.clientX - sx; ty = e.clientY - sy; applyT();
