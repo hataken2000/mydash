@@ -2684,7 +2684,7 @@ function renderNodeView() {
       const ny = y + HEAD + r * (ITEM_H + ITEM_GAP);
       const tc = { bookmark:'var(--bookmark)', tool:'var(--tool)', task:'var(--task)',
         memo:'var(--memo)', other:'var(--other)', set:'var(--set)', slack:'var(--slack)',
-        place:'var(--place)' }[item.type] || 'var(--border)';
+        place:'var(--place)', 'window-session':'var(--window-session)', script:'var(--script)' }[item.type] || 'var(--border)';
       const iconVar = TYPE_DEF[item.type]?.iconVar || 'var(--icon-box)';
       const label = esc(item.title || '');
       const hasItemIcon = !!item.icon;
