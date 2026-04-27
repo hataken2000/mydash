@@ -1456,7 +1456,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.9</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.10</div>
   </div>
 </aside>
 
@@ -2672,8 +2672,12 @@ function renderNodeView() {
   layouts.forEach(({ cat, items: gitems, x, y, w, h, catIdx }) => {
     const color = getCatColor(cat) || CAT_COLORS[catIdx % CAT_COLORS.length];
     islandsSvg += `<g>`;
-    islandsSvg += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="var(--card-bg)" stroke="${color}" stroke-width="2"/>`;
-    islandsSvg += `<foreignObject x="${x+6}" y="${y+4}" width="${w-12}" height="24" pointer-events="none"><span xmlns="http://www.w3.org/1999/xhtml" style="display:block;font-size:12px;color:${color};font-family:system-ui,sans-serif;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:24px">${esc(cat.slice(0,24))}</span></foreignObject>`;
+    islandsSvg += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="var(--card-bg)" stroke="var(--border)" stroke-width="1"/>`;
+    const folderUrl = nvIconDataUrl('var(--icon-folder)', color);
+    if (folderUrl) {
+      islandsSvg += `<image href="${folderUrl}" xlink:href="${folderUrl}" x="${x+6}" y="${y+9}" width="14" height="14"/>`;
+    }
+    islandsSvg += `<foreignObject x="${x+24}" y="${y+4}" width="${w-30}" height="24" pointer-events="none"><span xmlns="http://www.w3.org/1999/xhtml" style="display:block;font-size:12px;color:var(--text);font-family:system-ui,sans-serif;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:24px">${esc(cat.slice(0,24))}</span></foreignObject>`;
     gitems.forEach((item, idx) => {
       const c = idx % PER_ROW, r = Math.floor(idx / PER_ROW);
       const nx = x + PAD + c * (ITEM_W + ITEM_GAP);
@@ -2689,12 +2693,12 @@ function renderNodeView() {
       const textW = ITEM_W - (hasItemIcon ? 43 : 27);
       const isSelected = state.selectedIds.has(item.id);
       const hiddenAttr = item.hidden ? ' opacity="0.4"' : '';
-      const selStroke = isSelected ? 'var(--accent)' : tc;
-      const selStrokeW = isSelected ? 3 : 1.5;
+      const selStroke = isSelected ? 'var(--accent)' : 'var(--border)';
+      const selStrokeW = isSelected ? 1 : 0.75;
       const selDash = item.hidden ? ' stroke-dasharray="4,3"' : '';
       const iconUrl = nvIconDataUrl(iconVar, tc);
       islandsSvg += `<g data-id="${item.id}" onclick="nodeItemClick('${item.id}')" oncontextmenu="showCtx(event,'${item.id}')" style="cursor:pointer" class="nv-item"${hiddenAttr}>`;
-      islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${isSelected ? 'var(--accent)' : tc}" fill-opacity="${isSelected ? 0.35 : 0.2}" stroke="${selStroke}" stroke-width="${selStrokeW}"${selDash} data-tc="${tc}" class="nv-rect"/>`;
+      islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${isSelected ? 'var(--accent)' : 'var(--card-bg)'}" fill-opacity="${isSelected ? 0.18 : 1}" stroke="${selStroke}" stroke-width="${selStrokeW}"${selDash} data-tc="${tc}" class="nv-rect"/>`;
       if (iconUrl) {
         islandsSvg += `<image href="${iconUrl}" xlink:href="${iconUrl}" x="${nx+5}" y="${ny+7}" width="14" height="14"/>`;
       } else {
@@ -4133,10 +4137,10 @@ function toggleItemSelect(id, checked) {
   const nvRect = document.querySelector(`g.nv-item[data-id="${id}"] .nv-rect`);
   if (nvRect) {
     const tc = nvRect.getAttribute('data-tc') || 'var(--border)';
-    nvRect.setAttribute('fill', checked ? 'var(--accent)' : tc);
-    nvRect.setAttribute('fill-opacity', checked ? '0.35' : '0.2');
-    nvRect.setAttribute('stroke', checked ? 'var(--accent)' : tc);
-    nvRect.setAttribute('stroke-width', checked ? '3' : '1.5');
+    nvRect.setAttribute('fill', checked ? 'var(--accent)' : 'var(--card-bg)');
+    nvRect.setAttribute('fill-opacity', checked ? '0.18' : '1');
+    nvRect.setAttribute('stroke', checked ? 'var(--accent)' : 'var(--border)');
+    nvRect.setAttribute('stroke-width', checked ? '1' : '0.75');
   }
 }
 
