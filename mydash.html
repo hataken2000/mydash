@@ -1440,8 +1440,7 @@ body.hide-server .launch-btn { display: none !important; }
       <span class="count-badge" id="cnt-script">0</span>
     </div>
     <div class="sidebar-item server-feature" data-filter="window-session" onclick="setFilter('window-session')">
-      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor)"></span></span><span class="si-label">ウィンドウ復元</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openWindowSaverModal()" title="ウィンドウ復元追加">＋</button>
+      <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor)"></span></span><span class="si-label">タブセット</span>
       <span class="count-badge" id="cnt-window-session">0</span>
     </div>
   </div>
@@ -1453,7 +1452,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.13.0</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.13.1</div>
   </div>
 </aside>
 
@@ -1497,6 +1496,11 @@ body.hide-server .launch-btn { display: none !important; }
           <label class="io-btn" style="cursor:pointer;display:flex;align-items:center;gap:5px;justify-content:center">
             <span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px"></span>JSONインポート
             <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+          </label>
+          <button class="io-btn" onclick="wsExportSessions()" style="display:flex;align-items:center;gap:5px;justify-content:center;border-color:rgba(144,164,174,0.35);color:var(--window-session)"><span class="app-icon" style="-webkit-mask-image:var(--icon-upload);mask-image:var(--icon-upload);width:13px;height:13px;background-color:var(--window-session)"></span>タブセット エクスポート</button>
+          <label class="io-btn" style="cursor:pointer;display:flex;align-items:center;gap:5px;justify-content:center;border-color:rgba(144,164,174,0.35);color:var(--window-session)">
+            <span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px;background-color:var(--window-session)"></span>タブセット インポート
+            <input type="file" accept=".json" style="display:none" onchange="wsImportSessions(event)">
           </label>
           <button class="io-btn server-feature" onclick="closeSettingsModal();openCalImportModal()" style="border-color:rgba(128,203,196,0.35);color:var(--set);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);width:13px;height:13px;background-color:var(--set)"></span>カレンダーインポート</button>
           <button class="io-btn server-feature" onclick="closeSettingsModal();openDockImportModal()" style="border-color:rgba(129,199,132,0.35);color:var(--tool);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);width:13px;height:13px;background-color:var(--tool)"></span>Dockインポート</button>
@@ -2032,24 +2036,6 @@ body.hide-server .launch-btn { display: none !important; }
 </div>
 
 <!-- Window Saver Modal -->
-<div class="modal-overlay" id="ws-modal" style="display:none" onclick="if(event.target===this)closeWindowSaverModal()">
-  <div class="modal" style="max-width:460px" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <div class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>ウィンドウ復元</div>
-      <button class="modal-close" onclick="closeWindowSaverModal()">✕</button>
-    </div>
-    <div class="modal-body" style="padding:12px 16px">
-      <div style="display:flex;gap:6px;margin-bottom:12px">
-        <input id="ws-save-name" type="text" placeholder="セッション名（空欄で日時）" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit">
-        <button class="btn-primary" onclick="wsSaveCurrentWindow()">現在のウィンドウを保存</button>
-      </div>
-      <div id="ws-session-list" style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeWindowSaverModal()">閉じる</button>
-    </div>
-  </div>
-</div>
 
 <!-- Alarm Management Modal -->
 <div class="modal-overlay" id="alarm-modal" style="display:none" onclick="closeAlarmModalOutside(event)">
@@ -2076,18 +2062,25 @@ window.addEventListener('message', (e) => {
     window._wsSessionsCallback?.(e.data.sessions ?? []);
     window._wsSessionsCallback = null;
   }
-  if (e.data?.type === 'WINDOW_SAVER_SAVED') {
-    if (e.data.ok) {
-      toast('セッションを保存しました', '💾');
-      document.getElementById('ws-save-name').value = '';
-      window.dispatchEvent(new CustomEvent('mydash-window-saver-get-sessions'));
-      window._wsSessionsCallback = (sessions) => _renderWsSessions(sessions);
-    } else {
-      toast('保存に失敗しました', '⚠️');
+  if (e.data?.type === 'WS_SESSION_ADDED' && e.data.session) {
+    const session = e.data.session;
+    const existing = db.items.find(i => i.type === 'window-session' && i.sessionName === session.name);
+    if (!existing) {
+      db.items.unshift({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+        type: 'window-session',
+        title: session.name,
+        desc: '', icon: '', category: '', tags: [],
+        sessionName: session.name,
+        sessionId: session.id,
+        createdAt: new Date().toISOString(),
+      });
+      save(); render(); updateCounts();
+      toast(`「${esc(session.name)}」をMyDashに追加しました`, '🖥️');
     }
   }
   if (e.data?.type === 'WINDOW_SAVER_RESTORED') {
-    if (e.data.success) toast('ウィンドウを復元しました', '🖥️');
+    if (e.data.success) toast('タブセットを復元しました', '🖥️');
     else toast('復元に失敗しました', '⚠️');
     closeWindowSaverModal();
   }
@@ -2108,7 +2101,7 @@ const TYPE_DEF = {
   other:    { icon: '📦', label: 'その他',        iconVar: 'var(--icon-box)' },
   set:      { icon: '🚀', label: 'セット',        iconVar: 'var(--icon-set)' },
   slack:           { icon: '💬', label: 'Slack送信',     iconVar: 'var(--icon-slack)' },
-  'window-session': { icon: '🖥️', label: 'ウィンドウ復元', iconVar: 'var(--icon-monitor)' },
+  'window-session': { icon: '🖥️', label: 'タブセット', iconVar: 'var(--icon-monitor)' },
   place:            { icon: '📍', label: '場所',          iconVar: 'var(--icon-place)' },
   script:           { icon: '⌨️', label: 'スクリプト',   iconVar: 'var(--icon-script)' },
 };
@@ -4195,6 +4188,9 @@ function deleteSelected() {
   const ids = [...state.selectedIds];
   if (!ids.length) return;
   if (!confirm(`${ids.length}件を削除しますか？`)) return;
+  db.items.filter(i => ids.includes(i.id) && i.type === 'window-session' && i.sessionId).forEach(i => {
+    window.dispatchEvent(new CustomEvent('mydash-window-saver-delete', { detail: { id: i.sessionId } }));
+  });
   db.items = db.items.filter(i => !ids.includes(i.id));
   state.selectedIds.clear();
   save(); render(); toast(`${ids.length}件削除しました`, '🗑️');
@@ -4535,6 +4531,10 @@ function duplicateItem(id) {
 function confirmDelete(id) {
   const item = db.items.find(i => i.id === id);
   if (!item) return;
+  if (item.type === 'window-session') {
+    if (!confirm(`「${item.title}」を削除しますか？\nタブセットのデータも完全に削除されます。`)) return;
+    if (item.sessionId) window.dispatchEvent(new CustomEvent('mydash-window-saver-delete', { detail: { id: item.sessionId } }));
+  }
   const idx = db.items.findIndex(i => i.id === id);
   const orderIdx = db.itemOrder ? db.itemOrder.indexOf(id) : -1;
   const savedItem = JSON.parse(JSON.stringify(item));
@@ -4743,63 +4743,9 @@ function ctxDelete() { confirmDelete(state.ctxId); hideCtx(); }
 // Import / Export
 // ═══════════════════════════════════════════
 // IndexedDB にフォルダハンドルを保存・取得
-function _idbExportDir(mode, handle) {
-  return new Promise(resolve => {
-    const req = indexedDB.open('mydash-fs', 1);
-    req.onupgradeneeded = e => e.target.result.createObjectStore('handles');
-    req.onsuccess = e => {
-      const idb = e.target.result;
-      if (mode === 'get') {
-        const tx = idb.transaction('handles', 'readonly');
-        const r = tx.objectStore('handles').get('exportDir');
-        r.onsuccess = () => resolve(r.result || null);
-        r.onerror = () => resolve(null);
-      } else {
-        const tx = idb.transaction('handles', 'readwrite');
-        tx.objectStore('handles').put(handle, 'exportDir');
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => resolve();
-      }
-    };
-    req.onerror = () => resolve(null);
-  });
-}
-
-async function exportJSON() {
+function exportJSON() {
   const json = JSON.stringify(db, null, 2);
   const fileName = `mydash_${new Date().toISOString().slice(0,10)}.json`;
-
-  if (window.showDirectoryPicker) {
-    try {
-      let dirHandle = await _idbExportDir('get');
-
-      // 保存済みフォルダがあれば権限チェック
-      if (dirHandle) {
-        const perm = await dirHandle.queryPermission({ mode: 'readwrite' });
-        if (perm !== 'granted') {
-          const req = await dirHandle.requestPermission({ mode: 'readwrite' });
-          if (req !== 'granted') dirHandle = null;
-        }
-      }
-
-      // フォルダ未選択 or 権限なし → ダイアログ
-      if (!dirHandle) {
-        dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-        await _idbExportDir('set', dirHandle);
-      }
-
-      const fh = await dirHandle.getFileHandle(fileName, { create: true });
-      const writable = await fh.createWritable();
-      await writable.write(json);
-      await writable.close();
-      toast(`${dirHandle.name}/ に保存しました`, '📤');
-      return;
-    } catch(e) {
-      if (e.name === 'AbortError') return;
-    }
-  }
-
-  // フォールバック
   const a = Object.assign(document.createElement('a'), {
     href: URL.createObjectURL(new Blob([json], { type: 'application/json' })),
     download: fileName,
@@ -5124,59 +5070,17 @@ function closeSlackQuickPanel() {
 // ═══════════════════════════════════════════
 // WindowSaver連携
 // ═══════════════════════════════════════════
-function openWindowSaverModal() {
-  const list = document.getElementById('ws-session-list');
-  list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px">読み込み中…</div>';
-  document.getElementById('ws-modal').style.display = 'flex';
-  window.dispatchEvent(new CustomEvent('mydash-window-saver-get-sessions'));
-  window._wsSessionsCallback = (sessions) => _renderWsSessions(sessions);
-}
-
-function closeWindowSaverModal() {
-  document.getElementById('ws-modal').style.display = 'none';
-  window._wsSessionsCallback = null;
-}
-
-function _renderWsSessions(sessions) {
-  const list = document.getElementById('ws-session-list');
-  if (!sessions.length) {
-    list.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px">保存済みセッションがありません</div>';
-    return;
-  }
-  list.innerHTML = sessions.map((s, i) => {
-    const name = esc(s.name || `セッション ${i + 1}`);
-    const tabCount = Array.isArray(s.tabs) ? s.tabs.length : '?';
-    const date = s.savedAt ? new Date(s.savedAt).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
-    return `<div onclick="wsRestoreSession(${i})" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--card-bg);gap:10px" onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='var(--card-bg)'">
-      <div style="overflow:hidden">
-        <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${tabCount}タブ${date ? ' · ' + date : ''}</div>
-      </div>
-      <div style="display:flex;gap:6px;flex-shrink:0">
-        <button style="padding:5px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:11px;cursor:pointer" onclick="event.stopPropagation();wsAddToMyDash(${i})" title="MyDashにアイテムとして追加">+ MyDash</button>
-        <button style="padding:5px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;cursor:pointer" onclick="event.stopPropagation();wsRestoreSession(${i})">復元</button>
-        <button style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--danger);font-size:12px;cursor:pointer" onclick="event.stopPropagation();wsDeleteSession(${i})" title="削除">✕</button>
-      </div>
-    </div>`;
-  }).join('');
-  window._wsSessions = sessions;
-}
-
-function wsRestoreSession(indexOrSession) {
-  const session = typeof indexOrSession === 'number'
-    ? window._wsSessions?.[indexOrSession]
-    : indexOrSession;
-  if (!session) return;
+function wsRestoreSession(session) {
   window.dispatchEvent(new CustomEvent('mydash-window-saver-restore', { detail: { session } }));
 }
 
 function launchWindowSession(item) {
-  toast('セッションを読み込み中…', '🖥️');
+  toast('タブセットを読み込み中…', '🖥️');
   window.dispatchEvent(new CustomEvent('mydash-window-saver-get-sessions'));
   window._wsSessionsCallback = (sessions) => {
     window._wsSessionsCallback = null;
     const session = sessions.find(s => s.name === item.sessionName);
-    if (!session) { toast(`「${esc(item.title)}」のセッションが見つかりません`, '⚠️'); return; }
+    if (!session) { toast(`「${esc(item.title)}」のタブセットが見つかりません`, '⚠️'); return; }
     wsRestoreSession(session);
   };
 }
@@ -5186,39 +5090,32 @@ function launchWindowSessionById(id) {
   if (item) launchWindowSession(item);
 }
 
-function wsSaveCurrentWindow() {
-  const name = document.getElementById('ws-save-name').value.trim();
-  window.dispatchEvent(new CustomEvent('mydash-window-saver-save', { detail: { name } }));
-}
-
-function wsDeleteSession(index) {
-  const session = window._wsSessions?.[index];
-  if (!session) return;
-  window.dispatchEvent(new CustomEvent('mydash-window-saver-delete', { detail: { id: session.id } }));
-  window._wsSessions.splice(index, 1);
-  _renderWsSessions(window._wsSessions);
-}
-
-function wsAddToMyDash(index) {
-  const session = window._wsSessions?.[index];
-  if (!session) return;
-  const existing = db.items.find(i => i.type === 'window-session' && i.sessionName === session.name);
-  if (existing) { toast('このセッションはすでにMyDashに登録されています', '⚠️'); return; }
-  const item = {
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2),
-    type: 'window-session',
-    title: session.name || `セッション`,
-    desc: '',
-    icon: '',
-    category: '',
-    tags: [],
-    sessionName: session.name,
-    createdAt: new Date().toISOString(),
+function wsExportSessions() {
+  if (!window._mydashExtension) { toast('Chrome拡張機能が必要です', '⚠️'); return; }
+  window.dispatchEvent(new CustomEvent('mydash-window-saver-get-sessions'));
+  window._wsSessionsCallback = (sessions) => {
+    window._wsSessionsCallback = null;
+    const blob = new Blob([JSON.stringify(sessions, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mydash-sessions-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
-  db.items.unshift(item);
-  save();
-  render();
-  toast(`「${esc(item.title)}」をMyDashに追加しました`, '🖥️');
+}
+
+function wsImportSessions(e) {
+  if (!window._mydashExtension) { toast('Chrome拡張機能が必要です', '⚠️'); return; }
+  const file = e.target.files[0];
+  if (!file) return;
+  file.text().then(text => {
+    let imported;
+    try { imported = JSON.parse(text); } catch { toast('JSONファイルが正しくありません', '⚠️'); return; }
+    window.dispatchEvent(new CustomEvent('mydash-window-saver-import', { detail: { sessions: imported } }));
+    e.target.value = '';
+    toast('タブセットをインポートしました', '🖥️');
+  });
 }
 
 // セットを起動: Chrome新ウィンドウで開く
@@ -5257,7 +5154,7 @@ function showSetQuickPanel(id) {
       return `<div class="sqp-item server-feature" onclick="closeSetQuickPanel();launchWindowSessionById('${item.id}')">
         <span class="sqp-icon">${iconHtml(item,'sm')}</span>
         <span class="sqp-title">${esc(item.title)}</span>
-        <span class="sqp-type" style="color:${itemTc}">ウィンドウ復元</span>
+        <span class="sqp-type" style="color:${itemTc}">タブセット</span>
       </div>`;
     } else {
       return `<div class="sqp-item" style="cursor:default">
@@ -7490,9 +7387,11 @@ function importSlackSaved(rawItems) {
     const permalink = `https://app.slack.com/archives/${item_id}/p${ts.replace('.', '')}?no_macapp=1`;
     if (existingUrls.has(permalink)) continue;
     const date = new Date((date_created || Date.now() / 1000) * 1000);
-    const ymd = `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')}`;
     const hm = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
-    const title = `${ymd} ${hm}-Slack後`;
+    const yy = String(date.getFullYear()).slice(2);
+    const mm = String(date.getMonth()+1).padStart(2,'0');
+    const dd = String(date.getDate()).padStart(2,'0');
+    const title = `🔖Slack ${yy}.${mm}.${dd} ${hm}`;
     db.items.unshift({
       id: 'sl_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
       type: 'bookmark',

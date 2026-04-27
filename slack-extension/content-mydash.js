@@ -59,4 +59,18 @@
       console.warn('[MyDash] WindowSaver DELETE_SESSION失敗:', err.message);
     }
   });
+
+  window.addEventListener('mydash-window-saver-import', (e) => {
+    try {
+      chrome.runtime.sendMessage({ type: 'WS_IMPORT_SESSIONS', sessions: e.detail.sessions });
+    } catch (err) {
+      console.warn('[MyDash] WindowSaver IMPORT_SESSIONS失敗:', err.message);
+    }
+  });
+
+  chrome.runtime.onMessage.addListener((msg) => {
+    if (msg.type === 'WS_SESSION_SAVED') {
+      window.postMessage({ type: 'WS_SESSION_ADDED', session: msg.session }, '*');
+    }
+  });
 })();

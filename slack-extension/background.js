@@ -106,6 +106,13 @@ async function wsSaveSession(name) {
   await chrome.storage.local.set({ sessions });
   await wsSetSessionId(win.id, session.id);
   await wsSetWindowCache(win.id, { tabs, groups });
+
+  // MyDashタブにアイテム追加を通知
+  const mydashTabs = await chrome.tabs.query({ url: ['http://127.0.0.1:3737/*', 'https://hataken2000.github.io/*', 'file://*/*'] });
+  for (const tab of mydashTabs) {
+    try { chrome.tabs.sendMessage(tab.id, { type: 'WS_SESSION_SAVED', session }); } catch (_) {}
+  }
+
   return { ok: true, session };
 }
 
