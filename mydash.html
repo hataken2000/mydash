@@ -697,7 +697,8 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   border-radius: 13px;
   display: flex; align-items: center; justify-content: center;
   font-size: 28px;
-  overflow: hidden; flex-shrink: 0;
+  overflow: visible; flex-shrink: 0;
+  position: relative;
 }
 .card-icon img { width: 100%; height: 100%; object-fit: contain; }
 .card-title {
@@ -1020,11 +1021,8 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .star-btn .app-icon { background-color: var(--text-muted); }
 .star-btn.starred .app-icon { background-color: #ffd700; }
 .alarm-indicator {
-  position: absolute; top: 9px; left: 28px;
-  z-index: 1; opacity: 0.75; pointer-events: none;
-}
-.icon-card .alarm-indicator {
-  top: 3px; right: 3px; left: auto;
+  position: absolute; top: -4px; right: -4px;
+  z-index: 2; opacity: 0.85; pointer-events: none;
 }
 .list-star-btn {
   position: absolute; top: 6px; left: 8px; z-index: 2;
@@ -1459,7 +1457,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.2</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.3</div>
   </div>
 </aside>
 
@@ -2844,14 +2842,13 @@ function gridCard(item) {
       oncontextmenu="showCtx(event,'${item.id}')">
     ${selChk}
     <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${starIcon}</button>
-    ${alarmIndicator(item)}
     <div class="card-actions">
       ${shortcutBtn}
       <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
       <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
       <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
     </div>
-    <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
+    <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}${alarmIndicator(item)}</div>
     <div class="card-title">${esc(item.title)}</div>
     ${footer}
     ${expandBody}
@@ -4080,8 +4077,8 @@ function iconCard(item) {
         oncontextmenu="showCtx(event,'${item.id}')"
         title="${esc(item.title)}${titleSuffix}" style="border-top:3px solid ${tc}">
       ${selChkI}
-      <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
-      ${setMemberBadge(item)}${setCountBadge(item)}${alarmIndicator(item)}
+      <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}${alarmIndicator(item)}</div>
+      ${setMemberBadge(item)}${setCountBadge(item)}
     </div>
     <div class="icon-title">${esc(item.title)}</div>
   </div>`;
