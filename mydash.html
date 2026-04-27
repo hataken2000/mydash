@@ -1452,7 +1452,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.13.1</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.0</div>
   </div>
 </aside>
 
@@ -1497,11 +1497,7 @@ body.hide-server .launch-btn { display: none !important; }
             <span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px"></span>JSONインポート
             <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
           </label>
-          <button class="io-btn" onclick="wsExportSessions()" style="display:flex;align-items:center;gap:5px;justify-content:center;border-color:rgba(144,164,174,0.35);color:var(--window-session)"><span class="app-icon" style="-webkit-mask-image:var(--icon-upload);mask-image:var(--icon-upload);width:13px;height:13px;background-color:var(--window-session)"></span>タブセット エクスポート</button>
-          <label class="io-btn" style="cursor:pointer;display:flex;align-items:center;gap:5px;justify-content:center;border-color:rgba(144,164,174,0.35);color:var(--window-session)">
-            <span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px;background-color:var(--window-session)"></span>タブセット インポート
-            <input type="file" accept=".json" style="display:none" onchange="wsImportSessions(event)">
-          </label>
+
           <button class="io-btn server-feature" onclick="closeSettingsModal();openCalImportModal()" style="border-color:rgba(128,203,196,0.35);color:var(--set);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);width:13px;height:13px;background-color:var(--set)"></span>カレンダーインポート</button>
           <button class="io-btn server-feature" onclick="closeSettingsModal();openDockImportModal()" style="border-color:rgba(129,199,132,0.35);color:var(--tool);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);width:13px;height:13px;background-color:var(--tool)"></span>Dockインポート</button>
         </div>
@@ -2058,21 +2054,19 @@ window.addEventListener('message', (e) => {
   if (e.data?.type === 'MYDASH_EXTENSION_READY') {
     window._mydashExtension = true;
   }
-  if (e.data?.type === 'WINDOW_SAVER_SESSIONS') {
-    window._wsSessionsCallback?.(e.data.sessions ?? []);
-    window._wsSessionsCallback = null;
-  }
   if (e.data?.type === 'WS_SESSION_ADDED' && e.data.session) {
     const session = e.data.session;
-    const existing = db.items.find(i => i.type === 'window-session' && i.sessionName === session.name);
+    const existing = db.items.find(i => i.type === 'window-session' && i.sessionId === session.id);
     if (!existing) {
       db.items.unshift({
         id: Date.now().toString(36) + Math.random().toString(36).slice(2),
         type: 'window-session',
         title: session.name,
         desc: '', icon: '', category: '', tags: [],
-        sessionName: session.name,
         sessionId: session.id,
+        tabs: session.tabs,
+        groups: session.groups || {},
+        savedAt: session.savedAt,
         createdAt: new Date().toISOString(),
       });
       save(); render(); updateCounts();
@@ -2082,7 +2076,6 @@ window.addEventListener('message', (e) => {
   if (e.data?.type === 'WINDOW_SAVER_RESTORED') {
     if (e.data.success) toast('タブセットを復元しました', '🖥️');
     else toast('復元に失敗しました', '⚠️');
-    closeWindowSaverModal();
   }
 });
 
@@ -4188,9 +4181,7 @@ function deleteSelected() {
   const ids = [...state.selectedIds];
   if (!ids.length) return;
   if (!confirm(`${ids.length}件を削除しますか？`)) return;
-  db.items.filter(i => ids.includes(i.id) && i.type === 'window-session' && i.sessionId).forEach(i => {
-    window.dispatchEvent(new CustomEvent('mydash-window-saver-delete', { detail: { id: i.sessionId } }));
-  });
+
   db.items = db.items.filter(i => !ids.includes(i.id));
   state.selectedIds.clear();
   save(); render(); toast(`${ids.length}件削除しました`, '🗑️');
@@ -4533,7 +4524,6 @@ function confirmDelete(id) {
   if (!item) return;
   if (item.type === 'window-session') {
     if (!confirm(`「${item.title}」を削除しますか？\nタブセットのデータも完全に削除されます。`)) return;
-    if (item.sessionId) window.dispatchEvent(new CustomEvent('mydash-window-saver-delete', { detail: { id: item.sessionId } }));
   }
   const idx = db.items.findIndex(i => i.id === id);
   const orderIdx = db.itemOrder ? db.itemOrder.indexOf(id) : -1;
@@ -5075,47 +5065,15 @@ function wsRestoreSession(session) {
 }
 
 function launchWindowSession(item) {
-  toast('タブセットを読み込み中…', '🖥️');
-  window.dispatchEvent(new CustomEvent('mydash-window-saver-get-sessions'));
-  window._wsSessionsCallback = (sessions) => {
-    window._wsSessionsCallback = null;
-    const session = sessions.find(s => s.name === item.sessionName);
-    if (!session) { toast(`「${esc(item.title)}」のタブセットが見つかりません`, '⚠️'); return; }
-    wsRestoreSession(session);
-  };
+  if (!item.tabs?.length) { toast('タブデータがありません。再度保存してください', '⚠️'); return; }
+  toast('タブセットを復元中…', '🖥️');
+  const session = { id: item.sessionId || item.id, name: item.title, tabs: item.tabs, groups: item.groups || {} };
+  window.dispatchEvent(new CustomEvent('mydash-window-saver-restore', { detail: { session } }));
 }
 
 function launchWindowSessionById(id) {
   const item = db.items.find(i => i.id === id);
   if (item) launchWindowSession(item);
-}
-
-function wsExportSessions() {
-  if (!window._mydashExtension) { toast('Chrome拡張機能が必要です', '⚠️'); return; }
-  window.dispatchEvent(new CustomEvent('mydash-window-saver-get-sessions'));
-  window._wsSessionsCallback = (sessions) => {
-    window._wsSessionsCallback = null;
-    const blob = new Blob([JSON.stringify(sessions, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mydash-sessions-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-}
-
-function wsImportSessions(e) {
-  if (!window._mydashExtension) { toast('Chrome拡張機能が必要です', '⚠️'); return; }
-  const file = e.target.files[0];
-  if (!file) return;
-  file.text().then(text => {
-    let imported;
-    try { imported = JSON.parse(text); } catch { toast('JSONファイルが正しくありません', '⚠️'); return; }
-    window.dispatchEvent(new CustomEvent('mydash-window-saver-import', { detail: { sessions: imported } }));
-    e.target.value = '';
-    toast('タブセットをインポートしました', '🖥️');
-  });
 }
 
 // セットを起動: Chrome新ウィンドウで開く
