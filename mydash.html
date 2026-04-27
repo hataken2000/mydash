@@ -1456,7 +1456,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.6</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.7</div>
   </div>
 </aside>
 
@@ -2612,6 +2612,14 @@ function render() {
   requestAnimationFrame(() => { if (contentEl) contentEl.scrollTop = savedScroll; });
 }
 
+function nvIconHref(iconVar) {
+  const prop = iconVar.match(/var\((--[^)]+)\)/)?.[1];
+  if (!prop) return null;
+  const val = getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+  const m = val.match(/url\(['"]?(data:[^'")\s]+)['"]?\)/);
+  return m ? m[1] : null;
+}
+
 function renderNodeView() {
   const items = filteredItems();
   const el = document.getElementById('content');
@@ -2673,12 +2681,19 @@ function renderNodeView() {
       const selStroke = isSelected ? 'var(--accent)' : tc;
       const selStrokeW = isSelected ? 3 : 1.5;
       const selDash = item.hidden ? ' stroke-dasharray="4,3"' : '';
+      const iconHref = nvIconHref(iconVar);
+      const maskId = `nvm-${item.id}`;
       islandsSvg += `<g data-id="${item.id}" onclick="nodeItemClick('${item.id}')" oncontextmenu="showCtx(event,'${item.id}')" style="cursor:pointer" class="nv-item"${hiddenAttr}>`;
       islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${isSelected ? 'var(--accent)' : tc}" fill-opacity="${isSelected ? 0.35 : 0.2}" stroke="${selStroke}" stroke-width="${selStrokeW}"${selDash} data-tc="${tc}" class="nv-rect"/>`;
-      islandsSvg += `<foreignObject x="${nx+5}" y="${ny+7}" width="14" height="14"><span xmlns="http://www.w3.org/1999/xhtml" class="app-icon" style="-webkit-mask-image:${iconVar};mask-image:${iconVar};background-color:${tc};width:14px;height:14px;display:inline-block"></span></foreignObject>`;
+      if (iconHref) {
+        islandsSvg += `<mask id="${maskId}"><image href="${iconHref}" x="${nx+5}" y="${ny+7}" width="14" height="14"/></mask>`;
+        islandsSvg += `<rect x="${nx+5}" y="${ny+7}" width="14" height="14" fill="${tc}" mask="url(#${maskId})"/>`;
+      } else {
+        islandsSvg += `<rect x="${nx+5}" y="${ny+7}" width="14" height="14" rx="2" fill="${tc}" fill-opacity="0.6"/>`;
+      }
       if (hasItemIcon) {
         if (isImgIcon) {
-          islandsSvg += `<foreignObject x="${nx+21}" y="${ny+7}" width="14" height="14" pointer-events="none"><img xmlns="http://www.w3.org/1999/xhtml" src="${esc(item.icon)}" style="width:14px;height:14px;object-fit:contain;border-radius:2px" onerror="this.style.display='none'"/></foreignObject>`;
+          islandsSvg += `<image href="${esc(item.icon)}" x="${nx+21}" y="${ny+7}" width="14" height="14" preserveAspectRatio="xMidYMid meet"/>`;
         } else {
           islandsSvg += `<foreignObject x="${nx+21}" y="${ny+5}" width="14" height="18" pointer-events="none"><span xmlns="http://www.w3.org/1999/xhtml" style="font-size:12px;line-height:18px;display:block;text-align:center">${esc(item.icon)}</span></foreignObject>`;
         }
