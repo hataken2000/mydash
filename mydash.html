@@ -1019,6 +1019,13 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .star-btn.starred { opacity: 1; }
 .star-btn .app-icon { background-color: var(--text-muted); }
 .star-btn.starred .app-icon { background-color: #ffd700; }
+.alarm-indicator {
+  position: absolute; top: 9px; left: 28px;
+  z-index: 1; opacity: 0.75; pointer-events: none;
+}
+.icon-card .alarm-indicator {
+  top: 3px; right: 3px; left: auto;
+}
 .list-star-btn {
   position: absolute; top: 6px; left: 8px; z-index: 2;
   font-size: 15px; cursor: pointer;
@@ -1452,7 +1459,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.0</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.2</div>
   </div>
 </aside>
 
@@ -2458,6 +2465,11 @@ function setCountBadge(item) {
   return `<span class="set-count-badge" onclick="event.stopPropagation();showSetQuickPanel('${item.id}')" title="${count}個のアイテム">${count}</span>`;
 }
 
+function alarmIndicator(item) {
+  if (!item.alarm?.enabled) return '';
+  return `<span class="alarm-indicator" title="アラームあり"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--set);width:11px;height:11px;display:inline-block"></span></span>`;
+}
+
 function typeBadge(item) {
   if (item.type === 'task') {
     const s = item.status || 'todo';
@@ -2832,6 +2844,7 @@ function gridCard(item) {
       oncontextmenu="showCtx(event,'${item.id}')">
     ${selChk}
     <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${starIcon}</button>
+    ${alarmIndicator(item)}
     <div class="card-actions">
       ${shortcutBtn}
       <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
@@ -4068,7 +4081,7 @@ function iconCard(item) {
         title="${esc(item.title)}${titleSuffix}" style="border-top:3px solid ${tc}">
       ${selChkI}
       <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
-      ${setMemberBadge(item)}${setCountBadge(item)}
+      ${setMemberBadge(item)}${setCountBadge(item)}${alarmIndicator(item)}
     </div>
     <div class="icon-title">${esc(item.title)}</div>
   </div>`;
