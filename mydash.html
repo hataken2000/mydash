@@ -685,6 +685,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   position: relative; text-align: center;
   user-select: none;
   min-height: 130px;
+  touch-action: manipulation;
 }
 .grid-card.selected, .list-card.selected, .icon-card.selected,
 .grid-card.selected:hover, .list-card.selected:hover, .icon-card.selected:hover {
@@ -727,6 +728,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   transition: all 0.12s;
   overflow: hidden;
   position: relative;
+  touch-action: manipulation;
 }
 .item-hidden { opacity: 0.4; }
 .grid-card.item-hidden, .list-card.item-hidden {
@@ -1094,6 +1096,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; aspect-ratio: 1; width: 100%;
   transition: all 0.14s; position: relative;
+  touch-action: manipulation;
 }
 .icon-card:hover {
   border-color: var(--accent); background: var(--card-hover);
@@ -1460,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.31</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.32</div>
   </div>
 </aside>
 
