@@ -6241,8 +6241,10 @@ async function gistAutoDownload() {
     const remoteVersion = remote.version || 0;
     const localVersion = db.version || 0;
 
-    if (remoteVersion > localVersion) {
-      // リモートが新しい → 完全上書き
+    // ローカルにversionがない（古いデータ or 初回）はリモート優先
+    // リモートが新しい場合も同様
+    if (remoteVersion > localVersion || localVersion === 0) {
+      // リモートで完全上書き
       const prevJson = JSON.stringify(db.items);
       Object.assign(db, remote);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
