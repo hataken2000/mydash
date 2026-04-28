@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.32</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.33</div>
   </div>
 </aside>
 
@@ -3594,7 +3594,7 @@ function scheduleTlItemClick(id) {
 
 function cardClick(e, id) {
   if (e.target.closest('.action-btn') || e.target.closest('.launch-btn')) return;
-  if (state.selectMode) { toggleItemSelect(id, !state.selectedIds.has(id), e.shiftKey); return; }
+  if (state.selectMode) { if (!_selectTouchHandled) toggleItemSelect(id, !state.selectedIds.has(id), e.shiftKey); return; }
   const item = db.items.find(i => i.id === id);
   if (!item) return;
   if (item.type === 'set') { showSetQuickPanel(id); return; }
@@ -4202,7 +4202,7 @@ function pickStatus(status) {
 }
 
 function iconCardClick(event, id) {
-  if (state.selectMode) { toggleItemSelect(id, !state.selectedIds.has(id), event.shiftKey); return; }
+  if (state.selectMode) { if (!_selectTouchHandled) toggleItemSelect(id, !state.selectedIds.has(id), event.shiftKey); return; }
   const item = db.items.find(i => i.id === id);
   if (!item) return;
   if (item.type === 'set') { showSetQuickPanel(id); return; }
@@ -7565,6 +7565,23 @@ updateAlarmBadge();
 runCalSync(false); // ページ読み込み時に自動同期チェック
 handleShortcutExec(); // iPhoneショートカットURLパラメータの処理
 gistAutoDownload(); // 起動時にGistから自動同期
+
+// 選択モード中のiOSタップを touchend で直接処理（2回タップ問題の回避）
+let _selectTouchMoved = false;
+document.getElementById('content').addEventListener('touchstart', () => { _selectTouchMoved = false; }, { passive: true });
+document.getElementById('content').addEventListener('touchmove', () => { _selectTouchMoved = true; }, { passive: true });
+let _selectTouchHandled = false;
+document.getElementById('content').addEventListener('touchend', (e) => {
+  if (_selectTouchMoved || !state.selectMode) return;
+  const card = e.target.closest('[data-id]');
+  if (!card) return;
+  const id = card.dataset.id;
+  if (!id) return;
+  e.preventDefault();
+  _selectTouchHandled = true;
+  toggleItemSelect(id, !state.selectedIds.has(id), false);
+  setTimeout(() => { _selectTouchHandled = false; }, 300);
+}, { passive: false });
 
 let _lastVisibleSync = 0;
 document.addEventListener('visibilitychange', () => {
