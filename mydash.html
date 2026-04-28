@@ -4251,7 +4251,18 @@ function toggleItemSelect(id, checked, shiftKey) {
   if (checked) state.selectedIds.add(id); else state.selectedIds.delete(id);
   state.lastSelectedId = checked ? id : state.lastSelectedId;
   updateSelectBar();
-  render();
+  document.querySelectorAll(`[data-id="${id}"]`).forEach(el => {
+    el.classList.toggle('selected', checked);
+    const chk = el.querySelector('input[type="checkbox"]');
+    if (chk) chk.checked = checked;
+  });
+  const nvRect = document.querySelector(`g.nv-item[data-id="${id}"] .nv-rect`);
+  if (nvRect) {
+    nvRect.setAttribute('fill', checked ? 'var(--accent)' : 'var(--card-bg)');
+    nvRect.setAttribute('fill-opacity', checked ? '0.18' : '1');
+    nvRect.setAttribute('stroke', checked ? 'var(--accent)' : 'var(--border)');
+    nvRect.setAttribute('stroke-width', checked ? '1' : '0.75');
+  }
 }
 
 function toggleSelectAll(checked) {
