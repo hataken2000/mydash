@@ -1461,7 +1461,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.17</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.18</div>
   </div>
 </aside>
 
@@ -2225,6 +2225,8 @@ function load() {
   if (!db.settings.sidebarCollapsed) db.settings.sidebarCollapsed = {};
   state.expandedMemos = new Set(Array.isArray(db.expandedMemos) ? db.expandedMemos : []);
   state.expandedCards = new Set(Array.isArray(db.expandedCards) ? db.expandedCards : []);
+  // マイグレーション: calUid があるのに fromCalSync がないアイテムを修正
+  db.items.forEach(item => { if (item.calUid && !item.fromCalSync) item.fromCalSync = true; });
 }
 
 function save() {
@@ -6600,9 +6602,10 @@ async function runCalSync(manual = false) {
 
     let added = 0, updated = 0, removed = 0;
 
-    // 削除・更新: fromCalSync のアイテムを iCal と照合
+    // 削除・更新: calUid があるアイテムを iCal と照合（fromCalSync は照合後に付与）
     db.items = db.items.filter(item => {
-      if (!item.fromCalSync || !item.calUid) return true;
+      if (!item.calUid) return true;
+      item.fromCalSync = true;
       if (!icalUids.has(item.calUid)) { removed++; return false; }
 
       // タイトル・スケジュールを更新（setItems/desc/memo/icon はユーザー変更を保持）
