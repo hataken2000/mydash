@@ -1462,7 +1462,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.19</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.20</div>
   </div>
 </aside>
 
@@ -7463,35 +7463,90 @@ load();
 if (db.items.length === 0) {
   const _now = new Date().toISOString();
   db.items.push(
-    { id: genId(), type: 'memo', title: 'MyDashへようこそ！', category: 'はじめに', tags: [], starred: true, hidden: false, createdAt: _now, _tutorial: true, desc:
-`# MyDashへようこそ！
+    { id: genId(), type: 'memo', title: '🎉 MyDashへようこそ！', category: 'はじめに', tags: [], starred: true, hidden: false, createdAt: _now, _tutorial: true, desc:
+`# 🎉 MyDashへようこそ！
 
-ブックマーク・タスク・メモなどを一元管理するパーソナルダッシュボードです。
+ブックマーク・タスク・メモ・セットなどを一元管理するパーソナルダッシュボードです。
 
 ---
 
 **まずやること**
 - 右上の ＋ ボタンでアイテムを追加してみよう
 - 左サイドバーでカテゴリ・タイプを絞り込める
-- 慣れてきたら、このメモは削除してOK` },
-    { id: genId(), type: 'memo', title: 'アイテムの種類', category: 'はじめに', tags: [], starred: false, hidden: false, createdAt: _now, _tutorial: true, desc:
-`## アイテムの種類
+- 慣れてきたら「はじめに」カテゴリのチュートリアルは削除してOK` },
+    { id: genId(), type: 'memo', title: '📌 子機能 — 基本アイテム', category: 'はじめに', tags: [], starred: false, hidden: false, createdAt: _now, _tutorial: true, desc:
+`## 📌 子機能 — 基本アイテム
 
-- **ブックマーク** — よく使うURLを登録
-- **タスク** — やること管理（期限・優先度あり）
-- **メモ** — テキストや画像を自由に記録（このアイテム）
-- **ツール** — コマンドやショートカットを登録
-- **セット** — 複数アイテムをグループ化してまとめて開く
-- **スクリプト** — ターミナルコマンドを登録・実行` },
-    { id: genId(), type: 'memo', title: '便利な操作', category: 'はじめに', tags: [], starred: false, hidden: false, createdAt: _now, _tutorial: true, desc:
-`## 便利な操作
+日々の情報を登録する基本の要素です。セットに組み込んで使うのがおすすめ。
 
-- **表示切り替え** — 右上アイコンでグリッド / リスト / アイコン
-- **絞り込み** — 左サイドバーでカテゴリ・タイプ別フィルター
-- **お気に入り** — カードの ★ でピン留め
-- **並び替え** — ドラッグ&ドロップ（手動ソート時）
-- **クイック編集** — カードをクリックで詳細パネルが開く
-- **Gist同期** — 設定から複数端末間でデータを共有` }
+---
+
+🔖 **ブックマーク** — よく使うURLをワンクリックで開く。favicon自動取得。
+
+✅ **タスク** — やること管理。ステータス（未着手/進行中/完了）・優先度・期限日時を設定できる。
+
+📝 **メモ** — Markdown対応のフリーメモ。画像URLや地図も自動表示。
+
+📍 **場所** — 住所やGoogle MapsのURLを登録。説明欄に住所を書くと地図を自動表示。` },
+    { id: genId(), type: 'memo', title: '🗂️ 親機能 — セット', category: 'はじめに', tags: [], starred: false, hidden: false, createdAt: _now, _tutorial: true, desc:
+`## 🗂️ 親機能 — セット
+
+複数のアイテムをひとまとめにして、一括で開ける機能です。
+
+---
+
+**使い方のイメージ**
+- 「朝のルーティン」セット → Slack・メール・カレンダーをまとめて開く
+- 「会議準備」セット → 資料URL・メモ・タスクをまとめて起動
+
+**アラームと組み合わせると**
+- 指定した時刻に自動でセットを起動できる
+
+**作り方**
+- ＋ボタン → 種類「セット」を選択 → アイテムを追加` },
+    { id: genId(), type: 'memo', title: '⚡ 専用機能', category: 'はじめに', tags: [], starred: false, hidden: false, createdAt: _now, _tutorial: true, desc:
+`## ⚡ 専用機能
+
+特定の用途に特化したアイテムです。
+
+---
+
+🔧 **ツール/アプリ** — MacアプリをDock名で登録してワンクリック起動。ローカルサーバーが必要。
+
+⚡ **スクリプト** — ターミナルコマンドを登録して実行。{変数}でパラメータ入力も可能。ローカルサーバーが必要。
+
+💬 **Slack送信** — 定型文を素早く送信。Chrome拡張なし（スマホ等）でもクリップボード経由で使える。` },
+    { id: genId(), type: 'memo', title: '🔌 Chrome拡張機能', category: 'はじめに', tags: [], starred: false, hidden: false, createdAt: _now, _tutorial: true, desc:
+`## 🔌 Chrome拡張機能
+
+Chrome拡張「MyDash拡張」を入れると使える機能です。
+
+---
+
+🪟 **タブセット** — 開いているタブをまとめて保存・復元。拡張のポップアップから保存できる。
+
+💬 **Slack自動入力** — Slackの入力欄に自動でテキストを入力。送信ボタンは自分で押す。
+
+---
+
+**拡張のインストール**
+マニュアル → Chrome拡張のセットアップ を参照` },
+    { id: genId(), type: 'memo', title: '📖 もっと詳しく', category: 'はじめに', tags: [], starred: false, hidden: false, createdAt: _now, _tutorial: true, desc:
+`## 📖 もっと詳しく
+
+各機能の詳細はマニュアルで確認できます。
+
+---
+
+**マニュアルの開き方**
+- 画面右上の **？** ボタンをクリック
+
+**マニュアルに載っている内容**
+- キーボードショートカット一覧
+- Googleカレンダー連携
+- GitHub Gist による複数端末同期
+- iOSショートカット連携
+- ウィジェット（時計・今日のタスク）など` }
   );
   save();
 }
