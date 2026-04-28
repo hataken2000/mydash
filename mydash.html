@@ -1024,7 +1024,7 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .star-btn.starred { opacity: 1; }
 .star-btn .app-icon { background-color: var(--text-muted); }
 .star-btn.starred .app-icon { background-color: #ffd700; }
-.alarm-indicator {
+.alarm-indicator, .cal-sync-indicator {
   position: absolute; top: 3px; right: 3px;
   z-index: 2; opacity: 0.85; pointer-events: none;
 }
@@ -1461,7 +1461,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.14</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.16</div>
   </div>
 </aside>
 
@@ -2509,7 +2509,15 @@ function setCountBadge(item) {
 
 function alarmIndicator(item) {
   if (!item.alarm?.enabled) return '';
+  if (item.fromCalSync) return ''; // カレンダー由来はcalSyncBadgeで表示
   return `<span class="alarm-indicator" title="アラームあり"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--set);width:11px;height:11px;display:inline-block"></span></span>`;
+}
+
+function calSyncBadge(item) {
+  if (!item.fromCalSync) return '';
+  const color = item.alarm?.enabled ? 'var(--set)' : 'currentColor';
+  const title = item.alarm?.enabled ? 'Googleカレンダー（アラームあり）' : 'Googleカレンダー連携';
+  return `<span class="cal-sync-indicator" title="${title}"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:${color};width:11px;height:11px;display:inline-block"></span></span>`;
 }
 
 function typeBadge(item) {
@@ -2931,7 +2939,7 @@ function gridCard(item) {
     <div class="card-title">${esc(item.title)}</div>
     ${footer}
     ${expandBody}
-    ${setMemberBadge(item)}${setCountBadge(item)}${alarmIndicator(item)}
+    ${setMemberBadge(item)}${setCountBadge(item)}${alarmIndicator(item)}${calSyncBadge(item)}
   </div>`;
 }
 
@@ -2986,7 +2994,7 @@ function listCard(item) {
           <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
         </div>
       </div>
-      ${setCountBadge(item)}
+      ${setCountBadge(item)}${calSyncBadge(item)}
     </div>`;
   }
   const pri = item.type === 'task' && item.priority
@@ -3052,7 +3060,7 @@ function listCard(item) {
         <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
       </div>
     </div>
-    ${setMemberBadge(item)}
+    ${setMemberBadge(item)}${calSyncBadge(item)}
   </div>`;
 }
 
@@ -3465,10 +3473,13 @@ function renderTodayView() {
         : 'left:0;right:6px';
       const ic = iconHtml(item, 'sm');
       const sub = item.alarm.schedule.type === 'once' ? '単発' : '繰り返し';
+      const srcIcon = item.fromCalSync
+        ? `<span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:var(--set);width:10px;height:10px;display:inline-block;vertical-align:middle;margin-right:2px" title="Googleカレンダー"></span>`
+        : `<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--set);width:10px;height:10px;display:inline-block;vertical-align:middle;margin-right:2px" title="マイダッシュアラーム"></span>`;
       eventsHtml += `<div class="tl-event-block" style="top:${top}px;${posStyle}${item.hidden ? ';opacity:0.35' : ''}" onclick="editItem('${item.id}')">
         ${ic}
         <span class="tl-ev-title">${esc(item.title)}</span>
-        <span class="tl-ev-sub">${sub}</span>
+        <span class="tl-ev-sub">${srcIcon}${sub}</span>
         <button class="today-launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
         <button class="tl-hide-btn${item.hidden ? ' is-hidden' : ''}" onclick="event.stopPropagation();toggleTodayItemHidden('${item.id}')" title="${item.hidden ? '表示に戻す' : '非表示にする'}"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;display:inline-block"></span></button>
       </div>`;
@@ -4185,7 +4196,7 @@ function iconCard(item) {
         title="${esc(item.title)}${titleSuffix}" style="border-top:3px solid ${tc}">
       ${selChkI}
       <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
-      ${setMemberBadge(item)}${setCountBadge(item)}${alarmIndicator(item)}
+      ${setMemberBadge(item)}${setCountBadge(item)}${alarmIndicator(item)}${calSyncBadge(item)}
     </div>
     <div class="icon-title">${esc(item.title)}</div>
   </div>`;
@@ -6007,7 +6018,7 @@ function renderCalStep1() {
     <div id="cal-status" style="font-size:12px;color:var(--text-muted);margin-top:6px"></div>
     <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:12px;font-weight:700">🔄 自動同期（1日1回）</span>
+        <span style="font-size:12px;font-weight:700">🔄 自動同期（1時間ごと）</span>
         <label class="alarm-toggle" title="${sync.enabled?'ON':'OFF'}">
           <input type="checkbox" id="cal-sync-toggle" ${sync.enabled?'checked':''} onchange="toggleCalSync(this.checked)">
           <span class="alarm-toggle-slider"></span>
@@ -6565,15 +6576,57 @@ async function runCalSync(manual = false) {
   if (!manual) {
     if (!sync.enabled) return;
     const elapsed = Date.now() - (sync.lastSync || 0);
-    if (elapsed < 23 * 60 * 60 * 1000) return; // 23時間未満はスキップ
+    if (elapsed < 60 * 60 * 1000) return; // 1時間未満はスキップ
   }
   try {
     const events = parseICS(await fetchICSText(sync.url));
     const groups = groupICSEvents(events);
-    let added = 0;
-    const existingCalUids = new Set(db.items.map(i => i.calUid).filter(Boolean));
 
-    // 繰り返し → アラーム内蔵セット（同calUidがなければ追加）
+    // iCalの全UIDセットとUIDごとのイベントMapを構築
+    const icalUids = new Set();
+    const icalByUid = new Map();
+    for (const ev of groups.recurring) {
+      const uidKey = (ev.uid || ev.summary) + '_recurring';
+      icalUids.add(uidKey);
+      icalByUid.set(uidKey, { kind: 'recurring', ev });
+    }
+    for (const ev of groups.single) {
+      const d = ev.dtStart;
+      const due = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const uidKey = (ev.uid || ev.summary) + '_' + due;
+      icalUids.add(uidKey);
+      icalByUid.set(uidKey, { kind: 'single', ev, due });
+    }
+
+    let added = 0, updated = 0, removed = 0;
+
+    // 削除・更新: fromCalSync のアイテムを iCal と照合
+    db.items = db.items.filter(item => {
+      if (!item.fromCalSync || !item.calUid) return true;
+      if (!icalUids.has(item.calUid)) { removed++; return false; }
+
+      // タイトル・スケジュールを更新（setItems/desc/memo/icon はユーザー変更を保持）
+      const entry = icalByUid.get(item.calUid);
+      const prevTitle = item.title;
+      const prevSched = JSON.stringify(item.alarm?.schedule);
+      item.title = entry.ev.summary;
+      if (entry.kind === 'recurring') {
+        if (item.alarm) item.alarm.schedule = rruleToSchedule(entry.ev.rrule, entry.ev.dtStart);
+      } else {
+        const d = entry.ev.dtStart;
+        if (entry.ev.hasTime) {
+          const time = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+          if (item.alarm) item.alarm.schedule = { type: 'once', date: entry.due, time };
+        } else {
+          item.due = entry.due;
+        }
+      }
+      if (item.title !== prevTitle || JSON.stringify(item.alarm?.schedule) !== prevSched) updated++;
+      return true;
+    });
+
+    // 追加: iCal にあって MyDash にない calUid のみ
+    const existingCalUids = new Set(db.items.map(i => i.calUid).filter(Boolean));
     for (const ev of groups.recurring) {
       const uidKey = (ev.uid || ev.summary) + '_recurring';
       if (existingCalUids.has(uidKey)) continue;
@@ -6585,8 +6638,6 @@ async function runCalSync(manual = false) {
       });
       added++;
     }
-
-    // 単発 → 時刻ありはセット+アラーム、終日はタスク（同calUidがなければ追加）
     for (const ev of groups.single) {
       const d = ev.dtStart;
       const due = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -6608,14 +6659,15 @@ async function runCalSync(manual = false) {
 
     db.calSync.lastSync = Date.now();
     save();
-    if (added > 0) {
-      toast(`カレンダー同期: ${added}件追加`, '📅');
+    const changed = added + updated + removed;
+    if (changed > 0) {
+      const parts = [added && `${added}件追加`, updated && `${updated}件更新`, removed && `${removed}件削除`].filter(Boolean);
+      toast(`カレンダー同期: ${parts.join(' / ')}`, '📅');
       render();
       updateAlarmBadge();
     } else if (manual) {
-      toast('新しいイベントはありませんでした', '📅');
+      toast('変更はありませんでした', '📅');
     }
-    // モーダルが開いていたら表示を更新
     if (document.getElementById('cal-import-modal').style.display !== 'none') renderCalStep1();
   } catch(e) {
     if (manual) toast(`同期失敗: ${e.message}`, '❌');
