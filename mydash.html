@@ -7470,14 +7470,27 @@ if (SERVER_BASE) {
 // Slack後で読むアイテムをサーバーからポーリングしてインポート
 function importSlackSaved(rawItems) {
   if (!rawItems?.length) return;
-  const existingUrls = new Set(db.items.map(i => i.url).filter(Boolean));
+  const existingById = new Map(db.items.filter(i => i.slackId).map(i => [i.slackId, i]));
   let added = 0;
   for (const raw of rawItems) {
     if (raw.is_archived) continue;
     const { item_id, ts, date_created } = raw;
     if (!item_id || !ts) continue;
+    const slackId = `${item_id}_${ts}`;
     const permalink = `https://app.slack.com/archives/${item_id}/p${ts.replace('.', '')}?no_macapp=1`;
-    if (existingUrls.has(permalink)) continue;
+    const rawText = raw._text || raw.message?.text || '';
+    const desc = rawText
+      .replace(/<@[A-Z0-9]+>/g, '@user')
+      .replace(/<#[A-Z0-9]+\|([^>]+)>/g, '#$1')
+      .replace(/<([^|>]+)\|([^>]+)>/g, '$2')
+      .replace(/<([^>]+)>/g, '$1')
+      .slice(0, 300);
+    // 既存アイテムに本文をマージ
+    if (existingById.has(slackId)) {
+      const existing = existingById.get(slackId);
+      if (desc && !existing.desc) { existing.desc = desc; added++; }
+      continue;
+    }
     const date = new Date((date_created || Date.now() / 1000) * 1000);
     const hm = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
     const yy = String(date.getFullYear()).slice(2);
@@ -7488,7 +7501,9 @@ function importSlackSaved(rawItems) {
       id: 'sl_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
       type: 'bookmark',
       title,
+      desc,
       url: permalink,
+      slackId,
       category: 'Slack後で読む',
       hidden: false,
       starred: false,
@@ -7496,7 +7511,7 @@ function importSlackSaved(rawItems) {
       memo: '',
       createdAt: Date.now(),
     });
-    existingUrls.add(permalink);
+    existingById.set(slackId, db.items[0]);
     added++;
   }
   if (added > 0) {

@@ -94,6 +94,7 @@ async function pollSlackSaved() {
   const tabs = await chrome.tabs.query({ url: ['https://app.slack.com/*'] });
   for (const tab of tabs) {
     try {
+      // Slackページからトークン情報とsaved.listのみ取得
       const results = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         world: 'MAIN',
@@ -105,26 +106,47 @@ async function pollSlackSaved() {
             const token = teams[teamId]?.token;
             const domain = teams[teamId]?.domain || 'slack';
             if (!token) return null;
+
             const fd = new FormData();
             fd.append('token', token);
             fd.append('limit', '15');
             fd.append('filter', 'saved');
             fd.append('_x_app_name', 'client');
             const res = await fetch(`https://${domain}.slack.com/api/saved.list?slack_route=${teamId}&_x_gantry=true`, {
-              method: 'POST',
-              credentials: 'include',
-              body: fd
+              method: 'POST', credentials: 'include', body: fd
             });
             const data = await res.json();
-            return data.ok ? (data.saved_items || []) : null;
+            const savedItems = data.ok ? (data.saved_items || []) : null;
+            if (!savedItems) return null;
+            return { token, domain, teamId, savedItems };
           } catch(_) { return null; }
         }
       });
-      const items = results?.[0]?.result;
-      if (items?.length) {
-        sendSavedToMyDash(items);
-        return;
-      }
+      const payload = results?.[0]?.result;
+      if (!payload?.savedItems?.length) continue;
+
+      // conversations.history は background.js から直接fetch（CSP回避）
+      const { token, domain, teamId, savedItems } = payload;
+      const withText = await Promise.all(savedItems.map(async item => {
+        try {
+          const fd2 = new FormData();
+          fd2.append('token', token);
+          fd2.append('channel', item.item_id);
+          fd2.append('latest', item.ts);
+          fd2.append('oldest', item.ts);
+          fd2.append('inclusive', 'true');
+          fd2.append('limit', '1');
+          const r = await fetch(
+            `https://${domain}.slack.com/api/conversations.history?slack_route=${teamId}&_x_gantry=true`,
+            { method: 'POST', body: fd2 }
+          );
+          const d = await r.json();
+          const text = d.ok ? (d.messages?.[0]?.text || '') : '';
+          return { ...item, _text: text, _hist_ok: d.ok, _hist_err: d.error };
+        } catch(e) { return { ...item, _text: '', _err: String(e) }; }
+      }));
+      sendSavedToMyDash(withText);
+      return;
     } catch(e) {}
   }
 }
