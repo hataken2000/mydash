@@ -524,11 +524,6 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .today-event-card.today-task { border-left-color: var(--task); }
 .today-event-title { flex: 1; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .today-event-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
-.today-launch-btn {
-  background: var(--accent); color: #fff; border: none; border-radius: 6px;
-  padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer;
-  font-family: inherit; flex-shrink: 0; white-space: nowrap;
-}
 .today-empty { padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 13px; }
 .today-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
 .today-nav-btn {
@@ -2232,6 +2227,7 @@ function load() {
 }
 
 function save() {
+  db.version = Date.now();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
   rebuildIndex();
   scheduleGistAutoSync();
@@ -3489,11 +3485,10 @@ function renderTodayView() {
       const srcIcon = item.fromCalSync
         ? `<span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:var(--set);width:10px;height:10px;display:inline-block;vertical-align:middle;margin-right:2px" title="Googleカレンダー"></span>`
         : `<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--set);width:10px;height:10px;display:inline-block;vertical-align:middle;margin-right:2px" title="マイダッシュアラーム"></span>`;
-      eventsHtml += `<div class="tl-event-block" style="top:${top}px;${posStyle}${item.hidden ? ';opacity:0.35' : ''}" onclick="editItem('${item.id}')">
+      eventsHtml += `<div class="tl-event-block" style="top:${top}px;${posStyle}${item.hidden ? ';opacity:0.35' : ''}" onclick="scheduleTlItemClick('${item.id}')">
         ${ic}
         <span class="tl-ev-title">${esc(item.title)}</span>
         <span class="tl-ev-sub">${srcIcon}${sub}</span>
-        <button class="today-launch-btn" onclick="event.stopPropagation();launchSet('${item.id}')">▶ 起動</button>
         <button class="tl-hide-btn${item.hidden ? ' is-hidden' : ''}" onclick="event.stopPropagation();toggleTodayItemHidden('${item.id}')" title="${item.hidden ? '表示に戻す' : '非表示にする'}"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;display:inline-block"></span></button>
       </div>`;
     });
@@ -3577,6 +3572,20 @@ function setView(v) {
 // ═══════════════════════════════════════════
 // Card interaction
 // ═══════════════════════════════════════════
+function scheduleTlItemClick(id) {
+  const item = db.items.find(i => i.id === id);
+  if (!item) return;
+  if (item.type === 'set') { showSetQuickPanel(id); return; }
+  if (item.type === 'place') { showPlaceQuickPanel(id); return; }
+  if (item.type === 'slack') { showSlackQuickPanel(id); return; }
+  if (item.type === 'window-session') { launchWindowSession(item); return; }
+  if (item.type === 'script') { execScriptItem(item); return; }
+  if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
+  if (item.appName) { openWithServer(item.appName); return; }
+  if (item.url) { window.open(item.url, '_blank'); return; }
+  editItem(id);
+}
+
 function cardClick(e, id) {
   if (e.target.closest('.action-btn') || e.target.closest('.launch-btn')) return;
   if (state.selectMode) { toggleItemSelect(id, !state.selectedIds.has(id)); return; }
@@ -6174,32 +6183,11 @@ async function gistDownload() {
     if (!raw) throw new Error('データが見つかりません');
     const remote = JSON.parse(raw);
 
-    // マージ: IDベースで新しい updatedAt を採用
-    const localMap = new Map(db.items.map(i => [i.id, i]));
-    const remoteMap = new Map(remote.items.map(i => [i.id, i]));
-    const allIds = new Set([...localMap.keys(), ...remoteMap.keys()]);
-    const merged = [];
-    allIds.forEach(id => {
-      const l = localMap.get(id);
-      const r = remoteMap.get(id);
-      if (l && r) {
-        merged.push((l.updatedAt || l.createdAt) >= (r.updatedAt || r.createdAt) ? l : r);
-      } else {
-        merged.push(l || r);
-      }
-    });
-
-    // itemOrder もマージ（remote優先、ローカルのみIDは末尾に追加）
-    const remoteOrder = remote.itemOrder || [];
-    const localOnlyIds = merged.map(i => i.id).filter(id => !remoteOrder.includes(id));
-    db.items = merged;
-    db.itemOrder = [...remoteOrder, ...localOnlyIds];
-    if (remote.slackChannels) db.slackChannels = remote.slackChannels;
-
+    // リモートで完全上書き
+    Object.assign(db, remote);
     save();
     render();
-    const chCount = db.slackChannels?.length ?? 0;
-    gistStatus(`✅ マージ完了（${new Date().toLocaleTimeString('ja-JP')}）ch:${chCount}`, false);
+    gistStatus(`✅ 読込完了（${new Date().toLocaleTimeString('ja-JP')}）`, false);
   } catch(e) {
     gistStatus(`❌ ${e.message}`, true);
   }
@@ -6238,9 +6226,9 @@ async function gistAutoDownload() {
   const token = localStorage.getItem('mydash_github_token') || '';
   const gistId = localStorage.getItem('mydash_gist_id') || '';
   if (!token || !gistId) return;
+  if (_gistSyncing) return;
   _gistSyncing = true;
   try {
-    // 常にリモートを取得（slackChannels等の設定を先にマージするため）
     const res = await fetch(`https://api.github.com/gists/${gistId}`, {
       headers: { 'Authorization': `token ${token}` }
     });
@@ -6250,48 +6238,24 @@ async function gistAutoDownload() {
     if (!raw) return;
     const remote = JSON.parse(raw);
 
-    // slackChannels はリモート優先で常に適用
-    if (remote.slackChannels?.length) db.slackChannels = remote.slackChannels;
+    const remoteVersion = remote.version || 0;
+    const localVersion = db.version || 0;
 
-    // ローカルの最終更新時刻
-    const lastSync = localStorage.getItem('mydash_gist_last_sync') || '';
-    const localLatest = db.items.reduce((m, i) => {
-      const t = i.updatedAt || i.createdAt || '';
-      return t > m ? t : m;
-    }, '');
-
-    // ローカルにlastSync以降の変更があればアップロード（slackChannels込みで）
-    if (localLatest > lastSync) {
-      await gistAutoUpload();
-      return;
-    }
-
-    const localMap = new Map(db.items.map(i => [i.id, i]));
-    const remoteMap = new Map((remote.items || []).map(i => [i.id, i]));
-    const allIds = new Set([...localMap.keys(), ...remoteMap.keys()]);
-    const merged = [];
-    allIds.forEach(id => {
-      const l = localMap.get(id);
-      const r = remoteMap.get(id);
-      if (l && r) {
-        merged.push((l.updatedAt || l.createdAt || '') >= (r.updatedAt || r.createdAt || '') ? l : r);
-      } else {
-        merged.push(l || r);
+    if (remoteVersion > localVersion) {
+      // リモートが新しい → 完全上書き
+      const prevJson = JSON.stringify(db.items);
+      Object.assign(db, remote);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+      rebuildIndex();
+      if (JSON.stringify(db.items) !== prevJson) {
+        render();
+        toast('☁️ Gistから同期しました');
       }
-    });
-
-    const remoteOrder = remote.itemOrder || [];
-    const localOnlyIds = merged.map(i => i.id).filter(id => !remoteOrder.includes(id));
-
-    if (JSON.stringify(merged) === JSON.stringify(db.items) &&
-        JSON.stringify([...remoteOrder, ...localOnlyIds]) === JSON.stringify(db.itemOrder)) return;
-
-    db.items = merged;
-    db.itemOrder = [...remoteOrder, ...localOnlyIds];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-    rebuildIndex();
-    render();
-    toast('☁️ Gistから同期しました');
+    } else if (localVersion > remoteVersion) {
+      // ローカルが新しい → アップロード
+      await gistAutoUpload();
+    }
+    // 同バージョン（同一）なら何もしない
   } catch(e) {
     console.warn('[MyDash] Gist auto-download failed:', e.message);
   } finally {
@@ -7581,6 +7545,15 @@ updateAlarmBadge();
 runCalSync(false); // ページ読み込み時に自動同期チェック
 handleShortcutExec(); // iPhoneショートカットURLパラメータの処理
 gistAutoDownload(); // 起動時にGistから自動同期
+
+let _lastVisibleSync = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  const now = Date.now();
+  if (now - _lastVisibleSync < 60000) return; // 60秒以内は無視
+  _lastVisibleSync = now;
+  gistAutoDownload();
+});
 
 window.addEventListener('resize', () => {
   if (window.innerWidth > 768) {
