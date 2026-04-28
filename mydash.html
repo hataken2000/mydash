@@ -241,6 +241,7 @@ body {
   .list-card:hover { border-color: var(--border) !important; background: var(--card-bg) !important; }
   .grid-card:hover { border-color: var(--border) !important; background: var(--card-bg) !important; transform: none !important; box-shadow: none !important; }
   .icon-card:hover { border-color: var(--border) !important; background: var(--card-bg) !important; transform: none !important; box-shadow: none !important; }
+  .list-card.selected:hover, .grid-card.selected:hover, .icon-card.selected:hover { border-color: var(--set) !important; background: rgba(38,198,218,0.08) !important; }
   /* ボタン類 */
   .action-btn:hover, .action-btn.danger:hover { border-color: var(--border) !important; color: var(--text-muted) !important; }
   .help-btn:hover { border-color: var(--border) !important; color: var(--text-muted) !important; }
@@ -1459,7 +1460,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.22</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.30</div>
   </div>
 </aside>
 
