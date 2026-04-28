@@ -2865,7 +2865,7 @@ function gridCard(item) {
   const expanded = state.expandedCards.has(item.id);
   const starClass = item.starred ? ' starred' : '';
   const starIcon  = `<span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span>`;
-  const selChk = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked,event.shiftKey)" style="width:15px;height:15px;accent-color:${tc};cursor:pointer"></div>` : '';
+  const selChk = state.selectMode ? `<div style="position:absolute;top:7px;left:7px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onclick="event.stopPropagation();event.preventDefault();toggleItemSelect('${item.id}',!state.selectedIds.has('${item.id}'),event.shiftKey)" style="width:15px;height:15px;accent-color:${tc};cursor:pointer"></div>` : '';
 
   // 展開コンテンツがあるか
   const hasExpand = !!(
@@ -2947,7 +2947,7 @@ function gridCard(item) {
 function listCard(item) {
   const tc = typeColor(item);
   if (item.type === 'slack') {
-    const selChkS = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked,event.shiftKey)" style="width:15px;height:15px;accent-color:var(--slack);cursor:pointer;flex-shrink:0"></div>` : '';
+    const selChkS = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onclick="event.stopPropagation();event.preventDefault();toggleItemSelect('${item.id}',!state.selectedIds.has('${item.id}'),event.shiftKey)" style="width:15px;height:15px;accent-color:var(--slack);cursor:pointer;flex-shrink:0"></div>` : '';
     return `<div class="list-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
         style="border-left:4px solid ${tc}"
         onclick="cardClick(event,'${item.id}')"
@@ -2974,7 +2974,7 @@ function listCard(item) {
     const setItems = (item.setItems || [])
       .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
     const preview = setItems.map(i => esc(i.title)).join('、') || '（アイテムなし）';
-    const selChkLS = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked,event.shiftKey)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
+    const selChkLS = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onclick="event.stopPropagation();event.preventDefault();toggleItemSelect('${item.id}',!state.selectedIds.has('${item.id}'),event.shiftKey)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
     return `<div class="list-card set-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
         style="border-left:4px solid ${tc}"
         onclick="cardClick(event,'${item.id}')"
@@ -3003,7 +3003,7 @@ function listCard(item) {
   const cat = item.category
     ? `<span class="list-cat" style="font-size:11.5px;color:var(--text-muted)"><span class="cat-dot" style="background:${getCatColor(item.category)};width:7px;height:7px;vertical-align:middle;margin-right:3px"></span>${esc(item.category)}</span>` : '';
   const memoExpanded = state.expandedMemos.has(item.id);
-  const selChkLM = state.selectMode ? `<div onclick="event.stopPropagation()" style="flex-shrink:0;padding-top:2px"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked,event.shiftKey)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer"></div>` : '';
+  const selChkLM = state.selectMode ? `<div onclick="event.stopPropagation()" style="flex-shrink:0;padding-top:2px"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onclick="event.stopPropagation();event.preventDefault();toggleItemSelect('${item.id}',!state.selectedIds.has('${item.id}'),event.shiftKey)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer"></div>` : '';
   if (item.type === 'memo' && item.desc) {
     return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
         style="flex-direction:column;align-items:stretch;border-left:4px solid ${tc}"
@@ -3039,7 +3039,7 @@ function listCard(item) {
       </div>
     </div>`;
   }
-  const selChkL = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked,event.shiftKey)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
+  const selChkL = state.selectMode ? `<div onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onclick="event.stopPropagation();event.preventDefault();toggleItemSelect('${item.id}',!state.selectedIds.has('${item.id}'),event.shiftKey)" style="width:15px;height:15px;accent-color:var(--set);cursor:pointer;flex-shrink:0"></div>` : '';
   return `<div class="list-card ${taskCardClass(item)}${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
       style="border-left:4px solid ${tc}"
       onclick="cardClick(event,'${item.id}')"
@@ -4210,7 +4210,7 @@ function iconCardClick(event, id) {
 
 function iconCard(item) {
   const tc = typeColor(item);
-  const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onchange="toggleItemSelect('${item.id}',this.checked,event.shiftKey)" style="width:14px;height:14px;accent-color:var(--set);cursor:pointer"></div>` : '';
+  const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3" onclick="event.stopPropagation()"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} onclick="event.stopPropagation();event.preventDefault();toggleItemSelect('${item.id}',!state.selectedIds.has('${item.id}'),event.shiftKey)" style="width:14px;height:14px;accent-color:var(--set);cursor:pointer"></div>` : '';
   const titleSuffix = item.type === 'set' ? ' ▶ クリックでパネルを開く' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
   return `<div class="icon-wrap${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${item.hidden?' item-hidden':''}">
     <div class="icon-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}"
