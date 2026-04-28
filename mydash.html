@@ -1461,7 +1461,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.16</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.17</div>
   </div>
 </aside>
 
@@ -6822,7 +6822,7 @@ function extractMeetUrl(description, location) {
   return m ? m[0] : null;
 }
 
-function buildDescItems(desc, category, excludeUrls) {
+function buildDescItems(desc, category, excludeUrls, eventTitle) {
   if (!desc || !desc.trim()) return { bookmarks: [], memoText: '' };
   const excludeSet = new Set(excludeUrls || []);
   const lines = desc.split('\n');
@@ -6842,8 +6842,11 @@ function buildDescItems(desc, category, excludeUrls) {
       const bmId = genId();
       let hostname = url;
       try { hostname = new URL(url).hostname.replace(/^www\./, ''); } catch(e) {}
+      // tel. ホスト（電話ダイヤルイン用URL）は除外
+      if (hostname.startsWith('tel.')) { pl = pl.slice(0, index) + pl.slice(index + url.length); continue; }
+      const title = eventTitle ? `${eventTitle}：${hostname}` : hostname;
       bookmarks.push({
-        id: bmId, type: 'bookmark', title: hostname, url,
+        id: bmId, type: 'bookmark', title, url,
         icon: `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`,
         desc: '', category, tags: [], starred: false, hidden: true,
         createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
@@ -6879,7 +6882,7 @@ function importCalendarEvents() {
       setItems.push({ itemId: bmId, notionTodayPage: false });
     }
     if (_icsDescR.has(i) && (ev.description||'').trim()) {
-      const { bookmarks, memoText } = buildDescItems(ev.description||'', 'カレンダー', meetUrl ? [meetUrl] : []);
+      const { bookmarks, memoText } = buildDescItems(ev.description||'', 'カレンダー', meetUrl ? [meetUrl] : [], ev.summary);
       for (const bm of bookmarks) {
         db.items.push(bm);
         setItems.push({ itemId: bm.id, notionTodayPage: false });
@@ -6915,7 +6918,7 @@ function importCalendarEvents() {
       const time=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
       const setItems=[];
       if (_icsSDescR.has(i) && (ev.description||'').trim()) {
-        const { bookmarks, memoText } = buildDescItems(ev.description||'', 'カレンダー', []);
+        const { bookmarks, memoText } = buildDescItems(ev.description||'', 'カレンダー', [], ev.summary);
         for (const bm of bookmarks) {
           db.items.push(bm);
           setItems.push({ itemId: bm.id, notionTodayPage: false });
