@@ -6,6 +6,7 @@
 <title>MyDash</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='4' fill='%2300afcc'/><path d='M14 3L7 13h5l-2 8 7-10h-5z' fill='white'/></svg>">
 <link rel="apple-touch-icon" id="apple-touch-icon-link">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MyDash">
 <script>
@@ -1461,7 +1462,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.18</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.19</div>
   </div>
 </aside>
 
@@ -1571,7 +1572,7 @@ body.hide-server .launch-btn { display: none !important; }
         <div class="settings-section-body">
           <div class="io-btn" style="justify-content:space-between;gap:10px">
             <span style="white-space:nowrap;font-size:12px;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-lock);mask-image:var(--icon-lock);width:12px;height:12px"></span>トークン</span>
-            <input type="password" id="github-token-input" placeholder="ghp_..." onchange="saveGithubToken(this.value)"
+            <input type="text" id="github-token-input" placeholder="ghp_..." onchange="saveGithubToken(this.value)"
               style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:3px 6px;font-size:12px;font-family:inherit;min-width:0">
           </div>
           <div class="io-btn" style="justify-content:space-between;gap:10px">
@@ -3137,17 +3138,26 @@ function updateCatList() {
     const cnt = db.items.filter(i => i.category === cat).length;
     const active = state.filter === 'cat:' + cat ? ' active' : '';
     const color = getCatColor(cat) || CAT_COLORS[idx % CAT_COLORS.length];
+    const hasTutorial = db.items.some(i => i.category === cat && i._tutorial);
+    const tutorialBtn = hasTutorial ? `<button class="cat-rename-btn" onclick="event.stopPropagation();deleteTutorialItems('${esc(cat)}')" title="チュートリアルを削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:var(--text-muted);width:13px;height:13px"></span></button>` : '';
     return `<div class="sidebar-item${active}" data-filter="cat:${cat}" data-cat="${esc(cat)}" onclick="setFilter('cat:${cat}')"
       ondragover="catDragOver(this,event)" ondragleave="catDragLeave(this)" ondrop="catDrop(this)">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-folder);mask-image:var(--icon-folder);background-color:${color};width:13px;height:13px;display:inline-block"></span></span><span class="si-label">${esc(cat)}</span>
       <button class="cat-rename-btn" onclick="event.stopPropagation();startCatRename(this,'${esc(cat)}')" title="カテゴリ名を変更"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--text-muted);width:13px;height:13px"></span></button>
-      <span class="count-badge">${cnt}</span>
+      ${tutorialBtn}<span class="count-badge">${cnt}</span>
     </div>`;
   }).join('');
 
   // datalist
   const dl = document.getElementById('cat-datalist');
   if (dl) dl.innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
+}
+
+function deleteTutorialItems(cat) {
+  if (!confirm(`「${cat}」のチュートリアルを削除しますか？`)) return;
+  db.items = db.items.filter(i => !(i.category === cat && i._tutorial));
+  save();
+  render();
 }
 
 function startCatRename(btnEl, oldName) {
@@ -7450,6 +7460,41 @@ document.addEventListener('keydown', e => {
 // ═══════════════════════════════════════════
 window.name = 'mydash-main';
 load();
+if (db.items.length === 0) {
+  const _now = new Date().toISOString();
+  db.items.push(
+    { id: genId(), type: 'memo', title: 'MyDashへようこそ！', category: 'はじめに', tags: [], starred: true, hidden: false, createdAt: _now, _tutorial: true, desc:
+`# MyDashへようこそ！
+
+ブックマーク・タスク・メモなどを一元管理するパーソナルダッシュボードです。
+
+---
+
+**まずやること**
+- 右上の ＋ ボタンでアイテムを追加してみよう
+- 左サイドバーでカテゴリ・タイプを絞り込める
+- 慣れてきたら、このメモは削除してOK` },
+    { id: genId(), type: 'memo', title: 'アイテムの種類', category: 'はじめに', tags: [], starred: false, hidden: false, createdAt: _now, _tutorial: true, desc:
+`## アイテムの種類
+
+- **ブックマーク** — よく使うURLを登録
+- **タスク** — やること管理（期限・優先度あり）
+- **メモ** — テキストや画像を自由に記録（このアイテム）
+- **ツール** — コマンドやショートカットを登録
+- **セット** — 複数アイテムをグループ化してまとめて開く
+- **スクリプト** — ターミナルコマンドを登録・実行` },
+    { id: genId(), type: 'memo', title: '便利な操作', category: 'はじめに', tags: [], starred: false, hidden: false, createdAt: _now, _tutorial: true, desc:
+`## 便利な操作
+
+- **表示切り替え** — 右上アイコンでグリッド / リスト / アイコン
+- **絞り込み** — 左サイドバーでカテゴリ・タイプ別フィルター
+- **お気に入り** — カードの ★ でピン留め
+- **並び替え** — ドラッグ&ドロップ（手動ソート時）
+- **クイック編集** — カードをクリックで詳細パネルが開く
+- **Gist同期** — 設定から複数端末間でデータを共有` }
+  );
+  save();
+}
 loadUiState();
 rebuildIndex();
 if (SERVER_BASE && db.settings.windowSize) {
