@@ -4250,21 +4250,7 @@ function toggleItemSelect(id, checked, shiftKey) {
   if (checked) state.selectedIds.add(id); else state.selectedIds.delete(id);
   state.lastSelectedId = checked ? id : state.lastSelectedId;
   updateSelectBar();
-  // チェックボックスとカードのselectedクラスだけ更新（full render不要）
-  document.querySelectorAll(`[data-id="${id}"]`).forEach(el => {
-    el.classList.toggle('selected', checked);
-    const chk = el.querySelector('input[type="checkbox"]');
-    if (chk) chk.checked = checked;
-  });
-  // ノードビューSVGアイテムの選択状態を直接更新
-  const nvRect = document.querySelector(`g.nv-item[data-id="${id}"] .nv-rect`);
-  if (nvRect) {
-    const tc = nvRect.getAttribute('data-tc') || 'var(--border)';
-    nvRect.setAttribute('fill', checked ? 'var(--accent)' : 'var(--card-bg)');
-    nvRect.setAttribute('fill-opacity', checked ? '0.18' : '1');
-    nvRect.setAttribute('stroke', checked ? 'var(--accent)' : 'var(--border)');
-    nvRect.setAttribute('stroke-width', checked ? '1' : '0.75');
-  }
+  render();
 }
 
 function toggleSelectAll(checked) {
