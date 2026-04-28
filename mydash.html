@@ -3399,6 +3399,11 @@ function renderTodayView() {
         if (s.type === 'daily') return true;
         if (s.type === 'weekly' || s.type === 'biweekly') return (s.days||[]).includes(now.getDay());
         if (s.type === 'monthly-date') return now.getDate() === (s.monthDay||1);
+        if (s.type === 'monthly-weekday') {
+          if (now.getDay() !== s.weekday) return false;
+          if (s.weekdayN === -1) { const next = new Date(now); next.setDate(next.getDate()+7); return next.getMonth() !== now.getMonth(); }
+          return Math.ceil(now.getDate()/7) === s.weekdayN;
+        }
         if (s.type === 'yearly') return now.getMonth()+1 === s.month && now.getDate() === s.day;
         return false;
       })())
