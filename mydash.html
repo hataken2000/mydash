@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.35</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.36</div>
   </div>
 </aside>
 
@@ -3881,12 +3881,12 @@ function selectType(type) {
   const isSet    = type === 'set';
   const isPlace  = type === 'place';
   const isScript = type === 'script';
-  document.getElementById('f-url-group').style.display = hasUrl ? '' : 'none';
+  hasUrl ? showEl('f-url-group', '') : hideEl('f-url-group');
   document.getElementById('f-url-label').textContent   = isSlack ? 'チャンネルURL' : 'URL / パス';
   document.getElementById('f-url').placeholder         = isSlack ? 'https://app.slack.com/client/...' : 'https://...';
   if (isSlack) {
     const urlEl = document.getElementById('f-url');
-    urlEl.style.display = 'none';
+    hideEl('f-url');
     // チャンネルUI挿入（1回だけ）
     let chUi = document.getElementById('f-slack-ch-ui');
     if (!chUi) {
@@ -3894,33 +3894,32 @@ function selectType(type) {
       chUi.id = 'f-slack-ch-ui';
       urlEl.parentNode.insertBefore(chUi, urlEl);
     }
-    chUi.style.display = '';
+    showEl('f-slack-ch-ui', '');
     if (!state.editId && !urlEl.value) {
       const lastUrl = localStorage.getItem('mydash_last_slack_url') || '';
       if (lastUrl) urlEl.value = lastUrl;
     }
     _renderEditSlackChUI();
   } else {
-    const chUi = document.getElementById('f-slack-ch-ui');
-    if (chUi) chUi.style.display = 'none';
-    document.getElementById('f-url').style.display = '';
+    hideEl('f-slack-ch-ui');
+    showEl('f-url', '');
   }
-  document.getElementById('f-slack-msg-group').style.display = isSlack ? '' : 'none';
-  document.getElementById('f-appname-group').style.display = isTool ? '' : 'none';
-  document.getElementById('f-task-row').style.display = isTask ? '' : 'none';
-  document.getElementById('f-due-group').style.display = isTask ? '' : 'none';
+  isSlack ? showEl('f-slack-msg-group', '') : hideEl('f-slack-msg-group');
+  isTool  ? showEl('f-appname-group', '')   : hideEl('f-appname-group');
+  isTask  ? showEl('f-task-row', '')        : hideEl('f-task-row');
+  isTask  ? showEl('f-due-group', '')       : hideEl('f-due-group');
   if (isTask && !state.editId) {
     const dueEl = document.getElementById('f-due');
     if (!dueEl.value) dueEl.value = new Date().toISOString().slice(0, 10);
   }
-  document.getElementById('f-md-hint').style.display = type === 'memo' ? '' : 'none';
+  type === 'memo' ? showEl('f-md-hint', '') : hideEl('f-md-hint');
   document.getElementById('f-desc').style.minHeight = type === 'memo' ? '180px' : '74px';
-  document.getElementById('f-set-items-group').style.display = isSet ? '' : 'none';
-  document.getElementById('f-set-alarm-group').style.display = isSet ? '' : 'none';
+  isSet   ? showEl('f-set-items-group', '') : hideEl('f-set-items-group');
+  isSet   ? showEl('f-set-alarm-group', '') : hideEl('f-set-alarm-group');
   if (isSet) { const s = document.getElementById('f-set-items-search'); if (s) s.value = ''; renderSetItemsList(); }
-  document.getElementById('f-place-group').style.display = isPlace ? '' : 'none';
+  isPlace ? showEl('f-place-group', '')     : hideEl('f-place-group');
   if (!isPlace) { document.getElementById('f-place-latlng').textContent = ''; document.getElementById('f-place-latlng').dataset.lat = ''; document.getElementById('f-place-latlng').dataset.lng = ''; }
-  document.getElementById('f-script-group').style.display = isScript ? '' : 'none';
+  isScript ? showEl('f-script-group', '')  : hideEl('f-script-group');
   if (isScript) renderScriptParamsList();
   updateIconPreview();
 }
@@ -4769,7 +4768,7 @@ function selectTagDropdown(tag) {
 function updateSearchClear() {
   const hasText = document.getElementById('search-input').value.length > 0;
   const hasTags = state.filterTags.length > 0;
-  document.getElementById('search-clear').style.display = (hasText || hasTags) ? '' : 'none';
+  (hasText || hasTags) ? showEl('search-clear', '') : hideEl('search-clear');
 }
 
 // ─── 入力モード（検索 / メモ / タスク）────────
@@ -7227,17 +7226,14 @@ let _alarmMonthWeekday = 1; // 毎月第N曜日用の選択中の曜日
 function onAlarmTypeChange() {
   const unit = document.getElementById('af-unit')?.value;
   if (!unit) return;
-  const show = id => { const el=document.getElementById(id); if(el) el.style.display=''; };
-  const hide = id => { const el=document.getElementById(id); if(el) el.style.display='none'; };
   // interval入力は「一度だけ」のとき非表示
-  const intEl = document.getElementById('af-interval');
-  if (intEl) intEl.style.display = unit === 'once' ? 'none' : '';
-  ['af-days-group','af-monthday-group','af-monthweekday-group','af-yearly-group','af-once-group'].forEach(hide);
-  if (unit === 'week')          show('af-days-group');
-  if (unit === 'month-date')    show('af-monthday-group');
-  if (unit === 'month-weekday') show('af-monthweekday-group');
-  if (unit === 'year')          show('af-yearly-group');
-  if (unit === 'once')          show('af-once-group');
+  unit === 'once' ? hideEl('af-interval') : showEl('af-interval', '');
+  ['af-days-group','af-monthday-group','af-monthweekday-group','af-yearly-group','af-once-group'].forEach(hideEl);
+  if (unit === 'week')          showEl('af-days-group', '');
+  if (unit === 'month-date')    showEl('af-monthday-group', '');
+  if (unit === 'month-weekday') showEl('af-monthweekday-group', '');
+  if (unit === 'year')          showEl('af-yearly-group', '');
+  if (unit === 'once')          showEl('af-once-group', '');
 }
 
 function selectMonthWeekday(idx, btn) {
@@ -7248,8 +7244,8 @@ function selectMonthWeekday(idx, btn) {
 
 function onAlarmActionTypeChange() {
   const type = document.getElementById('af-action-type').value;
-  document.getElementById('af-set-group').style.display = type === 'set' ? '' : 'none';
-  document.getElementById('af-url-group').style.display = type === 'url' ? '' : 'none';
+  type === 'set' ? showEl('af-set-group', '') : hideEl('af-set-group');
+  type === 'url' ? showEl('af-url-group', '') : hideEl('af-url-group');
 }
 
 function toggleAlarmDay(idx, btn) {
@@ -7264,23 +7260,20 @@ function toggleAlarmDay(idx, btn) {
 
 // ── セットフォーム用アラーム関数 ──
 function onSetAlarmToggle(enabled) {
-  document.getElementById('f-alarm-settings').style.display = enabled ? '' : 'none';
+  enabled ? showEl('f-alarm-settings', '') : hideEl('f-alarm-settings');
   if (enabled) onSetAlarmTypeChange();
 }
 
 function onSetAlarmTypeChange() {
   const unit = document.getElementById('f-alarm-unit')?.value;
   if (!unit) return;
-  const show = id => { const el=document.getElementById(id); if(el) el.style.display=''; };
-  const hide = id => { const el=document.getElementById(id); if(el) el.style.display='none'; };
-  const intEl = document.getElementById('f-alarm-interval');
-  if (intEl) intEl.style.display = unit === 'once' ? 'none' : '';
-  ['f-alarm-days-group','f-alarm-monthday-group','f-alarm-monthweekday-group','f-alarm-yearly-group','f-alarm-once-group'].forEach(hide);
-  if (unit === 'week')          show('f-alarm-days-group');
-  if (unit === 'month-date')    show('f-alarm-monthday-group');
-  if (unit === 'month-weekday') show('f-alarm-monthweekday-group');
-  if (unit === 'year')          show('f-alarm-yearly-group');
-  if (unit === 'once')          show('f-alarm-once-group');
+  unit === 'once' ? hideEl('f-alarm-interval') : showEl('f-alarm-interval', '');
+  ['f-alarm-days-group','f-alarm-monthday-group','f-alarm-monthweekday-group','f-alarm-yearly-group','f-alarm-once-group'].forEach(hideEl);
+  if (unit === 'week')          showEl('f-alarm-days-group', '');
+  if (unit === 'month-date')    showEl('f-alarm-monthday-group', '');
+  if (unit === 'month-weekday') showEl('f-alarm-monthweekday-group', '');
+  if (unit === 'year')          showEl('f-alarm-yearly-group', '');
+  if (unit === 'once')          showEl('f-alarm-once-group', '');
 }
 
 function toggleSetAlarmDay(idx, btn) {
