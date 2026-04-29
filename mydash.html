@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.42</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.44</div>
   </div>
 </aside>
 
@@ -2326,15 +2326,15 @@ function embedItemHtml(item) {
   if (item.type === 'task') {
     const statusLabel = esc({ todo:'未着手', doing:'進行中', done:'完了' }[item.status||'todo'] || '');
     const sub = [statusLabel, item.dueDate].filter(Boolean).join(' · ');
-    return `<div class="memo-embed-card" onclick="event.stopPropagation();showQuickEdit('${item.id}')"><span class="mec-icon" style="color:${tc}">${ih}</span><span class="mec-title">${esc(item.title)}</span><span class="mec-sub">${sub}</span></div>`;
+    return `<div class="memo-embed-card" data-card-action="show-quick-edit" data-id="${item.id}"><span class="mec-icon" style="color:${tc}">${ih}</span><span class="mec-title">${esc(item.title)}</span><span class="mec-sub">${sub}</span></div>`;
   }
   if (item.type === 'memo') {
     const preview = esc((item.desc||'').replace(/\n/g,' ').slice(0,40));
-    return `<div class="memo-embed-card" onclick="event.stopPropagation();showQuickEdit('${item.id}')"><span class="mec-icon" style="color:${tc}">${ih}</span><div style="flex:1;min-width:0"><div class="mec-title">${esc(item.title)}</div>${preview?`<div style="font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${preview}</div>`:''}</div></div>`;
+    return `<div class="memo-embed-card" data-card-action="show-quick-edit" data-id="${item.id}"><span class="mec-icon" style="color:${tc}">${ih}</span><div style="flex:1;min-width:0"><div class="mec-title">${esc(item.title)}</div>${preview?`<div style="font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${preview}</div>`:''}</div></div>`;
   }
   if (item.type === 'set') {
     const count = (item.setItems||[]).length;
-    return `<div class="memo-embed-card" onclick="event.stopPropagation();showSetQuickPanel('${item.id}')"><span class="mec-icon" style="color:${tc}">${ih}</span><span class="mec-title">${esc(item.title)}</span><span class="mec-sub">${count}アイテム</span></div>`;
+    return `<div class="memo-embed-card" data-card-action="show-sqp" data-id="${item.id}"><span class="mec-icon" style="color:${tc}">${ih}</span><span class="mec-title">${esc(item.title)}</span><span class="mec-sub">${count}アイテム</span></div>`;
   }
   if (item.url) {
     return `<a class="memo-embed-card" href="${esc(item.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><span class="mec-icon">${ih}</span><span class="mec-title">${esc(item.title)}</span><span class="mec-sub" style="color:${tc}">${label}</span></a>`;
@@ -2519,7 +2519,7 @@ function setCountBadge(item) {
   if (item.type !== 'set') return '';
   const count = (item.setItems || []).filter(si => db.items.find(i => i.id === si.itemId)).length;
   if (count === 0) return '';
-  return `<span class="set-count-badge" onclick="event.stopPropagation();showSetQuickPanel('${item.id}')" title="${count}個のアイテム">${count}</span>`;
+  return `<span class="set-count-badge" data-card-action="show-sqp" data-id="${item.id}" title="${count}個のアイテム">${count}</span>`;
 }
 
 function alarmIndicator(item) {
@@ -2914,7 +2914,7 @@ function gridCard(item) {
   let expandBody = '';
   if (expanded && hasExpand) {
     if (item.type === 'memo') {
-      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">${renderMemo(item.desc)}</div>`;
+      expandBody = `<div class="card-expand-body">${renderMemo(item.desc)}</div>`;
     } else if (item.type === 'set') {
       const setItems = (item.setItems || [])
         .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
@@ -2923,23 +2923,23 @@ function gridCard(item) {
         : '<div>（アイテムなし）</div>';
       const alarmHtml = item.alarm?.enabled
         ? `<div style="color:${tc};margin-top:4px;font-size:11px"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:11px;height:11px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>${alarmSchedDesc({schedule:item.alarm.schedule})}  </div>` : '';
-      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
+      expandBody = `<div class="card-expand-body">
         ${preview}${alarmHtml}
       </div>`;
     } else if (item.type === 'place') {
-      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">${placeMapHtml(item)}</div>`;
+      expandBody = `<div class="card-expand-body">${placeMapHtml(item)}</div>`;
     } else if (item.type === 'slack') {
       const msg = item.slackMessage || '';
-      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
+      expandBody = `<div class="card-expand-body">
         ${msg ? `<div style="margin-bottom:8px;white-space:pre-wrap;word-break:break-word">${esc(msg)}</div>` : ''}
-        <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border:1px solid rgba(74,185,95,0.4);width:100%" onclick="event.stopPropagation();showSlackQuickPanel('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
+        <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border:1px solid rgba(74,185,95,0.4);width:100%" data-card-action="show-slack-qp" data-id="${item.id}"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
       </div>`;
     } else if (item.type === 'script' && item.scriptCommand) {
-      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">
+      expandBody = `<div class="card-expand-body">
         <div style="font-family:monospace;font-size:11px;background:var(--bg3);padding:6px 8px;border-radius:4px;word-break:break-all">${esc(item.scriptCommand)}</div>
       </div>`;
     } else if (item.desc) {
-      expandBody = `<div class="card-expand-body" onclick="event.stopPropagation()">${esc(item.desc)}</div>`;
+      expandBody = `<div class="card-expand-body">${esc(item.desc)}</div>`;
     }
   }
 
@@ -2986,7 +2986,7 @@ function _listCardSlack(item, tc) {
     </div>
     <div class="list-meta">
       ${typeBadge(item)}
-      <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();showSlackQuickPanel('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
+      <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" data-card-action="show-slack-qp" data-id="${item.id}"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
       <button class="list-star-btn${item.starred ? ' starred' : ''}" data-card-action="star" data-id="${item.id}" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
       <div class="list-actions">
         <div class="action-btn" data-card-action="duplicate" data-id="${item.id}" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
@@ -3037,7 +3037,7 @@ function _listCardMemo(item, tc, cat) {
           <textarea id="memo-inline-${item.id}" style="width:100%;min-height:120px;background:var(--bg);border:1px solid var(--accent);border-radius:var(--radius-sm);color:var(--text);padding:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none" onblur="saveMemoInline('${item.id}')" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveMemoInline('${item.id}')}"></textarea>
           <div style="font-size:11px;color:var(--text-muted);margin-top:3px">⌘+Enter またはフォーカスを外すと保存</div>
         </div>`
-      : `<div class="memo-body" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);cursor:text" onclick="event.stopPropagation();startMemoEdit('${item.id}')" title="クリックして編集">${renderMemo(item.desc)}</div>`)
+      : `<div class="memo-body" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);cursor:text" data-card-action="start-memo-edit" data-id="${item.id}" title="クリックして編集">${renderMemo(item.desc)}</div>`)
     : '';
   return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}" data-card-id="${item.id}"
       style="flex-direction:column;align-items:stretch;border-left:4px solid ${tc}">
@@ -4562,7 +4562,7 @@ function showQuickEdit(id) {
         <button onmousedown="event.preventDefault()" onclick="openItemInsertModal('${id}')" style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:3px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);width:11px;height:11px"></span>挿入</button>
       </div>
       <div id="qe-desc-preview" class="memo-body"
-        onclick="_qeShowEdit('${id}')" title="クリックして編集"
+        onclick="if(!event.target.closest('[data-card-action]'))_qeShowEdit('${id}')" title="クリックして編集"
         style="min-height:80px;max-height:220px;overflow-y:auto;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
         background:${t.btnBg};cursor:text;line-height:1.7;font-size:14px;color:${t.text}"></div>
       <textarea id="qe-desc"
@@ -4604,6 +4604,19 @@ function showQuickEdit(id) {
   } else {
     _qeShowEdit(id);
   }
+  document.getElementById('qe-desc-preview').addEventListener('click', e => {
+    const mec = e.target.closest('[data-card-action]');
+    if (!mec) return;
+    e.stopPropagation(); // インラインonclick(_qeShowEdit)の発火を防ぐ
+    const mecId = mec.dataset.id;
+    const mecAction = mec.dataset.cardAction;
+    setTimeout(() => {
+      switch (mecAction) {
+        case 'show-quick-edit': showQuickEdit(mecId); break;
+        case 'show-sqp':        showSetQuickPanel(mecId); break;
+      }
+    }, 0);
+  });
   if (isTask && document.getElementById('qe-due')) {
     document.getElementById('qe-due').value = item.dueDate || '';
   }
@@ -6453,7 +6466,7 @@ function getItemOrder() {
 let _dragSrcId = null;
 function initDragSort() {
   const isManual = document.getElementById('sort-select').value === 'manual';
-  const cards = document.querySelectorAll('[data-id]');
+  const cards = document.querySelectorAll('[data-card-id]');
 
   function clearIndicators() {
     document.querySelectorAll('.drag-insert-before,.drag-insert-after,.dragging')
@@ -7356,9 +7369,13 @@ document.addEventListener('click', e => {
       case 'duplicate':     duplicateItem(id); break;
       case 'edit':          editItem(id); break;
       case 'delete':        confirmDelete(id); break;
-      case 'cycle-status':  cycleStatus(id); break;
-      case 'toggle-expand': toggleCardExpand(id); break;
-      case 'toggle-memo':   toggleMemoExpand(id); break;
+      case 'cycle-status':    cycleStatus(id); break;
+      case 'toggle-expand':   toggleCardExpand(id); break;
+      case 'toggle-memo':     toggleMemoExpand(id); break;
+      case 'show-sqp':        showSetQuickPanel(id); break;
+      case 'show-slack-qp':   showSlackQuickPanel(id); break;
+      case 'show-quick-edit': showQuickEdit(id); break;
+      case 'start-memo-edit': startMemoEdit(id); break;
     }
     return;
   }
@@ -7386,7 +7403,7 @@ document.addEventListener('click', e => {
     return;
   }
   const cardEl = e.target.closest('[data-card-id]');
-  if (cardEl) {
+  if (cardEl && !e.target.closest('.card-expand-body')) {
     const id = cardEl.dataset.cardId;
     if (cardEl.dataset.cardType === 'icon') {
       iconCardClick(e, id);
@@ -7413,12 +7430,20 @@ document.querySelectorAll('.modal').forEach(el => {
 document.getElementById('sqp-body').addEventListener('click', e => {
   const item = e.target.closest('[data-panel-action]');
   if (!item) return;
+  e.stopPropagation();
   const id = item.dataset.id;
   switch (item.dataset.panelAction) {
-    case 'sqp-quick-edit':    closeSetQuickPanel(); showQuickEdit(id); break;
-    case 'sqp-launch-window': closeSetQuickPanel(); launchWindowSessionById(id); break;
+    case 'sqp-quick-edit':
+      closeSetQuickPanel();
+      setTimeout(() => showQuickEdit(id), 0);
+      break;
+    case 'sqp-launch-window':
+      closeSetQuickPanel();
+      launchWindowSessionById(id);
+      break;
   }
 });
+
 
 // ═══════════════════════════════════════════
 // Quick Search (⌘K)

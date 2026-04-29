@@ -84,7 +84,7 @@ db（localStorage: 'mydash_v1'）→ load() → state → filteredItems() → re
 
 ## バージョン管理ルール
 
-**現在のバージョン: v1.14.1**
+**現在のバージョン: v1.14.42**
 
 形式: `vMAJOR.MINOR.PATCH`
 
@@ -113,10 +113,13 @@ db（localStorage: 'mydash_v1'）→ load() → state → filteredItems() → re
 ### ✅ 完了（v1.10.5）
 - [x] **autoLaunch廃止・クイックパネル新設** — セットカードクリック・起動ボタン→クイックパネル、設定の「🚀 セット自動起動」削除、アラームはポップアップ→クイックパネルを開くボタン
 
-### その他
-- [ ] 設定ダイアログ内の絵文字・記号をSVGに（4/11残り）
-- [ ] 優先度アイコン（▂▄█）のSVG化（priority-low/medium/high.svg作成済み）
+### ✅ 完了（v1.14.x）
+- [x] **設定ダイアログSVG化** — セクションタイトル・ボタンは全部 `app-icon` SVGに変換済み
+- [x] **優先度アイコンSVG化** — `--icon-priority-low/medium/high` でbase64 SVG定義済み・`app-icon` クラスで表示
+
+### その他（未着手）
 - [ ] Windows対応（mydash-server.js のスクリプト部分）
 - [ ] オンライン同期強化（Gistで一部対応済み）
 - [ ] 位置情報トリガー（iOSバックグラウンド制限あり）
 - [ ] Slackブラウザ版 自動入力の精度向上
+- [ ] manual.html 不足コンテンツ追加（スクリプトアイテム・Slack後で読む・カレンダーバッジ）
