@@ -1399,7 +1399,7 @@ body.hide-server .launch-btn { display: none !important; }
   <div id="body-section-type">
     <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set)"></span></span><span class="si-label">セット</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openModal('set')" title="セット追加">＋</button>
+      <button class="type-add-btn" data-modal-type="set" title="セット追加">＋</button>
       <span class="count-badge" id="cnt-set">0</span>
     </div>
     <div id="set-subfilter-section" style="display:none">
@@ -1407,17 +1407,17 @@ body.hide-server .launch-btn { display: none !important; }
     </div>
     <div class="sidebar-item" data-filter="bookmark" onclick="setFilter('bookmark')">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark)"></span></span><span class="si-label">ブックマーク</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openModal('bookmark')" title="ブックマーク追加">＋</button>
+      <button class="type-add-btn" data-modal-type="bookmark" title="ブックマーク追加">＋</button>
       <span class="count-badge" id="cnt-bookmark">0</span>
     </div>
     <div class="sidebar-item" data-filter="tool" onclick="setFilter('tool')">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-tool);mask-image:var(--icon-tool)"></span></span><span class="si-label">ツール/アプリ</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openModal('tool')" title="ツール/アプリ追加">＋</button>
+      <button class="type-add-btn" data-modal-type="tool" title="ツール/アプリ追加">＋</button>
       <span class="count-badge" id="cnt-tool">0</span>
     </div>
     <div class="sidebar-item" data-filter="task" onclick="setFilter('task')">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task)"></span></span><span class="si-label">タスク</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openModal('task')" title="タスク追加">＋</button>
+      <button class="type-add-btn" data-modal-type="task" title="タスク追加">＋</button>
       <span class="count-badge" id="cnt-task">0</span>
     </div>
     <div id="task-subfilter-section" style="display:none">
@@ -1427,27 +1427,27 @@ body.hide-server .launch-btn { display: none !important; }
     </div>
     <div class="sidebar-item" data-filter="place" onclick="setFilter('place')">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place)"></span></span><span class="si-label">場所</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openModal('place')" title="場所追加">＋</button>
+      <button class="type-add-btn" data-modal-type="place" title="場所追加">＋</button>
       <span class="count-badge" id="cnt-place">0</span>
     </div>
     <div class="sidebar-item" data-filter="memo" onclick="setFilter('memo')">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo)"></span></span><span class="si-label">メモ</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openModal('memo')" title="メモ追加">＋</button>
+      <button class="type-add-btn" data-modal-type="memo" title="メモ追加">＋</button>
       <span class="count-badge" id="cnt-memo">0</span>
     </div>
     <div class="sidebar-item" data-filter="other" onclick="setFilter('other')">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-box);mask-image:var(--icon-box)"></span></span><span class="si-label">その他</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openModal('other')" title="その他追加">＋</button>
+      <button class="type-add-btn" data-modal-type="other" title="その他追加">＋</button>
       <span class="count-badge" id="cnt-other">0</span>
     </div>
     <div class="sidebar-item" data-filter="slack" onclick="setFilter('slack')">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack)"></span></span><span class="si-label">Slack送信</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openModal('slack')" title="Slack送信追加">＋</button>
+      <button class="type-add-btn" data-modal-type="slack" title="Slack送信追加">＋</button>
       <span class="count-badge" id="cnt-slack">0</span>
     </div>
     <div class="sidebar-item server-feature" data-filter="script" onclick="setFilter('script')">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script)"></span></span><span class="si-label">スクリプト</span>
-      <button class="type-add-btn" onclick="event.stopPropagation();openModal('script')" title="スクリプト追加">＋</button>
+      <button class="type-add-btn" data-modal-type="script" title="スクリプト追加">＋</button>
       <span class="count-badge" id="cnt-script">0</span>
     </div>
     <div class="sidebar-item server-feature" data-filter="window-session" onclick="setFilter('window-session')">
@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.33</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.34</div>
   </div>
 </aside>
 
@@ -1673,7 +1673,7 @@ body.hide-server .launch-btn { display: none !important; }
 
 <!-- Modal -->
 <div class="modal-overlay" id="modal" style="display:none" onclick="overlayClick(event)">
-  <div class="modal" onclick="event.stopPropagation()">
+  <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-title">新規追加</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
@@ -1967,7 +1967,7 @@ body.hide-server .launch-btn { display: none !important; }
 
 <!-- Calendar Import Modal -->
 <div class="modal-overlay" id="cal-import-modal" style="display:none" onclick="if(event.target===this)closeCalImportModal()">
-  <div class="modal" style="max-width:540px" onclick="event.stopPropagation()">
+  <div class="modal" style="max-width:540px">
     <div class="modal-header">
       <div class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>Googleカレンダーインポート</div>
       <button class="modal-close" onclick="closeCalImportModal()">✕</button>
@@ -1993,7 +1993,7 @@ body.hide-server .launch-btn { display: none !important; }
 
 <!-- Set Quick Panel -->
 <div class="modal-overlay" id="set-quick-panel" style="display:none" onclick="if(event.target===this)closeSetQuickPanel()">
-  <div class="modal" style="max-width:480px" onclick="event.stopPropagation()">
+  <div class="modal" style="max-width:480px">
     <div class="modal-header">
       <div class="modal-title" id="sqp-title" style="display:flex;align-items:center;gap:8px"></div>
       <button class="modal-close" onclick="closeSetQuickPanel()">✕</button>
@@ -2005,7 +2005,7 @@ body.hide-server .launch-btn { display: none !important; }
 
 <!-- Item Insert Modal -->
 <div class="modal-overlay" id="item-insert-modal" style="display:none;z-index:100000" onclick="if(event.target===this)closeItemInsertModal()">
-  <div class="modal" style="max-width:420px" onclick="event.stopPropagation()">
+  <div class="modal" style="max-width:420px">
     <div class="modal-header">
       <div class="modal-title" style="display:flex;align-items:center;gap:6px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block"></span>アイテムを挿入</div>
       <button class="modal-close" onclick="closeItemInsertModal()">✕</button>
@@ -2021,7 +2021,7 @@ body.hide-server .launch-btn { display: none !important; }
 
 <!-- Place Quick Panel -->
 <div class="modal-overlay" id="place-quick-panel" style="display:none" onclick="if(event.target===this)closePlaceQuickPanel()">
-  <div class="modal" style="max-width:480px" onclick="event.stopPropagation()">
+  <div class="modal" style="max-width:480px">
     <div class="modal-header">
       <div class="modal-title" id="pqp-title" style="display:flex;align-items:center;gap:8px"></div>
       <button class="modal-close" onclick="closePlaceQuickPanel()">✕</button>
@@ -2033,7 +2033,7 @@ body.hide-server .launch-btn { display: none !important; }
 
 <!-- Slack Quick Panel -->
 <div class="modal-overlay" id="slack-quick-panel" style="display:none" onclick="if(event.target===this)closeSlackQuickPanel()">
-  <div class="modal" style="max-width:480px" onclick="event.stopPropagation()">
+  <div class="modal" style="max-width:480px">
     <div class="modal-header">
       <div class="modal-title" id="sqkp-title" style="display:flex;align-items:center;gap:8px"></div>
       <button class="modal-close" onclick="closeSlackQuickPanel()">✕</button>
@@ -2047,7 +2047,7 @@ body.hide-server .launch-btn { display: none !important; }
 
 <!-- Alarm Management Modal -->
 <div class="modal-overlay" id="alarm-modal" style="display:none" onclick="closeAlarmModalOutside(event)">
-  <div class="modal" style="max-width:540px" onclick="event.stopPropagation()">
+  <div class="modal" style="max-width:540px">
     <div class="modal-header">
       <div class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>アラーム管理</div>
       <button class="modal-close" onclick="closeAlarmModal()">✕</button>
@@ -2294,6 +2294,15 @@ function esc(s) {
   return String(s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showEl(id, display = 'flex') {
+  const el = document.getElementById(id);
+  if (el) el.style.display = display;
+}
+function hideEl(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
 }
 
 function relativeDate(iso) {
@@ -2672,6 +2681,22 @@ function render() {
   requestAnimationFrame(() => { if (contentEl) contentEl.scrollTop = savedScroll; });
 }
 
+// 1枚のカードだけ差し替える（フォールバック: 見つからなければ render()）
+function renderCard(id) {
+  const cardEl = document.querySelector(`[data-id="${id}"]`);
+  if (!cardEl) { render(); return; }
+  const item = db.items.find(i => i.id === id);
+  if (!item) { render(); return; }
+  _setMembership = buildSetMembership();
+  const cardFn = state.view === 'icon' ? iconCard : state.view === 'grid' ? gridCard : listCard;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = cardFn(item);
+  const newCard = tmp.firstElementChild;
+  if (!newCard) { render(); return; }
+  cardEl.replaceWith(newCard);
+  updateCounts();
+}
+
 const _nvIconCache = {};
 function nvIconDataUrl(iconVar, tc) {
   const colorM = tc.match(/var\((--[^)]+)\)/);
@@ -2949,107 +2974,115 @@ function gridCard(item) {
   </div>`;
 }
 
-function listCard(item) {
-  const tc = typeColor(item);
-  if (item.type === 'slack') {
-    const selChkS = state.selectMode ? `<div style="pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--slack);pointer-events:none;flex-shrink:0"></div>` : '';
-    return `<div class="list-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-        style="border-left:4px solid ${tc}"
-        onclick="cardClick(event,'${item.id}')"
-        oncontextmenu="showCtx(event,'${item.id}')">
-      ${selChkS}
-      <div class="list-icon icon-bg-slack">${iconHtml(item,'sm')}</div>
-      <div class="list-info">
-        <div class="list-title">${esc(item.title)}</div>
-        <div class="list-desc">${esc((item.slackMessage || '').slice(0, 80))}</div>
+function _listCardSlack(item, tc) {
+  const selChk = state.selectMode
+    ? `<div style="pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--slack);pointer-events:none;flex-shrink:0"></div>`
+    : '';
+  return `<div class="list-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+      style="border-left:4px solid ${tc}"
+      onclick="cardClick(event,'${item.id}')"
+      oncontextmenu="showCtx(event,'${item.id}')">
+    ${selChk}
+    <div class="list-icon icon-bg-slack">${iconHtml(item,'sm')}</div>
+    <div class="list-info">
+      <div class="list-title">${esc(item.title)}</div>
+      <div class="list-desc">${esc((item.slackMessage || '').slice(0, 80))}</div>
+    </div>
+    <div class="list-meta">
+      ${typeBadge(item)}
+      <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();showSlackQuickPanel('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
+      <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
+      <div class="list-actions">
+        <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
+        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
+        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
       </div>
-      <div class="list-meta">
-        ${typeBadge(item)}
-        <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();showSlackQuickPanel('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
-        <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
-        <div class="list-actions">
-          <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
-          <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
-          <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
-        </div>
+    </div>
+  </div>`;
+}
+
+function _listCardSet(item, tc) {
+  const setItems = (item.setItems || [])
+    .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
+  const preview = setItems.map(i => esc(i.title)).join('、') || '（アイテムなし）';
+  const selChk = state.selectMode
+    ? `<div style="pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--set);pointer-events:none;flex-shrink:0"></div>`
+    : '';
+  return `<div class="list-card set-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+      style="border-left:4px solid ${tc}"
+      onclick="cardClick(event,'${item.id}')"
+      oncontextmenu="showCtx(event,'${item.id}')">
+    ${selChk}
+    <div class="list-icon icon-bg-set">${iconHtml(item,'sm')}</div>
+    <div class="list-info">
+      <div class="list-title">${esc(item.title)}</div>
+      <div class="list-desc">${item.alarm?.enabled ? `<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:11px;height:11px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>${alarmSchedDesc({schedule:item.alarm.schedule})}　` : ''}${preview}</div>
+    </div>
+    <div class="list-meta">
+      ${typeBadge(item)}
+      <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
+      <div class="list-actions">
+        <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
+        <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
+        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
+        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
       </div>
-    </div>`;
-  }
-  if (item.type === 'set') {
-    const setItems = (item.setItems || [])
-      .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
-    const preview = setItems.map(i => esc(i.title)).join('、') || '（アイテムなし）';
-    const selChkLS = state.selectMode ? `<div style="pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--set);pointer-events:none;flex-shrink:0"></div>` : '';
-    return `<div class="list-card set-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-        style="border-left:4px solid ${tc}"
-        onclick="cardClick(event,'${item.id}')"
-        oncontextmenu="showCtx(event,'${item.id}')">
-      ${selChkLS}
-      <div class="list-icon icon-bg-set">${iconHtml(item,'sm')}</div>
-      <div class="list-info">
-        <div class="list-title">${esc(item.title)}</div>
-        <div class="list-desc">${item.alarm?.enabled ? `<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:11px;height:11px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>${alarmSchedDesc({schedule:item.alarm.schedule})}　` : ''}${preview}</div>
-      </div>
-      <div class="list-meta">
-        ${typeBadge(item)}
-        <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
-        <div class="list-actions">
-          <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
-          <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
-          <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
-          <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
-        </div>
-      </div>
-      ${setCountBadge(item)}${calSyncBadge(item)}
-    </div>`;
-  }
-  const pri = item.type === 'task' && item.priority
-    ? priorityIconHtml(item.priority) : '';
-  const cat = item.category
-    ? `<span class="list-cat" style="font-size:11.5px;color:var(--text-muted)"><span class="cat-dot" style="background:${getCatColor(item.category)};width:7px;height:7px;vertical-align:middle;margin-right:3px"></span>${esc(item.category)}</span>` : '';
+    </div>
+    ${setCountBadge(item)}${calSyncBadge(item)}
+  </div>`;
+}
+
+function _listCardMemo(item, tc, cat) {
   const memoExpanded = state.expandedMemos.has(item.id);
-  const selChkLM = state.selectMode ? `<div style="flex-shrink:0;padding-top:2px;pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--set);pointer-events:none"></div>` : '';
-  if (item.type === 'memo' && item.desc) {
-    return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-        style="flex-direction:column;align-items:stretch;border-left:4px solid ${tc}"
-        onclick="cardClick(event,'${item.id}')"
-        oncontextmenu="showCtx(event,'${item.id}')">
-      <div style="display:flex;align-items:flex-start;gap:12px">
-        ${selChkLM}
-        <div class="list-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
-        <div class="list-info" style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="list-title" style="flex:1;min-width:0">${esc(item.title)}</div>
-            <div class="list-meta">
-              ${typeBadge(item)} ${cat}
-              <span class="list-date">${relativeDate(item.createdAt)}</span>
-              <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
-              <div class="list-actions">
-                <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
-                <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
-                <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
-                <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
-              </div>
+  const selChk = state.selectMode
+    ? `<div style="flex-shrink:0;padding-top:2px;pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--set);pointer-events:none"></div>`
+    : '';
+  const bodyHtml = memoExpanded
+    ? (state.editingMemoId === item.id
+      ? `<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)" onclick="event.stopPropagation()">
+          <textarea id="memo-inline-${item.id}" style="width:100%;min-height:120px;background:var(--bg);border:1px solid var(--accent);border-radius:var(--radius-sm);color:var(--text);padding:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none" onblur="saveMemoInline('${item.id}')" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveMemoInline('${item.id}')}"></textarea>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:3px">⌘+Enter またはフォーカスを外すと保存</div>
+        </div>`
+      : `<div class="memo-body" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);cursor:text" onclick="event.stopPropagation();startMemoEdit('${item.id}')" title="クリックして編集">${renderMemo(item.desc)}</div>`)
+    : '';
+  return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
+      style="flex-direction:column;align-items:stretch;border-left:4px solid ${tc}"
+      onclick="cardClick(event,'${item.id}')"
+      oncontextmenu="showCtx(event,'${item.id}')">
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      ${selChk}
+      <div class="list-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
+      <div class="list-info" style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="list-title" style="flex:1;min-width:0">${esc(item.title)}</div>
+          <div class="list-meta">
+            ${typeBadge(item)} ${cat}
+            <span class="list-date">${relativeDate(item.createdAt)}</span>
+            <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
+            <div class="list-actions">
+              <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
+              <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
+              <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
+              <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
             </div>
           </div>
-          <button class="memo-toggle" style="margin-top:3px;text-align:left" onclick="event.stopPropagation();toggleMemoExpand('${item.id}')">${memoExpanded ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-up);mask-image:var(--icon-chevron-up);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>閉じる' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-down);mask-image:var(--icon-chevron-down);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>展開'}</button>
-          ${memoExpanded ? (state.editingMemoId === item.id
-            ? `<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)" onclick="event.stopPropagation()">
-                <textarea id="memo-inline-${item.id}" style="width:100%;min-height:120px;background:var(--bg);border:1px solid var(--accent);border-radius:var(--radius-sm);color:var(--text);padding:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none" onblur="saveMemoInline('${item.id}')" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveMemoInline('${item.id}')}"></textarea>
-                <div style="font-size:11px;color:var(--text-muted);margin-top:3px">⌘+Enter またはフォーカスを外すと保存</div>
-              </div>`
-            : `<div class="memo-body" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);cursor:text" onclick="event.stopPropagation();startMemoEdit('${item.id}')" title="クリックして編集">${renderMemo(item.desc)}</div>`
-          ) : ''}
         </div>
+        <button class="memo-toggle" style="margin-top:3px;text-align:left" onclick="event.stopPropagation();toggleMemoExpand('${item.id}')">${memoExpanded ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-up);mask-image:var(--icon-chevron-up);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>閉じる' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-down);mask-image:var(--icon-chevron-down);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>展開'}</button>
+        ${bodyHtml}
       </div>
-    </div>`;
-  }
-  const selChkL = state.selectMode ? `<div style="pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--set);pointer-events:none;flex-shrink:0"></div>` : '';
+    </div>
+  </div>`;
+}
+
+function _listCardDefault(item, tc, pri, cat) {
+  const selChk = state.selectMode
+    ? `<div style="pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--set);pointer-events:none;flex-shrink:0"></div>`
+    : '';
   return `<div class="list-card ${taskCardClass(item)}${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
       style="border-left:4px solid ${tc}"
       onclick="cardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')">
-    ${selChkL}
+    ${selChk}
     <div class="list-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
     <div class="list-info">
       <div class="list-title">${esc(item.title)}</div>
@@ -3068,6 +3101,18 @@ function listCard(item) {
     </div>
     ${setMemberBadge(item)}${calSyncBadge(item)}
   </div>`;
+}
+
+function listCard(item) {
+  const tc = typeColor(item);
+  if (item.type === 'slack') return _listCardSlack(item, tc);
+  if (item.type === 'set')   return _listCardSet(item, tc);
+  const pri = item.type === 'task' && item.priority ? priorityIconHtml(item.priority) : '';
+  const cat = item.category
+    ? `<span class="list-cat" style="font-size:11.5px;color:var(--text-muted)"><span class="cat-dot" style="background:${getCatColor(item.category)};width:7px;height:7px;vertical-align:middle;margin-right:3px"></span>${esc(item.category)}</span>`
+    : '';
+  if (item.type === 'memo' && item.desc) return _listCardMemo(item, tc, cat);
+  return _listCardDefault(item, tc, pri, cat);
 }
 
 function updateCounts() {
@@ -3129,7 +3174,7 @@ function updateCatList() {
   const list = document.getElementById('cat-list');
   const hasContent = !!(cats.length || uncatCount);
   sec.style.display = hasContent ? '' : 'none';
-  if (!hasContent) document.getElementById('body-section-cat').style.display = 'none';
+  if (!hasContent) hideEl('body-section-cat');
   applySidebarCollapsed();
   const uncatActive = state.filter === 'cat:' ? ' active' : '';
   const uncatItem = uncatCount > 0 || state.filter === 'cat:' ? `<div class="sidebar-item${uncatActive}" data-filter="cat:" data-cat="" onclick="setFilter('cat:')"
@@ -3396,25 +3441,8 @@ function resetTodayView() {
   renderTodayView();
 }
 
-function renderTodayView() {
-  const el = document.getElementById('content');
-  const todayStr = state.todayViewDate;
-  const now = new Date(todayStr + 'T00:00:00');
-  const isToday = todayStr === new Date().toISOString().slice(0, 10);
-  const dow = ['日','月','火','水','木','金','土'][now.getDay()];
-  const dateLabel = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${dow}）`;
-
-  const workStart = db.settings.workStart || '09:00';
-  const workEnd   = db.settings.workEnd   || '19:00';
-  const [sh, sm] = workStart.split(':').map(Number);
-  const [eh, em] = workEnd.split(':').map(Number);
-  const startMin  = sh * 60 + sm;
-  const endMin    = eh * 60 + em;
-  const HOUR_H    = 64; // px per hour
-  const gridH     = (endMin - startMin) / 60 * HOUR_H;
-
-  // 時刻ありセット（once + 繰り返し）
-  const timedItems = db.items
+function _todayTimedItems(todayStr, now) {
+  return db.items
     .filter(i => i.alarm?.enabled && (
       (i.alarm.schedule.type === 'once' && i.alarm.schedule.date === todayStr) ||
       (i.alarm.schedule.type !== 'once' && (() => {
@@ -3432,41 +3460,25 @@ function renderTodayView() {
       })())
     ))
     .sort((a, b) => (a.alarm.schedule.time||'').localeCompare(b.alarm.schedule.time||''));
+}
 
-  // 終日タスク
-  const allDayTasks = db.items
-    .filter(i => i.type === 'task' && (i.due || i.dueDate) === todayStr && i.status !== 'done')
-    .sort((a, b) => a.title.localeCompare(b.title, 'ja'));
-
-  // グリッドライン（1時間 + 30分）
-  let gridLines = '';
+function _buildTlGridLines(startMin, endMin, HOUR_H) {
+  let html = '';
   for (let m = 0; m <= endMin - startMin; m += 30) {
     const top = m / 60 * HOUR_H;
-    const isHour = m % 60 === 0;
     const hh = Math.floor((startMin + m) / 60);
     const mm = (startMin + m) % 60;
     const label = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-    if (isHour) {
-      gridLines += `<div class="tl-hour-row" style="top:${top}px">
-        <span class="tl-hour-label">${label}</span>
-        <div class="tl-hour-line"></div>
-      </div>`;
+    if (m % 60 === 0) {
+      html += `<div class="tl-hour-row" style="top:${top}px"><span class="tl-hour-label">${label}</span><div class="tl-hour-line"></div></div>`;
     } else {
-      gridLines += `<div class="tl-half-row" style="top:${top}px"></div>`;
+      html += `<div class="tl-half-row" style="top:${top}px"></div>`;
     }
   }
+  return html;
+}
 
-  // 現在時刻ライン（今日のみ）
-  const realNow = new Date();
-  const nowMin  = realNow.getHours() * 60 + realNow.getMinutes();
-  const showNow = isToday && nowMin >= startMin && nowMin <= endMin;
-  const nowTop  = (nowMin - startMin) / 60 * HOUR_H;
-  const nowLine = showNow
-    ? `<div class="tl-now-dot" id="tl-now-dot" style="top:${nowTop}px"></div>
-       <div class="tl-now-line" id="tl-now-line" style="top:${nowTop}px"></div>`
-    : '';
-
-  // イベントブロック（同時刻は横並び）
+function _buildTlEventsHtml(timedItems, startMin, endMin, HOUR_H) {
   const timeGroups = new Map();
   timedItems.forEach(item => {
     const [ih, im] = (item.alarm.schedule.time||'00:00').split(':').map(Number);
@@ -3475,87 +3487,101 @@ function renderTodayView() {
     if (!timeGroups.has(iMin)) timeGroups.set(iMin, []);
     timeGroups.get(iMin).push(item);
   });
-
-  let eventsHtml = '';
+  let html = '';
   timeGroups.forEach((group, iMin) => {
     const top = (iMin - startMin) / 60 * HOUR_H;
     const N = group.length;
     group.forEach((item, colIdx) => {
-      const wPct = (100 / N).toFixed(2);
-      const lPct = (colIdx * 100 / N).toFixed(2);
       const posStyle = N > 1
-        ? `left:${lPct}%;width:calc(${wPct}% - 4px);right:auto`
+        ? `left:${(colIdx * 100 / N).toFixed(2)}%;width:calc(${(100 / N).toFixed(2)}% - 4px);right:auto`
         : 'left:0;right:6px';
-      const ic = iconHtml(item, 'sm');
-      const sub = item.alarm.schedule.type === 'once' ? '単発' : '繰り返し';
       const srcIcon = item.fromCalSync
         ? `<span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:var(--set);width:10px;height:10px;display:inline-block;vertical-align:middle;margin-right:2px" title="Googleカレンダー"></span>`
         : `<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--set);width:10px;height:10px;display:inline-block;vertical-align:middle;margin-right:2px" title="マイダッシュアラーム"></span>`;
-      eventsHtml += `<div class="tl-event-block" style="top:${top}px;${posStyle}${item.hidden ? ';opacity:0.35' : ''}" onclick="scheduleTlItemClick('${item.id}')">
-        ${ic}
+      html += `<div class="tl-event-block" style="top:${top}px;${posStyle}${item.hidden ? ';opacity:0.35' : ''}" onclick="scheduleTlItemClick('${item.id}')">
+        ${iconHtml(item, 'sm')}
         <span class="tl-ev-title">${esc(item.title)}</span>
-        <span class="tl-ev-sub">${srcIcon}${sub}</span>
+        <span class="tl-ev-sub">${srcIcon}${item.alarm.schedule.type === 'once' ? '単発' : '繰り返し'}</span>
         <button class="tl-hide-btn${item.hidden ? ' is-hidden' : ''}" onclick="event.stopPropagation();toggleTodayItemHidden('${item.id}')" title="${item.hidden ? '表示に戻す' : '非表示にする'}"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;display:inline-block"></span></button>
       </div>`;
     });
   });
+  return html;
+}
 
-  // 終日エリア HTML
-  let allDayHtml = '';
-  if (allDayTasks.length) {
-    allDayHtml = `<div class="today-allday">
-      <div class="today-allday-label">終日</div>
-      <div class="today-allday-items">` +
-      allDayTasks.map(item => {
-        const ic = iconHtml(item, 'sm');
-        return `<div class="today-allday-card" style="${item.hidden ? 'opacity:0.35' : ''}" onclick="editItem('${item.id}')">${ic}<span class="today-event-title" style="flex:1">${esc(item.title)}</span><button class="tl-hide-btn${item.hidden ? ' is-hidden' : ''}" onclick="event.stopPropagation();toggleTodayItemHidden('${item.id}')" title="${item.hidden ? '表示に戻す' : '非表示にする'}"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;display:inline-block"></span></button></div>`;
-      }).join('') +
-    `</div></div>`;
-  }
+function _buildTlAllDayHtml(allDayTasks) {
+  if (!allDayTasks.length) return '';
+  const items = allDayTasks.map(item =>
+    `<div class="today-allday-card" style="${item.hidden ? 'opacity:0.35' : ''}" onclick="editItem('${item.id}')">${iconHtml(item, 'sm')}<span class="today-event-title" style="flex:1">${esc(item.title)}</span><button class="tl-hide-btn${item.hidden ? ' is-hidden' : ''}" onclick="event.stopPropagation();toggleTodayItemHidden('${item.id}')" title="${item.hidden ? '表示に戻す' : '非表示にする'}"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;display:inline-block"></span></button></div>`
+  ).join('');
+  return `<div class="today-allday"><div class="today-allday-label">終日</div><div class="today-allday-items">${items}</div></div>`;
+}
+
+function _buildTodayNavHtml(todayStr, dateLabel, isToday) {
+  return `<div class="today-nav">
+    <button class="today-nav-btn" onclick="moveTodayView(-1)" title="前の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-left);mask-image:var(--icon-chevron-left);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
+    <label class="today-nav-date" title="日付を選択" onclick="document.getElementById('today-date-input').showPicker?.()">
+      ${dateLabel}${isToday ? '<span class="today-badge">今日</span>' : ''}
+      <input type="date" value="${todayStr}" onchange="jumpTodayView(this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none" id="today-date-input">
+    </label>
+    <button class="today-nav-btn" onclick="moveTodayView(1)" title="次の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-right);mask-image:var(--icon-chevron-right);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
+    ${!isToday ? `<button class="today-nav-today" onclick="resetTodayView()">今日に戻る</button>` : ''}
+  </div>`;
+}
+
+function renderTodayView() {
+  const el = document.getElementById('content');
+  const todayStr = state.todayViewDate;
+  const now = new Date(todayStr + 'T00:00:00');
+  const isToday = todayStr === new Date().toISOString().slice(0, 10);
+  const dow = ['日','月','火','水','木','金','土'][now.getDay()];
+  const dateLabel = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${dow}）`;
+
+  const workStart = db.settings.workStart || '09:00';
+  const workEnd   = db.settings.workEnd   || '19:00';
+  const [sh, sm] = workStart.split(':').map(Number);
+  const [eh, em] = workEnd.split(':').map(Number);
+  const startMin = sh * 60 + sm;
+  const endMin   = eh * 60 + em;
+  const HOUR_H   = 64;
+
+  const timedItems = _todayTimedItems(todayStr, now);
+  const allDayTasks = db.items
+    .filter(i => i.type === 'task' && (i.due || i.dueDate) === todayStr && i.status !== 'done')
+    .sort((a, b) => a.title.localeCompare(b.title, 'ja'));
+
+  const navHtml = _buildTodayNavHtml(todayStr, dateLabel, isToday);
 
   if (!timedItems.length && !allDayTasks.length) {
-    el.innerHTML = `<div class="today-view">
-      <div class="today-nav">
-        <button class="today-nav-btn" onclick="moveTodayView(-1)" title="前の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-left);mask-image:var(--icon-chevron-left);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
-        <label class="today-nav-date" title="日付を選択" onclick="document.getElementById('today-date-input').showPicker?.()">
-          ${dateLabel}${isToday ? '<span class="today-badge">今日</span>' : ''}
-          <input type="date" value="${todayStr}" onchange="jumpTodayView(this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none" id="today-date-input">
-        </label>
-        <button class="today-nav-btn" onclick="moveTodayView(1)" title="次の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-right);mask-image:var(--icon-chevron-right);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
-        ${!isToday ? `<button class="today-nav-today" onclick="resetTodayView()">今日に戻る</button>` : ''}
-      </div>
-      <div class="today-empty">今日の予定はありません</div>
-    </div>`;
+    el.innerHTML = `<div class="today-view">${navHtml}<div class="today-empty">今日の予定はありません</div></div>`;
     return;
   }
 
+  const realNow = new Date();
+  const nowMin  = realNow.getHours() * 60 + realNow.getMinutes();
+  const showNow = isToday && nowMin >= startMin && nowMin <= endMin;
+  const nowTop  = (nowMin - startMin) / 60 * HOUR_H;
+  const nowLine = showNow
+    ? `<div class="tl-now-dot" id="tl-now-dot" style="top:${nowTop}px"></div><div class="tl-now-line" id="tl-now-line" style="top:${nowTop}px"></div>`
+    : '';
+
   el.innerHTML = `<div class="today-view">
-    <div class="today-nav">
-      <button class="today-nav-btn" onclick="moveTodayView(-1)" title="前の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-left);mask-image:var(--icon-chevron-left);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
-      <label class="today-nav-date" title="日付を選択" onclick="document.getElementById('today-date-input').showPicker?.()">
-        ${dateLabel}${isToday ? '<span class="today-badge">今日</span>' : ''}
-        <input type="date" value="${todayStr}" onchange="jumpTodayView(this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none" id="today-date-input">
-      </label>
-      <button class="today-nav-btn" onclick="moveTodayView(1)" title="次の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-right);mask-image:var(--icon-chevron-right);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
-      ${!isToday ? `<button class="today-nav-today" onclick="resetTodayView()">今日に戻る</button>` : ''}
-    </div>
-    ${allDayHtml}
+    ${navHtml}
+    ${_buildTlAllDayHtml(allDayTasks)}
     <div class="tl-wrap">
-      <div class="tl-grid" style="height:${gridH}px">
-        ${gridLines}
+      <div class="tl-grid" style="height:${(endMin - startMin) / 60 * HOUR_H}px">
+        ${_buildTlGridLines(startMin, endMin, HOUR_H)}
         ${nowLine}
-        <div class="tl-events-area">${eventsHtml}</div>
+        <div class="tl-events-area">${_buildTlEventsHtml(timedItems, startMin, endMin, HOUR_H)}</div>
       </div>
     </div>
   </div>`;
 
-  // 現在時刻ラインを1分ごとに更新
   if (window._tlTimer) clearInterval(window._tlTimer);
   if (showNow) {
     window._tlTimer = setInterval(() => {
       const n = new Date();
-      const nMin = n.getHours() * 60 + n.getMinutes();
-      const nTop = (nMin - startMin) / 60 * HOUR_H;
+      const nTop = (n.getHours() * 60 + n.getMinutes() - startMin) / 60 * HOUR_H;
       const dot = document.getElementById('tl-now-dot');
       const line = document.getElementById('tl-now-line');
       if (dot)  dot.style.top  = nTop + 'px';
@@ -3655,16 +3681,16 @@ function openModal(type = 'bookmark') {
   state.editId = null;
   state.tags = [];
   document.getElementById('modal-title').textContent = '新規追加';
-  document.getElementById('btn-delete').style.display = 'none';
+  hideEl('btn-delete');
   resetForm();
   selectType(type);
-  document.getElementById('modal').style.display = 'flex';
+  showEl('modal');
   setTimeout(() => document.getElementById('f-title').focus(), 50);
 }
 
 function closeModal(skipConfirm = false) {
   if (!skipConfirm && !_confirmClose()) return;
-  document.getElementById('modal').style.display = 'none';
+  hideEl('modal');
   state.editId = null;
 }
 
@@ -3972,63 +3998,84 @@ function editItem(id) {
   }
   renderTags();
   updateIconPreview();
-  // セットのアラーム設定を復元
-  if (item.type === 'set') {
-    const al = item.alarm;
-    const enabledEl = document.getElementById('f-alarm-enabled');
-    enabledEl.checked = !!(al?.enabled);
-    onSetAlarmToggle(enabledEl.checked);
-    if (al) {
-      const s = al.schedule || {};
-      // schedType → unit / interval
-      let _unit = 'week', _intv = 1;
-      if (s.type === 'daily')            { _unit = 'day'; }
-      else if (s.type === 'weekly')      { _unit = 'week';         _intv = s.interval || 1; }
-      else if (s.type === 'biweekly')    { _unit = 'week';         _intv = 2; }
-      else if (s.type === 'monthly-date')    { _unit = 'month-date'; }
-      else if (s.type === 'monthly-weekday') { _unit = 'month-weekday'; }
-      else if (s.type === 'yearly')      { _unit = 'year'; }
-      else if (s.type === 'once')        { _unit = 'once'; }
-      document.getElementById('f-alarm-unit').value = _unit;
-      document.getElementById('f-alarm-interval').value = _intv;
-      document.getElementById('f-alarm-time').value = s.time || '08:00';
-      onSetAlarmTypeChange();
-      // 曜日ボタン（weekly/biweekly）
-      document.querySelectorAll('#f-alarm-days-group .day-btn').forEach((btn, i) => {
-        btn.classList.toggle('selected', (s.days || []).includes(i));
-      });
-      // monthly-date
-      if (s.monthDay) document.getElementById('f-alarm-monthday').value = s.monthDay;
-      // monthly-weekday
-      if (s.weekdayN != null) document.getElementById('f-alarm-weekday-n').value = s.weekdayN;
-      if (s.weekday != null) {
-        _setAlarmMWDay = s.weekday;
-        document.querySelectorAll('#f-alarm-mw-days .day-btn').forEach((btn, i) => {
-          btn.classList.toggle('selected', i === s.weekday);
-        });
-      }
-      // yearly
-      if (s.month) document.getElementById('f-alarm-yearly-month').value = s.month;
-      if (s.day) document.getElementById('f-alarm-yearly-day').value = s.day;
-      // once
-      if (s.date) {
-        document.getElementById('f-alarm-once-date').value = s.date;
-        document.getElementById('f-alarm-once-disp').textContent = s.date;
-      }
-    } else {
-      onSetAlarmTypeChange();
-    }
-  }
-  document.getElementById('modal').style.display = 'flex';
+  if (item.type === 'set') restoreAlarmUi(item.alarm);
+  showEl('modal');
 }
 
-function saveItem() {
-  const title = document.getElementById('f-title').value.trim();
-  if (!title) { toast('タイトルを入力してください', '⚠️'); return; }
+function restoreAlarmUi(alarm) {
+  const enabledEl = document.getElementById('f-alarm-enabled');
+  enabledEl.checked = !!(alarm?.enabled);
+  onSetAlarmToggle(enabledEl.checked);
+  if (!alarm) { onSetAlarmTypeChange(); return; }
+  const s = alarm.schedule || {};
+  let _unit = 'week', _intv = 1;
+  if (s.type === 'daily')                { _unit = 'day'; }
+  else if (s.type === 'weekly')          { _unit = 'week';          _intv = s.interval || 1; }
+  else if (s.type === 'biweekly')        { _unit = 'week';          _intv = 2; }
+  else if (s.type === 'monthly-date')    { _unit = 'month-date'; }
+  else if (s.type === 'monthly-weekday') { _unit = 'month-weekday'; }
+  else if (s.type === 'yearly')          { _unit = 'year'; }
+  else if (s.type === 'once')            { _unit = 'once'; }
+  document.getElementById('f-alarm-unit').value = _unit;
+  document.getElementById('f-alarm-interval').value = _intv;
+  document.getElementById('f-alarm-time').value = s.time || '08:00';
+  onSetAlarmTypeChange();
+  document.querySelectorAll('#f-alarm-days-group .day-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', (s.days || []).includes(i));
+  });
+  if (s.monthDay) document.getElementById('f-alarm-monthday').value = s.monthDay;
+  if (s.weekdayN != null) document.getElementById('f-alarm-weekday-n').value = s.weekdayN;
+  if (s.weekday != null) {
+    _setAlarmMWDay = s.weekday;
+    document.querySelectorAll('#f-alarm-mw-days .day-btn').forEach((btn, i) => {
+      btn.classList.toggle('selected', i === s.weekday);
+    });
+  }
+  if (s.month) document.getElementById('f-alarm-yearly-month').value = s.month;
+  if (s.day) document.getElementById('f-alarm-yearly-day').value = s.day;
+  if (s.date) {
+    document.getElementById('f-alarm-once-date').value = s.date;
+    document.getElementById('f-alarm-once-disp').textContent = s.date;
+  }
+}
 
+function buildAlarmData() {
+  const alarmEnabled = document.getElementById('f-alarm-enabled').checked;
+  if (!alarmEnabled) return null;
+  const unit = document.getElementById('f-alarm-unit').value;
+  const intervalN = parseInt(document.getElementById('f-alarm-interval')?.value) || 1;
+  const time = document.getElementById('f-alarm-time').value || '08:00';
+  const days = [...document.querySelectorAll('#f-alarm-days-group .day-btn.selected')].map(b =>
+    [...b.parentElement.children].indexOf(b));
+  let schedule;
+  if (unit === 'once') {
+    schedule = { type: 'once', time, date: document.getElementById('f-alarm-once-date').value };
+  } else if (unit === 'day') {
+    schedule = { type: 'daily', time };
+  } else if (unit === 'week') {
+    if (intervalN === 2) {
+      schedule = { type: 'biweekly', time, days, biweeklyRef: new Date().toISOString().slice(0,10) };
+    } else {
+      schedule = { type: 'weekly', time, days };
+      if (intervalN > 2) schedule.interval = intervalN;
+    }
+  } else if (unit === 'month-date') {
+    schedule = { type: 'monthly-date', time, monthDay: parseInt(document.getElementById('f-alarm-monthday').value) || 1 };
+  } else if (unit === 'month-weekday') {
+    schedule = { type: 'monthly-weekday', time, weekdayN: parseInt(document.getElementById('f-alarm-weekday-n').value) || 1, weekday: _setAlarmMWDay };
+  } else if (unit === 'year') {
+    schedule = { type: 'yearly', time, month: parseInt(document.getElementById('f-alarm-yearly-month').value) || 1, day: parseInt(document.getElementById('f-alarm-yearly-day').value) || 1 };
+  } else {
+    schedule = { type: 'weekly', time, days };
+  }
+  const existing = state.editId ? db.items.find(i => i.id === state.editId) : null;
+  return { enabled: true, schedule, lastFired: existing?.alarm?.lastFired || null };
+}
+
+function collectFormData() {
   const data = {
     type:     state.type,
-    title,
+    title:    document.getElementById('f-title').value.trim(),
     url:      document.getElementById('f-url').value.trim(),
     appName:  document.getElementById('f-appname').value.trim() || null,
     desc:     document.getElementById('f-desc').value.trim(),
@@ -4040,51 +4087,15 @@ function saveItem() {
     dueDate:  document.getElementById('f-due').value || null,
     dueTime:  document.getElementById('f-due-time').value || null,
   };
-
   if (state.type === 'place') {
     data.address = document.getElementById('f-place-address').value.trim() || null;
     data.mapUrl  = document.getElementById('f-place-mapurl').value.trim() || null;
     const ll = document.getElementById('f-place-latlng');
     if (ll.dataset.lat) { data.lat = parseFloat(ll.dataset.lat); data.lng = parseFloat(ll.dataset.lng); }
   }
-
   if (state.type === 'set') {
     data.setItems = [...state.setItems];
-    // アラーム設定を保存
-    const alarmEnabled = document.getElementById('f-alarm-enabled').checked;
-    if (alarmEnabled) {
-      const unit = document.getElementById('f-alarm-unit').value;
-      const intervalN = parseInt(document.getElementById('f-alarm-interval')?.value) || 1;
-      const time = document.getElementById('f-alarm-time').value || '08:00';
-      const days = [...document.querySelectorAll('#f-alarm-days-group .day-btn.selected')].map(b =>
-        [...b.parentElement.children].indexOf(b));
-      let schedule;
-      if (unit === 'once') {
-        schedule = { type: 'once', time, date: document.getElementById('f-alarm-once-date').value };
-      } else if (unit === 'day') {
-        schedule = { type: 'daily', time };
-      } else if (unit === 'week') {
-        if (intervalN === 2) {
-          schedule = { type: 'biweekly', time, days, biweeklyRef: new Date().toISOString().slice(0,10) };
-        } else {
-          schedule = { type: 'weekly', time, days };
-          if (intervalN > 2) schedule.interval = intervalN;
-        }
-      } else if (unit === 'month-date') {
-        schedule = { type: 'monthly-date', time, monthDay: parseInt(document.getElementById('f-alarm-monthday').value) || 1 };
-      } else if (unit === 'month-weekday') {
-        schedule = { type: 'monthly-weekday', time, weekdayN: parseInt(document.getElementById('f-alarm-weekday-n').value) || 1, weekday: _setAlarmMWDay };
-      } else if (unit === 'year') {
-        schedule = { type: 'yearly', time, month: parseInt(document.getElementById('f-alarm-yearly-month').value) || 1, day: parseInt(document.getElementById('f-alarm-yearly-day').value) || 1 };
-      } else {
-        schedule = { type: 'weekly', time, days };
-      }
-      // 既存アラームの lastFired を引き継ぐ
-      const existing = state.editId ? db.items.find(i => i.id === state.editId) : null;
-      data.alarm = { enabled: true, schedule, lastFired: existing?.alarm?.lastFired || null };
-    } else {
-      data.alarm = null;
-    }
+    data.alarm = buildAlarmData();
   }
   if (state.type === 'slack') {
     data.slackMessage = document.getElementById('f-slack-msg').value.trim();
@@ -4095,6 +4106,14 @@ function saveItem() {
     data.scriptTerminal = document.getElementById('f-script-terminal').value || null;
     data.scriptParams = state.scriptParams ? JSON.parse(JSON.stringify(state.scriptParams)) : [];
   }
+  return data;
+}
+
+function saveItem() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { toast('タイトルを入力してください', '⚠️'); return; }
+
+  const data = collectFormData();
 
   if (state.editId) {
     const idx = db.items.findIndex(i => i.id === state.editId);
@@ -4120,7 +4139,8 @@ function toggleStar(id) {
   if (!item) return;
   item.starred = !item.starred;
   save();
-  render();
+  // starredソートは並び順が変わるので全体再描画
+  document.getElementById('sort-select')?.value === 'starred' ? render() : renderCard(id);
 }
 
 function cycleStatus(id) {
@@ -4130,7 +4150,7 @@ function cycleStatus(id) {
   const idx = order.indexOf(item.status || 'todo');
   item.status = order[(idx + 1) % 3];
   item.updatedAt = new Date().toISOString();
-  save(); render();
+  save(); renderCard(id);
 }
 
 function toggleMemoExpand(id) {
@@ -4141,7 +4161,7 @@ function toggleMemoExpand(id) {
   }
   db.expandedMemos = [...state.expandedMemos];
   save();
-  render();
+  renderCard(id);
 }
 
 function toggleCardExpand(id) {
@@ -4736,7 +4756,7 @@ function showTagDropdown(inputEl, onSelect) {
 }
 
 function hideTagDropdown() {
-  document.getElementById('tag-dropdown').style.display = 'none';
+  hideEl('tag-dropdown');
   _dropdownOnSelect = null;
 }
 
@@ -4890,7 +4910,7 @@ function showCtx(e, id) {
   m.style.left = Math.min(e.pageX, window.innerWidth - 170) + 'px';
   m.style.top  = Math.min(e.pageY, window.innerHeight - 100) + 'px';
 }
-function hideCtx() { document.getElementById('ctx-menu').style.display = 'none'; }
+function hideCtx() { hideEl('ctx-menu'); }
 function ctxEdit()   { editItem(state.ctxId); hideCtx(); }
 function ctxOpen()   { const it = db.items.find(i => i.id === state.ctxId); if (it?.type === 'set') { hideCtx(); showSetQuickPanel(state.ctxId); } else if (it?.url) { window.open(it.url,'_blank'); hideCtx(); } else { hideCtx(); } }
 function ctxDelete() { confirmDelete(state.ctxId); hideCtx(); }
@@ -5054,7 +5074,7 @@ function showSlackQuickPanel(id) {
     `<button class="btn-secondary" onclick="closeSlackQuickPanel();editItem('${id}')">詳細編集</button>
      <button class="btn-primary" onclick="_execSlackQPSend()" style="background:var(--slack);display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);width:14px;height:14px;background-color:white"></span>送信</button>`;
 
-  document.getElementById('slack-quick-panel').style.display = 'flex';
+  showEl('slack-quick-panel');
 }
 
 function _renderSlackQPBody(item) {
@@ -5234,7 +5254,7 @@ function _saveSlackQPMessage() {
 
 function closeSlackQuickPanel() {
   _saveSlackQPMessage();
-  document.getElementById('slack-quick-panel').style.display = 'none';
+  hideEl('slack-quick-panel');
   _sqkpItemId = null;
   _sqkpSelectedUrl = null;
 }
@@ -5319,11 +5339,11 @@ function showSetQuickPanel(id) {
      <button class="btn-secondary" onclick="closeSetQuickPanel();editItem('${id}')">詳細編集</button>
      <button class="btn-primary" onclick="closeSetQuickPanel();launchSet('${id}')" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>▶ 起動</button>`;
 
-  document.getElementById('set-quick-panel').style.display = 'flex';
+  showEl('set-quick-panel');
 }
 
 function closeSetQuickPanel() {
-  document.getElementById('set-quick-panel').style.display = 'none';
+  hideEl('set-quick-panel');
 }
 
 function showPlaceQuickPanel(id) {
@@ -5359,11 +5379,11 @@ function showPlaceQuickPanel(id) {
     `<button class="btn-secondary" onclick="closePlaceQuickPanel();editItem('${id}')">詳細編集</button>
      ${copyBtn}${mapOpenBtn}${navBtn}`;
 
-  document.getElementById('place-quick-panel').style.display = 'flex';
+  showEl('place-quick-panel');
 }
 
 function closePlaceQuickPanel() {
-  document.getElementById('place-quick-panel').style.display = 'none';
+  hideEl('place-quick-panel');
 }
 
 // ═══════════════════════════════════════════
@@ -5536,12 +5556,12 @@ function openItemInsertModal(targetId) {
   _iimTargetId = targetId;
   document.getElementById('iim-search').value = '';
   renderItemInsertList();
-  document.getElementById('item-insert-modal').style.display = 'flex';
+  showEl('item-insert-modal');
   setTimeout(() => document.getElementById('iim-search').focus(), 50);
 }
 
 function closeItemInsertModal() {
-  document.getElementById('item-insert-modal').style.display = 'none';
+  hideEl('item-insert-modal');
 }
 
 function renderItemInsertList() {
@@ -5860,7 +5880,7 @@ function showAlarmPopup(alarm) {
   } else {
     execBtn.style.display = 'none';
   }
-  document.getElementById('alarm-popup-overlay').style.display = 'flex';
+  showEl('alarm-popup-overlay');
 
   // ビープ音
   try {
@@ -5876,7 +5896,7 @@ function showAlarmPopup(alarm) {
 }
 
 function closeAlarmPopup() {
-  document.getElementById('alarm-popup-overlay').style.display = 'none';
+  hideEl('alarm-popup-overlay');
   _currentAlarm = null;
 }
 
@@ -6023,9 +6043,9 @@ let _icsGroups=null, _icsSelR=new Set(), _icsSelS=new Set(), _icsMeetR=new Set()
 
 function openCalImportModal() {
   renderCalStep1();
-  document.getElementById('cal-import-modal').style.display='flex';
+  showEl('cal-import-modal');
 }
-function closeCalImportModal() { document.getElementById('cal-import-modal').style.display='none'; }
+function closeCalImportModal() { hideEl('cal-import-modal'); }
 
 function renderCalStep1() {
   const ng = db.calNgList || [];
@@ -6108,7 +6128,7 @@ function toggleCalSync(enabled) {
 }
 
 function openSettingsModal() {
-  document.getElementById('settings-modal').style.display = 'flex';
+  showEl('settings-modal');
   const token = localStorage.getItem('mydash_github_token') || '';
   const gistId = localStorage.getItem('mydash_gist_id') || '';
   document.getElementById('github-token-input').value = token;
@@ -6138,7 +6158,7 @@ function setDefaultTerminal(el) {
   db.settings.defaultTerminal = el.value;
   save();
 }
-function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+function closeSettingsModal() { hideEl('settings-modal'); }
 
 function saveGithubToken(val) {
   localStorage.setItem('mydash_github_token', val.trim());
@@ -6285,7 +6305,7 @@ async function gistAutoDownload() {
 
 // ── Dockインポート ──────────────────────────────
 async function openDockImportModal() {
-  document.getElementById('dock-import-modal').style.display = 'flex';
+  showEl('dock-import-modal');
   const body = document.getElementById('dock-import-body');
   const footer = document.getElementById('dock-import-footer');
   body.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:20px">取得中…</div>';
@@ -6301,7 +6321,7 @@ async function openDockImportModal() {
 }
 
 function closeDockImportModal() {
-  document.getElementById('dock-import-modal').style.display = 'none';
+  hideEl('dock-import-modal');
 }
 
 function renderDockImportList(apps) {
@@ -6950,9 +6970,9 @@ function importCalendarEvents() {
 function openAlarmModal() {
   updateAlarmBadge();
   renderAlarmList();
-  document.getElementById('alarm-modal').style.display = 'flex';
+  showEl('alarm-modal');
 }
-function closeAlarmModal() { document.getElementById('alarm-modal').style.display = 'none'; }
+function closeAlarmModal() { hideEl('alarm-modal'); }
 function closeAlarmModalOutside(e) { if (e.target === document.getElementById('alarm-modal')) closeAlarmModal(); }
 
 function renderAlarmList() {
@@ -7336,6 +7356,13 @@ document.addEventListener('gesturestart', e => { e.preventDefault(); });
 
 document.addEventListener('click', e => {
   if (!e.target.closest('.ctx-menu')) hideCtx();
+  const addBtn = e.target.closest('.type-add-btn');
+  if (addBtn) { e.stopPropagation(); openModal(addBtn.dataset.modalType); }
+});
+
+// モーダル内クリックのバブリング防止
+document.querySelectorAll('.modal').forEach(el => {
+  el.addEventListener('click', e => e.stopPropagation());
 });
 
 // ═══════════════════════════════════════════
