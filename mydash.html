@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.40</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.41</div>
   </div>
 </aside>
 
@@ -3488,11 +3488,11 @@ function _buildTlEventsHtml(timedItems, startMin, endMin, HOUR_H) {
       const srcIcon = item.fromCalSync
         ? `<span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:var(--set);width:10px;height:10px;display:inline-block;vertical-align:middle;margin-right:2px" title="Googleカレンダー"></span>`
         : `<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:var(--set);width:10px;height:10px;display:inline-block;vertical-align:middle;margin-right:2px" title="マイダッシュアラーム"></span>`;
-      html += `<div class="tl-event-block" style="top:${top}px;${posStyle}${item.hidden ? ';opacity:0.35' : ''}" onclick="scheduleTlItemClick('${item.id}')">
+      html += `<div class="tl-event-block" style="top:${top}px;${posStyle}${item.hidden ? ';opacity:0.35' : ''}" data-today-action="tl-item" data-id="${item.id}">
         ${iconHtml(item, 'sm')}
         <span class="tl-ev-title">${esc(item.title)}</span>
         <span class="tl-ev-sub">${srcIcon}${item.alarm.schedule.type === 'once' ? '単発' : '繰り返し'}</span>
-        <button class="tl-hide-btn${item.hidden ? ' is-hidden' : ''}" onclick="event.stopPropagation();toggleTodayItemHidden('${item.id}')" title="${item.hidden ? '表示に戻す' : '非表示にする'}"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;display:inline-block"></span></button>
+        <button class="tl-hide-btn${item.hidden ? ' is-hidden' : ''}" data-today-action="tl-hide" data-id="${item.id}" title="${item.hidden ? '表示に戻す' : '非表示にする'}"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;display:inline-block"></span></button>
       </div>`;
     });
   });
@@ -3502,7 +3502,7 @@ function _buildTlEventsHtml(timedItems, startMin, endMin, HOUR_H) {
 function _buildTlAllDayHtml(allDayTasks) {
   if (!allDayTasks.length) return '';
   const items = allDayTasks.map(item =>
-    `<div class="today-allday-card" style="${item.hidden ? 'opacity:0.35' : ''}" onclick="editItem('${item.id}')">${iconHtml(item, 'sm')}<span class="today-event-title" style="flex:1">${esc(item.title)}</span><button class="tl-hide-btn${item.hidden ? ' is-hidden' : ''}" onclick="event.stopPropagation();toggleTodayItemHidden('${item.id}')" title="${item.hidden ? '表示に戻す' : '非表示にする'}"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;display:inline-block"></span></button></div>`
+    `<div class="today-allday-card" style="${item.hidden ? 'opacity:0.35' : ''}" data-today-action="allday-item" data-id="${item.id}">${iconHtml(item, 'sm')}<span class="today-event-title" style="flex:1">${esc(item.title)}</span><button class="tl-hide-btn${item.hidden ? ' is-hidden' : ''}" data-today-action="tl-hide" data-id="${item.id}" title="${item.hidden ? '表示に戻す' : '非表示にする'}"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;display:inline-block"></span></button></div>`
   ).join('');
   return `<div class="today-allday"><div class="today-allday-label">終日</div><div class="today-allday-items">${items}</div></div>`;
 }
@@ -7359,6 +7359,17 @@ document.addEventListener('click', e => {
       case 'cycle-status':  cycleStatus(id); break;
       case 'toggle-expand': toggleCardExpand(id); break;
       case 'toggle-memo':   toggleMemoExpand(id); break;
+    }
+    return;
+  }
+  const todayAction = e.target.closest('[data-today-action]');
+  if (todayAction) {
+    e.stopPropagation();
+    const id = todayAction.dataset.id;
+    switch (todayAction.dataset.todayAction) {
+      case 'tl-item':     scheduleTlItemClick(id); break;
+      case 'tl-hide':     toggleTodayItemHidden(id); break;
+      case 'allday-item': editItem(id); break;
     }
     return;
   }
