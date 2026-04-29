@@ -4139,8 +4139,9 @@ function toggleStar(id) {
   if (!item) return;
   item.starred = !item.starred;
   save();
-  // starredソートは並び順が変わるので全体再描画
-  document.getElementById('sort-select')?.value === 'starred' ? render() : renderCard(id);
+  // starredフィルター/ソート中は表示・並び順が変わるので全体再描画
+  const needsFull = state.filter === 'starred' || document.getElementById('sort-select')?.value === 'starred';
+  needsFull ? render() : renderCard(id);
 }
 
 function cycleStatus(id) {
