@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.41</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.42</div>
   </div>
 </aside>
 
@@ -5299,13 +5299,13 @@ function showSetQuickPanel(id) {
         <span class="sqp-type" style="color:${itemTc}">${esc(item.type)}</span>
       </a>`;
     } else if (item.type === 'memo' || item.type === 'task') {
-      return `<div class="sqp-item" onclick="closeSetQuickPanel();showQuickEdit('${item.id}')">
+      return `<div class="sqp-item" data-panel-action="sqp-quick-edit" data-id="${item.id}">
         <span class="sqp-icon">${iconHtml(item,'sm')}</span>
         <span class="sqp-title">${esc(item.title)}</span>
         <span class="sqp-type" style="color:${itemTc}">${esc(item.type)}</span>
       </div>`;
     } else if (item.type === 'window-session') {
-      return `<div class="sqp-item server-feature" onclick="closeSetQuickPanel();launchWindowSessionById('${item.id}')">
+      return `<div class="sqp-item server-feature" data-panel-action="sqp-launch-window" data-id="${item.id}">
         <span class="sqp-icon">${iconHtml(item,'sm')}</span>
         <span class="sqp-title">${esc(item.title)}</span>
         <span class="sqp-type" style="color:${itemTc}">タブセット</span>
@@ -5457,7 +5457,7 @@ function _showScriptParamPanel(item) {
     ${rows}
     <div style="display:flex;gap:8px;margin-top:4px">
       <button onclick="document.getElementById('${panelId}').remove()" class="btn-secondary" style="flex:1">キャンセル</button>
-      <button onclick="_runScriptFromPanel('${item.id}')" class="btn-primary" style="flex:1">▶ 実行</button>
+      <button data-panel-action="run-script" data-id="${item.id}" class="btn-primary" style="flex:1">▶ 実行</button>
     </div>
   </div>`;
   panel.style.display = 'flex';
@@ -7362,6 +7362,18 @@ document.addEventListener('click', e => {
     }
     return;
   }
+  const panelAction = e.target.closest('[data-panel-action]');
+  if (panelAction) {
+    e.stopPropagation();
+    const id = panelAction.dataset.id;
+    switch (panelAction.dataset.panelAction) {
+      case 'sqp-quick-edit':    closeSetQuickPanel(); showQuickEdit(id); break;
+      case 'sqp-launch-window': closeSetQuickPanel(); launchWindowSessionById(id); break;
+      case 'run-script':        _runScriptFromPanel(id); break;
+      case 'qs-select':         qsSelectItem(id); break;
+    }
+    return;
+  }
   const todayAction = e.target.closest('[data-today-action]');
   if (todayAction) {
     e.stopPropagation();
@@ -7397,6 +7409,17 @@ document.querySelectorAll('.modal').forEach(el => {
   el.addEventListener('click', e => e.stopPropagation());
 });
 
+// sqp-body は .modal 内のためdocument委譲が届かない → 直接ハンドラで処理
+document.getElementById('sqp-body').addEventListener('click', e => {
+  const item = e.target.closest('[data-panel-action]');
+  if (!item) return;
+  const id = item.dataset.id;
+  switch (item.dataset.panelAction) {
+    case 'sqp-quick-edit':    closeSetQuickPanel(); showQuickEdit(id); break;
+    case 'sqp-launch-window': closeSetQuickPanel(); launchWindowSessionById(id); break;
+  }
+});
+
 // ═══════════════════════════════════════════
 // Quick Search (⌘K)
 // ═══════════════════════════════════════════
@@ -7425,7 +7448,7 @@ function onQsInput() {
   if (items.length === 0) { results.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px">見つかりません</div>'; return; }
   results.innerHTML = items.map((item, idx) => {
     const typeDef = TYPE_DEF[item.type] || {};
-    return `<div class="qs-item" data-id="${item.id}" onclick="qsSelectItem('${item.id}')">
+    return `<div class="qs-item" data-id="${item.id}" data-panel-action="qs-select">
       <div class="qs-item-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
       <span class="qs-item-title">${esc(item.title)}</span>
       <span class="qs-item-type">${typeDef.label||item.type}</span>
