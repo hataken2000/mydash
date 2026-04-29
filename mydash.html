@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.38</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.39</div>
   </div>
 </aside>
 
@@ -2538,7 +2538,7 @@ function calSyncBadge(item) {
 function typeBadge(item) {
   if (item.type === 'task') {
     const s = item.status || 'todo';
-    return `<span class="status-badge status-${s} status-clickable" onclick="event.stopPropagation();cycleStatus('${item.id}')" title="クリックでステータス変更">${STATUS_LABEL[s]}</span>`;
+    return `<span class="status-badge status-${s} status-clickable" data-card-action="cycle-status" data-id="${item.id}" title="クリックでステータス変更">${STATUS_LABEL[s]}</span>`;
   }
   return `<span class="type-badge type-${item.type}">${TYPE_DEF[item.type].label}</span>`;
 }
@@ -2907,7 +2907,7 @@ function gridCard(item) {
     (['bookmark','tool','task','other'].includes(item.type) && item.desc)
   );
   const expandBtn = hasExpand
-    ? `<button class="card-expand-btn" onclick="event.stopPropagation();toggleCardExpand('${item.id}')">${expanded ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-up);mask-image:var(--icon-chevron-up);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;"></span>' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-down);mask-image:var(--icon-chevron-down);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;"></span>'}</button>`
+    ? `<button class="card-expand-btn" data-card-action="toggle-expand" data-id="${item.id}">${expanded ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-up);mask-image:var(--icon-chevron-up);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;"></span>' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-down);mask-image:var(--icon-chevron-down);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;"></span>'}</button>`
     : '';
 
   // 展開コンテンツ本体
@@ -3067,7 +3067,7 @@ function _listCardMemo(item, tc, cat) {
             </div>
           </div>
         </div>
-        <button class="memo-toggle" style="margin-top:3px;text-align:left" onclick="event.stopPropagation();toggleMemoExpand('${item.id}')">${memoExpanded ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-up);mask-image:var(--icon-chevron-up);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>閉じる' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-down);mask-image:var(--icon-chevron-down);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>展開'}</button>
+        <button class="memo-toggle" style="margin-top:3px;text-align:left" data-card-action="toggle-memo" data-id="${item.id}">${memoExpanded ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-up);mask-image:var(--icon-chevron-up);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>閉じる' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-down);mask-image:var(--icon-chevron-down);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>展開'}</button>
         ${bodyHtml}
       </div>
     </div>
@@ -7363,11 +7363,14 @@ document.addEventListener('click', e => {
     e.stopPropagation();
     const id = cardAction.dataset.id;
     switch (cardAction.dataset.cardAction) {
-      case 'star':       toggleStar(id); break;
-      case 'copy-url':   copyShortcutUrl(id); break;
-      case 'duplicate':  duplicateItem(id); break;
-      case 'edit':       editItem(id); break;
-      case 'delete':     confirmDelete(id); break;
+      case 'star':          toggleStar(id); break;
+      case 'copy-url':      copyShortcutUrl(id); break;
+      case 'duplicate':     duplicateItem(id); break;
+      case 'edit':          editItem(id); break;
+      case 'delete':        confirmDelete(id); break;
+      case 'cycle-status':  cycleStatus(id); break;
+      case 'toggle-expand': toggleCardExpand(id); break;
+      case 'toggle-memo':   toggleMemoExpand(id); break;
     }
   }
 });
