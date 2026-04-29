@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.37</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.38</div>
   </div>
 </aside>
 
@@ -2952,19 +2952,19 @@ function gridCard(item) {
 
   // ショートカットURLボタンを出すタイプ
   const shortcutBtn = ['memo','task','other','set','bookmark','tool'].includes(item.type)
-    ? `<div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>` : '';
+    ? `<div class="action-btn" data-card-action="copy-url" data-id="${item.id}" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>` : '';
 
   return `<div class="grid-card${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
       style="border-left:4px solid ${tc}"
       onclick="cardClick(event,'${item.id}')"
       oncontextmenu="showCtx(event,'${item.id}')">
     ${selChk}
-    <button class="star-btn${starClass}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り">${starIcon}</button>
+    <button class="star-btn${starClass}" data-card-action="star" data-id="${item.id}" title="お気に入り">${starIcon}</button>
     <div class="card-actions">
       ${shortcutBtn}
-      <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
-      <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
-      <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
+      <div class="action-btn" data-card-action="duplicate" data-id="${item.id}" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
+      <div class="action-btn" data-card-action="edit" data-id="${item.id}" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
+      <div class="action-btn danger" data-card-action="delete" data-id="${item.id}" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
     </div>
     <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
     <div class="card-title">${esc(item.title)}</div>
@@ -2991,11 +2991,11 @@ function _listCardSlack(item, tc) {
     <div class="list-meta">
       ${typeBadge(item)}
       <button class="launch-btn" style="background:rgba(74,185,95,0.15);color:var(--slack);border-color:rgba(74,185,95,0.4)" onclick="event.stopPropagation();showSlackQuickPanel('${item.id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>送信</button>
-      <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
+      <button class="list-star-btn${item.starred ? ' starred' : ''}" data-card-action="star" data-id="${item.id}" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
       <div class="list-actions">
-        <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
-        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
-        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
+        <div class="action-btn" data-card-action="duplicate" data-id="${item.id}" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
+        <div class="action-btn" data-card-action="edit" data-id="${item.id}" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
+        <div class="action-btn danger" data-card-action="delete" data-id="${item.id}" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
       </div>
     </div>
   </div>`;
@@ -3020,12 +3020,12 @@ function _listCardSet(item, tc) {
     </div>
     <div class="list-meta">
       ${typeBadge(item)}
-      <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
+      <button class="list-star-btn${item.starred ? ' starred' : ''}" data-card-action="star" data-id="${item.id}" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
       <div class="list-actions">
-        <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
-        <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
-        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
-        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
+        <div class="action-btn" data-card-action="copy-url" data-id="${item.id}" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
+        <div class="action-btn" data-card-action="duplicate" data-id="${item.id}" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
+        <div class="action-btn" data-card-action="edit" data-id="${item.id}" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
+        <div class="action-btn danger" data-card-action="delete" data-id="${item.id}" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
       </div>
     </div>
     ${setCountBadge(item)}${calSyncBadge(item)}
@@ -3058,12 +3058,12 @@ function _listCardMemo(item, tc, cat) {
           <div class="list-meta">
             ${typeBadge(item)} ${cat}
             <span class="list-date">${relativeDate(item.createdAt)}</span>
-            <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
+            <button class="list-star-btn${item.starred ? ' starred' : ''}" data-card-action="star" data-id="${item.id}" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
             <div class="list-actions">
-              <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
-              <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
-              <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
-              <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
+              <div class="action-btn" data-card-action="copy-url" data-id="${item.id}" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
+              <div class="action-btn" data-card-action="duplicate" data-id="${item.id}" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
+              <div class="action-btn" data-card-action="edit" data-id="${item.id}" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
+              <div class="action-btn danger" data-card-action="delete" data-id="${item.id}" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
             </div>
           </div>
         </div>
@@ -3091,12 +3091,12 @@ function _listCardDefault(item, tc, pri, cat) {
     <div class="list-meta">
       ${pri} ${typeBadge(item)} ${dueBadge(item)} ${cat}
       <span class="list-date">${relativeDate(item.createdAt)}</span>
-      <button class="list-star-btn${item.starred ? ' starred' : ''}" onclick="event.stopPropagation();toggleStar('${item.id}')" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
+      <button class="list-star-btn${item.starred ? ' starred' : ''}" data-card-action="star" data-id="${item.id}" title="お気に入り"><span class="app-icon" style="-webkit-mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});mask-image:var(--icon-${item.starred ? 'star-filled' : 'star'});width:14px;height:14px"></span></button>
       <div class="list-actions">
-        <div class="action-btn" onclick="event.stopPropagation();copyShortcutUrl('${item.id}')" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
-        <div class="action-btn" onclick="event.stopPropagation();duplicateItem('${item.id}')" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
-        <div class="action-btn" onclick="event.stopPropagation();editItem('${item.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
-        <div class="action-btn danger" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
+        <div class="action-btn" data-card-action="copy-url" data-id="${item.id}" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>
+        <div class="action-btn" data-card-action="duplicate" data-id="${item.id}" title="複製"><span class="app-icon" style="-webkit-mask-image:var(--icon-duplicate);mask-image:var(--icon-duplicate)"></span></div>
+        <div class="action-btn" data-card-action="edit" data-id="${item.id}" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></div>
+        <div class="action-btn danger" data-card-action="delete" data-id="${item.id}" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></div>
       </div>
     </div>
     ${setMemberBadge(item)}${calSyncBadge(item)}
@@ -3619,7 +3619,7 @@ function scheduleTlItemClick(id) {
 }
 
 function cardClick(e, id) {
-  if (e.target.closest('.action-btn') || e.target.closest('.launch-btn')) return;
+  if (e.target.closest('[data-card-action]') || e.target.closest('.launch-btn')) return;
   if (state.selectMode) { if (!_selectTouchHandled) toggleItemSelect(id, !state.selectedIds.has(id), e.shiftKey); return; }
   const item = db.items.find(i => i.id === id);
   if (!item) return;
@@ -7358,6 +7358,18 @@ document.addEventListener('click', e => {
   if (!e.target.closest('.ctx-menu')) hideCtx();
   const addBtn = e.target.closest('.type-add-btn');
   if (addBtn) { e.stopPropagation(); openModal(addBtn.dataset.modalType); }
+  const cardAction = e.target.closest('[data-card-action]');
+  if (cardAction) {
+    e.stopPropagation();
+    const id = cardAction.dataset.id;
+    switch (cardAction.dataset.cardAction) {
+      case 'star':       toggleStar(id); break;
+      case 'copy-url':   copyShortcutUrl(id); break;
+      case 'duplicate':  duplicateItem(id); break;
+      case 'edit':       editItem(id); break;
+      case 'delete':     confirmDelete(id); break;
+    }
+  }
 });
 
 // モーダル内クリックのバブリング防止
