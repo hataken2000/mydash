@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.34</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.35</div>
   </div>
 </aside>
 
@@ -1921,7 +1921,7 @@ body.hide-server .launch-btn { display: none !important; }
 <div id="toasts"></div>
 
 <!-- ⌘K クイック検索モーダル -->
-<div id="quick-search-modal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding-top:80px" onclick="if(event.target===this)closeQuickSearch()">
+<div id="quick-search-modal" style="position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding-top:80px" onclick="if(event.target===this)closeQuickSearch()">
   <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:14px;width:min(560px,92vw);box-shadow:0 24px 64px rgba(0,0,0,0.5);overflow:hidden">
     <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
       <span class="app-icon" style="-webkit-mask-image:var(--icon-search);mask-image:var(--icon-search);width:18px;height:18px;flex-shrink:0"></span>
@@ -7430,7 +7430,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
   if (db.settings.darkMode === 'auto') applyTheme();
 });
 
-document.addEventListener('keydown', e => {
+function handleGlobalKeydown(e) {
   if (e.key === 'Escape' && !e.isComposing) {
     if (document.getElementById('quick-search-modal').classList.contains('open')) { closeQuickSearch(); return; }
     if (document.getElementById('shortcuts-modal').classList.contains('open')) { closeShortcutsModal(); return; }
@@ -7463,7 +7463,8 @@ document.addEventListener('keydown', e => {
   const FILTER_KEYS = ['all','bookmark','tool','task','memo','other','set'];
   const n = parseInt(e.key);
   if (!isNaN(n) && n >= 0 && n <= 6) { e.preventDefault(); setFilter(FILTER_KEYS[n]); }
-});
+}
+document.addEventListener('keydown', handleGlobalKeydown);
 
 // ═══════════════════════════════════════════
 // Init
