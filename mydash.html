@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.36</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.37</div>
   </div>
 </aside>
 
@@ -3869,25 +3869,9 @@ function resetForm() {
   updateIconPreview();
 }
 
-function selectType(type) {
-  state.type = type;
-  document.querySelectorAll('.type-option').forEach(el => {
-    el.classList.toggle('selected', el.dataset.type === type);
-  });
-  const isSlack  = type === 'slack';
-  const hasUrl   = type === 'bookmark' || type === 'tool' || isSlack;
-  const isTask   = type === 'task';
-  const isTool   = type === 'tool';
-  const isSet    = type === 'set';
-  const isPlace  = type === 'place';
-  const isScript = type === 'script';
-  hasUrl ? showEl('f-url-group', '') : hideEl('f-url-group');
-  document.getElementById('f-url-label').textContent   = isSlack ? 'チャンネルURL' : 'URL / パス';
-  document.getElementById('f-url').placeholder         = isSlack ? 'https://app.slack.com/client/...' : 'https://...';
-  if (isSlack) {
-    const urlEl = document.getElementById('f-url');
+function _updateSlackUrlField(type, urlEl) {
+  if (type === 'slack') {
     hideEl('f-url');
-    // チャンネルUI挿入（1回だけ）
     let chUi = document.getElementById('f-slack-ch-ui');
     if (!chUi) {
       chUi = document.createElement('div');
@@ -3904,22 +3888,44 @@ function selectType(type) {
     hideEl('f-slack-ch-ui');
     showEl('f-url', '');
   }
-  isSlack ? showEl('f-slack-msg-group', '') : hideEl('f-slack-msg-group');
-  isTool  ? showEl('f-appname-group', '')   : hideEl('f-appname-group');
-  isTask  ? showEl('f-task-row', '')        : hideEl('f-task-row');
-  isTask  ? showEl('f-due-group', '')       : hideEl('f-due-group');
+}
+
+function selectType(type) {
+  state.type = type;
+  document.querySelectorAll('.type-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.type === type);
+  });
+  const isSlack  = type === 'slack';
+  const hasUrl   = type === 'bookmark' || type === 'tool' || isSlack;
+  const isTask   = type === 'task';
+  const isTool   = type === 'tool';
+  const isSet    = type === 'set';
+  const isPlace  = type === 'place';
+  const isScript = type === 'script';
+
+  // フィールド表示/非表示
+  hasUrl   ? showEl('f-url-group', '')       : hideEl('f-url-group');
+  document.getElementById('f-url-label').textContent = isSlack ? 'チャンネルURL' : 'URL / パス';
+  document.getElementById('f-url').placeholder       = isSlack ? 'https://app.slack.com/client/...' : 'https://...';
+  _updateSlackUrlField(type, document.getElementById('f-url'));
+  isSlack  ? showEl('f-slack-msg-group', '') : hideEl('f-slack-msg-group');
+  isTool   ? showEl('f-appname-group', '')   : hideEl('f-appname-group');
+  isTask   ? showEl('f-task-row', '')        : hideEl('f-task-row');
+  isTask   ? showEl('f-due-group', '')       : hideEl('f-due-group');
+  type === 'memo' ? showEl('f-md-hint', '') : hideEl('f-md-hint');
+  document.getElementById('f-desc').style.minHeight = type === 'memo' ? '180px' : '74px';
+  isSet    ? showEl('f-set-items-group', '') : hideEl('f-set-items-group');
+  isSet    ? showEl('f-set-alarm-group', '') : hideEl('f-set-alarm-group');
+  isPlace  ? showEl('f-place-group', '')     : hideEl('f-place-group');
+  isScript ? showEl('f-script-group', '')   : hideEl('f-script-group');
+
+  // タイプ別副作用
   if (isTask && !state.editId) {
     const dueEl = document.getElementById('f-due');
     if (!dueEl.value) dueEl.value = new Date().toISOString().slice(0, 10);
   }
-  type === 'memo' ? showEl('f-md-hint', '') : hideEl('f-md-hint');
-  document.getElementById('f-desc').style.minHeight = type === 'memo' ? '180px' : '74px';
-  isSet   ? showEl('f-set-items-group', '') : hideEl('f-set-items-group');
-  isSet   ? showEl('f-set-alarm-group', '') : hideEl('f-set-alarm-group');
-  if (isSet) { const s = document.getElementById('f-set-items-search'); if (s) s.value = ''; renderSetItemsList(); }
-  isPlace ? showEl('f-place-group', '')     : hideEl('f-place-group');
-  if (!isPlace) { document.getElementById('f-place-latlng').textContent = ''; document.getElementById('f-place-latlng').dataset.lat = ''; document.getElementById('f-place-latlng').dataset.lng = ''; }
-  isScript ? showEl('f-script-group', '')  : hideEl('f-script-group');
+  if (isSet)    { const s = document.getElementById('f-set-items-search'); if (s) s.value = ''; renderSetItemsList(); }
+  if (!isPlace) { const ll = document.getElementById('f-place-latlng'); ll.textContent = ''; ll.dataset.lat = ''; ll.dataset.lng = ''; }
   if (isScript) renderScriptParamsList();
   updateIconPreview();
 }
