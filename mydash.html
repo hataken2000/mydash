@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.39</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.40</div>
   </div>
 </aside>
 
@@ -2954,10 +2954,8 @@ function gridCard(item) {
   const shortcutBtn = ['memo','task','other','set','bookmark','tool'].includes(item.type)
     ? `<div class="action-btn" data-card-action="copy-url" data-id="${item.id}" title="ショートカットURL"><span class="app-icon" style="-webkit-mask-image:var(--icon-phone);mask-image:var(--icon-phone)"></span></div>` : '';
 
-  return `<div class="grid-card${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-      style="border-left:4px solid ${tc}"
-      onclick="cardClick(event,'${item.id}')"
-      oncontextmenu="showCtx(event,'${item.id}')">
+  return `<div class="grid-card${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}" data-card-id="${item.id}"
+      style="border-left:4px solid ${tc}">
     ${selChk}
     <button class="star-btn${starClass}" data-card-action="star" data-id="${item.id}" title="お気に入り">${starIcon}</button>
     <div class="card-actions">
@@ -2978,10 +2976,8 @@ function _listCardSlack(item, tc) {
   const selChk = state.selectMode
     ? `<div style="pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--slack);pointer-events:none;flex-shrink:0"></div>`
     : '';
-  return `<div class="list-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-      style="border-left:4px solid ${tc}"
-      onclick="cardClick(event,'${item.id}')"
-      oncontextmenu="showCtx(event,'${item.id}')">
+  return `<div class="list-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}" data-card-id="${item.id}"
+      style="border-left:4px solid ${tc}">
     ${selChk}
     <div class="list-icon icon-bg-slack">${iconHtml(item,'sm')}</div>
     <div class="list-info">
@@ -3008,10 +3004,8 @@ function _listCardSet(item, tc) {
   const selChk = state.selectMode
     ? `<div style="pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--set);pointer-events:none;flex-shrink:0"></div>`
     : '';
-  return `<div class="list-card set-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-      style="border-left:4px solid ${tc}"
-      onclick="cardClick(event,'${item.id}')"
-      oncontextmenu="showCtx(event,'${item.id}')">
+  return `<div class="list-card set-card${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}" data-card-id="${item.id}"
+      style="border-left:4px solid ${tc}">
     ${selChk}
     <div class="list-icon icon-bg-set">${iconHtml(item,'sm')}</div>
     <div class="list-info">
@@ -3045,10 +3039,8 @@ function _listCardMemo(item, tc, cat) {
         </div>`
       : `<div class="memo-body" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);cursor:text" onclick="event.stopPropagation();startMemoEdit('${item.id}')" title="クリックして編集">${renderMemo(item.desc)}</div>`)
     : '';
-  return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-      style="flex-direction:column;align-items:stretch;border-left:4px solid ${tc}"
-      onclick="cardClick(event,'${item.id}')"
-      oncontextmenu="showCtx(event,'${item.id}')">
+  return `<div class="list-card ${taskCardClass(item)}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}" data-card-id="${item.id}"
+      style="flex-direction:column;align-items:stretch;border-left:4px solid ${tc}">
     <div style="display:flex;align-items:flex-start;gap:12px">
       ${selChk}
       <div class="list-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
@@ -3078,10 +3070,8 @@ function _listCardDefault(item, tc, pri, cat) {
   const selChk = state.selectMode
     ? `<div style="pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:15px;height:15px;accent-color:var(--set);pointer-events:none;flex-shrink:0"></div>`
     : '';
-  return `<div class="list-card ${taskCardClass(item)}${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}"
-      style="border-left:4px solid ${tc}"
-      onclick="cardClick(event,'${item.id}')"
-      oncontextmenu="showCtx(event,'${item.id}')">
+  return `<div class="list-card ${taskCardClass(item)}${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${state.selectedIds.has(item.id)?' selected':''}${item.hidden?' item-hidden':''}" data-id="${item.id}" data-card-id="${item.id}"
+      style="border-left:4px solid ${tc}">
     ${selChk}
     <div class="list-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
     <div class="list-info">
@@ -4244,9 +4234,7 @@ function iconCard(item) {
   const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3;pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:14px;height:14px;accent-color:var(--set);pointer-events:none"></div>` : '';
   const titleSuffix = item.type === 'set' ? ' ▶ クリックでパネルを開く' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
   return `<div class="icon-wrap${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${item.hidden?' item-hidden':''}">
-    <div class="icon-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}"
-        onclick="iconCardClick(event,'${item.id}')"
-        oncontextmenu="showCtx(event,'${item.id}')"
+    <div class="icon-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}" data-card-id="${item.id}" data-card-type="icon"
         title="${esc(item.title)}${titleSuffix}" style="border-top:3px solid ${tc}">
       ${selChkI}
       <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
@@ -7357,7 +7345,7 @@ document.addEventListener('gesturestart', e => { e.preventDefault(); });
 document.addEventListener('click', e => {
   if (!e.target.closest('.ctx-menu')) hideCtx();
   const addBtn = e.target.closest('.type-add-btn');
-  if (addBtn) { e.stopPropagation(); openModal(addBtn.dataset.modalType); }
+  if (addBtn) { e.stopPropagation(); openModal(addBtn.dataset.modalType); return; }
   const cardAction = e.target.closest('[data-card-action]');
   if (cardAction) {
     e.stopPropagation();
@@ -7372,6 +7360,24 @@ document.addEventListener('click', e => {
       case 'toggle-expand': toggleCardExpand(id); break;
       case 'toggle-memo':   toggleMemoExpand(id); break;
     }
+    return;
+  }
+  const cardEl = e.target.closest('[data-card-id]');
+  if (cardEl) {
+    const id = cardEl.dataset.cardId;
+    if (cardEl.dataset.cardType === 'icon') {
+      iconCardClick(e, id);
+    } else {
+      cardClick(e, id);
+    }
+  }
+});
+
+document.addEventListener('contextmenu', e => {
+  const cardEl = e.target.closest('[data-card-id]');
+  if (cardEl) {
+    e.preventDefault();
+    showCtx(e, cardEl.dataset.cardId);
   }
 });
 
