@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.47</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.48</div>
   </div>
 </aside>
 
@@ -2045,19 +2045,6 @@ body.hide-server .launch-btn { display: none !important; }
 
 <!-- Window Saver Modal -->
 
-<!-- Alarm Management Modal -->
-<div class="modal-overlay" id="alarm-modal" style="display:none" onclick="closeAlarmModalOutside(event)">
-  <div class="modal" style="max-width:540px">
-    <div class="modal-header">
-      <div class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>アラーム管理</div>
-      <button class="modal-close" data-alarm-action="close">✕</button>
-    </div>
-    <div class="modal-body" id="alarm-modal-body"></div>
-    <div class="modal-footer" id="alarm-modal-footer">
-      <button class="btn-primary" data-alarm-action="open-form">＋ 追加</button>
-    </div>
-  </div>
-</div>
 
 <script>
 // ═══════════════════════════════════════════
@@ -2473,10 +2460,9 @@ function setMemberBadge(item) {
   const sets = _setMembership.get(item.id);
   if (!sets || sets.length === 0) return '';
   const titles = sets.map(s => s.title).join('・');
-  const onclick = sets.length === 1
-    ? `event.stopPropagation();showSetQuickPanel('${sets[0].id}')`
-    : `event.stopPropagation();showQuickEdit('${item.id}')`;
-  return `<span class="set-member-badge" onclick="${onclick}" title="セット: ${esc(titles)}">${sets.length}</span>`;
+  const action = sets.length === 1 ? 'show-sqp' : 'show-quick-edit';
+  const dataId = sets.length === 1 ? sets[0].id : item.id;
+  return `<span class="set-member-badge" data-card-action="${action}" data-id="${dataId}" title="セット: ${esc(titles)}">${sets.length}</span>`;
 }
 
 function placeMapHtml(item) {
@@ -3182,11 +3168,11 @@ function updateCatList() {
     const active = state.filter === 'cat:' + cat ? ' active' : '';
     const color = getCatColor(cat) || CAT_COLORS[idx % CAT_COLORS.length];
     const hasTutorial = db.items.some(i => i.category === cat && i._tutorial);
-    const tutorialBtn = hasTutorial ? `<button class="cat-rename-btn" onclick="event.stopPropagation();deleteTutorialItems('${esc(cat)}')" title="チュートリアルを削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:var(--text-muted);width:13px;height:13px"></span></button>` : '';
+    const tutorialBtn = hasTutorial ? `<button class="cat-rename-btn" data-app-action="delete-tutorial-items" data-cat="${esc(cat)}" title="チュートリアルを削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:var(--text-muted);width:13px;height:13px"></span></button>` : '';
     return `<div class="sidebar-item${active}" data-filter="cat:${cat}" data-cat="${esc(cat)}"
       ondragover="catDragOver(this,event)" ondragleave="catDragLeave(this)" ondrop="catDrop(this)">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-folder);mask-image:var(--icon-folder);background-color:${color};width:13px;height:13px;display:inline-block"></span></span><span class="si-label">${esc(cat)}</span>
-      <button class="cat-rename-btn" onclick="event.stopPropagation();startCatRename(this,'${esc(cat)}')" title="カテゴリ名を変更"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--text-muted);width:13px;height:13px"></span></button>
+      <button class="cat-rename-btn" data-app-action="start-cat-rename" data-cat="${esc(cat)}" title="カテゴリ名を変更"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--text-muted);width:13px;height:13px"></span></button>
       ${tutorialBtn}<span class="count-badge">${cnt}</span>
     </div>`;
   }).join('');
@@ -4897,7 +4883,7 @@ function renderFilterTags() {
   if (state.filterTags.length === 0) { row.style.display = 'none'; return; }
   row.style.display = 'flex';
   row.innerHTML = state.filterTags.map(t =>
-    `<div class="filter-tag"># ${esc(t)} <span class="filter-tag-remove" onclick="removeFilterTag('${esc(t)}')">×</span></div>`
+    `<div class="filter-tag"># ${esc(t)} <span class="filter-tag-remove" data-app-action="remove-filter-tag" data-tag="${esc(t)}">×</span></div>`
   ).join('');
 }
 
@@ -4918,7 +4904,7 @@ function removeTag(tag) {
 
 function renderTags() {
   document.getElementById('tags-wrap').innerHTML = state.tags.map(t =>
-    `<div class="tag">${esc(t)} <span class="tag-remove" onclick="removeTag('${esc(t)}')">×</span></div>`
+    `<div class="tag">${esc(t)} <span class="tag-remove" data-app-action="remove-tag" data-tag="${esc(t)}">×</span></div>`
   ).join('');
 }
 
@@ -5729,6 +5715,7 @@ let _currentAlarm = null;
 let _alarmFormId = null;
 let _alarmFormDays = [];
 let _alarmCheckLock = false;
+let _setAlarmMWDay = 0;
 let _snoozeTimer = null;
 
 function getAlarms() { return db.alarms || []; }
@@ -6989,299 +6976,6 @@ function importCalendarEvents() {
   toast(msg, count > 0 ? '✅' : 'ℹ️');
 }
 
-// ── Alarm Modal ──────────────────────────────
-function openAlarmModal() {
-  updateAlarmBadge();
-  renderAlarmList();
-  showEl('alarm-modal');
-}
-function closeAlarmModal() { hideEl('alarm-modal'); }
-function closeAlarmModalOutside(e) { if (e.target === document.getElementById('alarm-modal')) closeAlarmModal(); }
-
-function renderAlarmList() {
-  const body = document.getElementById('alarm-modal-body');
-  const footer = document.getElementById('alarm-modal-footer');
-  const alarms = getAlarms();
-  const setAlarms = (db.items || []).filter(i => i.type === 'set' && i.alarm);
-  const total = alarms.length + setAlarms.length;
-
-  if (!total) {
-    body.innerHTML = `<div class="empty-state" style="padding:40px 20px">
-      <div class="ei"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);width:42px;height:42px"></span></div><h3>アラームなし</h3>
-      <div style="font-size:13px;color:var(--text-muted);margin-top:6px">「＋ 追加」でアラームを作成できます</div></div>`;
-  } else {
-    let html = '';
-    if (alarms.length) {
-      html += `
-      <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:2px">
-        <input type="checkbox" id="alarm-check-all" onchange="toggleAllAlarmChecks(this.checked)" style="width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--set)">
-        <span style="font-size:12px;color:var(--text-muted);cursor:pointer;user-select:none" onclick="document.getElementById('alarm-check-all').click()">すべて選択</span>
-      </div>
-      <div class="alarm-list">${alarms.map(a => `
-      <div class="alarm-row">
-        <input type="checkbox" class="alarm-check" data-id="${a.id}" onchange="updateAlarmActionBtns()" style="width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--set)">
-        <div class="alarm-row-info">
-          <div class="alarm-row-name">${esc(a.name)}</div>
-          <div class="alarm-row-sched">${alarmSchedDesc(a)}${a.action?.type==='set' && a.action.targetId ? ` · <span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);width:10px;height:10px;vertical-align:middle;display:inline-block;margin-right:2px"></span>自動起動: ${esc((db.items.find(i=>i.id===a.action.targetId)||{}).title||'?')}` : ''}</div>
-        </div>
-        ${a.action?.type==='url' && a.action.url ? `<button class="action-btn" onclick="event.stopPropagation();window.open('${esc(a.action.url)}','_blank')" title="URLを開く"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link)"></span></button>` : ''}
-        ${a.action?.type==='set' && a.action.targetId ? `<button class="action-btn" onclick="event.stopPropagation();launchSet('${a.action.targetId}');closeAlarmModal()" title="セットを今すぐ起動"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle)"></span></button>` : ''}
-        <label class="alarm-toggle" title="${a.enabled?'ON':'OFF'}">
-          <input type="checkbox" ${a.enabled?'checked':''} onchange="toggleAlarmEnabled('${a.id}',this.checked)">
-          <span class="alarm-toggle-slider"></span>
-        </label>
-        <button class="action-btn" data-alarm-action="edit" data-id="${a.id}" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></button>
-        <button class="action-btn danger" data-alarm-action="delete" data-id="${a.id}" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></button>
-      </div>`).join('')}</div>`;
-    }
-    if (setAlarms.length) {
-      html += `
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin:${alarms.length?'14px':'0px'} 0 6px;letter-spacing:0.04em;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);width:11px;height:11px"></span>セット内蔵アラーム</div>
-      <div class="alarm-list">${setAlarms.map(item => `
-      <div class="alarm-row">
-        <input type="checkbox" class="alarm-check" data-setid="${item.id}" onchange="updateAlarmActionBtns()" style="width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--set)">
-        <div class="alarm-row-info">
-          <div class="alarm-row-name">${esc(item.title)}</div>
-          <div class="alarm-row-sched">${alarmSchedDesc({schedule:item.alarm.schedule})}</div>
-        </div>
-        <button class="action-btn" onclick="event.stopPropagation();launchSet('${item.id}');closeAlarmModal()" title="今すぐ起動"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle)"></span></button>
-        <label class="alarm-toggle" title="${item.alarm.enabled?'ON':'OFF'}">
-          <input type="checkbox" ${item.alarm.enabled?'checked':''} onchange="toggleSetAlarmEnabled('${item.id}',this.checked)">
-          <span class="alarm-toggle-slider"></span>
-        </label>
-        <button class="action-btn" onclick="editItem('${item.id}');closeAlarmModal()" title="セットを編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></button>
-        <button class="action-btn danger" onclick="deleteSetWithAlarm('${item.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></button>
-      </div>`).join('')}</div>`;
-    }
-    body.innerHTML = html;
-  }
-  footer.innerHTML = `
-    <button class="btn-danger" id="alarm-del-sel-btn" onclick="deleteSelectedAlarms()" disabled style="opacity:0.4;margin-right:auto"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>選択削除</button>
-    <button class="btn-secondary" id="alarm-off-sel-btn" data-alarm-action="toggle-selected" data-enabled="false" disabled style="opacity:0.4"><span class="app-icon" style="-webkit-mask-image:var(--icon-pause);mask-image:var(--icon-pause);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>無効化</button>
-    <button class="btn-secondary" id="alarm-on-sel-btn" data-alarm-action="toggle-selected" data-enabled="true" disabled style="opacity:0.4"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>有効化</button>`;
-}
-
-function updateAlarmActionBtns() {
-  const all = document.querySelectorAll('.alarm-check');
-  const checked = document.querySelectorAll('.alarm-check:checked');
-  const count = checked.length;
-  const iconHtml = (svg) => `<span class="app-icon" style="-webkit-mask-image:url(icons/${svg}.svg);mask-image:url(icons/${svg}.svg);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>`;
-  const setBtn = (id, icon, label) => {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    btn.disabled = count === 0;
-    btn.style.opacity = count ? '1' : '0.4';
-    btn.innerHTML = count ? `${iconHtml(icon)}${label}（${count}件）` : `${iconHtml(icon)}${label}`;
-  };
-  setBtn('alarm-del-sel-btn', 'trash', '選択削除');
-  setBtn('alarm-off-sel-btn', 'pause', '無効化');
-  setBtn('alarm-on-sel-btn', 'play-circle', '有効化');
-  // 全選択チェックの状態を同期
-  const allChk = document.getElementById('alarm-check-all');
-  if (!allChk) return;
-  allChk.checked = count === all.length;
-  allChk.indeterminate = count > 0 && count < all.length;
-}
-
-function toggleAllAlarmChecks(checked) {
-  document.querySelectorAll('.alarm-check').forEach(c => c.checked = checked);
-  updateAlarmActionBtns();
-}
-
-function deleteSelectedAlarms() {
-  const checked = [...document.querySelectorAll('.alarm-check:checked')];
-  if (!checked.length) return;
-  const alarmIds = checked.filter(c => c.dataset.id).map(c => c.dataset.id);
-  const setIds = checked.filter(c => c.dataset.setid).map(c => c.dataset.setid);
-  const total = alarmIds.length + setIds.length;
-  if (!confirm(`${total}件を削除しますか？${setIds.length ? `\n（セット${setIds.length}件もアラームと一緒に削除されます）` : ''}`)) return;
-  db.alarms = db.alarms.filter(a => !alarmIds.includes(a.id));
-  db.items = db.items.filter(i => !setIds.includes(i.id));
-  save(); render(); renderAlarmList(); updateAlarmBadge();
-}
-
-function toggleSelectedAlarms(enabled) {
-  const checked = [...document.querySelectorAll('.alarm-check:checked')];
-  const alarmIds = checked.filter(c => c.dataset.id).map(c => c.dataset.id);
-  const setIds = checked.filter(c => c.dataset.setid).map(c => c.dataset.setid);
-  db.alarms.forEach(a => { if (alarmIds.includes(a.id)) a.enabled = enabled; });
-  db.items.forEach(i => { if (setIds.includes(i.id) && i.alarm) i.alarm.enabled = enabled; });
-  save(); renderAlarmList(); updateAlarmBadge();
-}
-
-function toggleAlarmEnabled(id, val) {
-  const a = getAlarms().find(a => a.id === id);
-  if (a) { a.enabled = val; save(); updateAlarmBadge(); }
-}
-
-function deleteAlarm(id) {
-  if (!confirm('このアラームを削除しますか？')) return;
-  db.alarms = db.alarms.filter(a => a.id !== id);
-  save(); renderAlarmList(); updateAlarmBadge();
-}
-
-function toggleSetAlarmEnabled(itemId, val) {
-  const item = db.items.find(i => i.id === itemId);
-  if (item?.alarm) { item.alarm.enabled = val; save(); updateAlarmBadge(); }
-}
-
-function deleteSetWithAlarm(itemId) {
-  const item = db.items.find(i => i.id === itemId);
-  if (!item) return;
-  if (!confirm(`このアラームを削除しますか？\n（セット「${item.title}」も一緒に削除されます）`)) return;
-  db.items = db.items.filter(i => i.id !== itemId);
-  save(); render(); renderAlarmList(); updateAlarmBadge();
-  toast('削除しました', '🗑️');
-}
-
-function openAlarmForm(id) {
-  _alarmFormId = id;
-  const alarm = id ? getAlarms().find(a => a.id === id) : null;
-  _alarmFormDays = alarm ? [...(alarm.schedule.days || [])] : [];
-  _alarmMonthWeekday = alarm?.schedule?.weekday ?? 1;
-  const schedType = alarm?.schedule?.type || 'weekly';
-  const actionType = alarm?.action?.type || 'none';
-  const sets = db.items.filter(i => i.type === 'set');
-  const setOpts = sets.map(s => `<option value="${s.id}" ${alarm?.action?.targetId===s.id?'selected':''}>${esc(s.title)}</option>`).join('');
-
-  // schedType → unit / interval
-  let _afUnit = 'week', _afInterval = 1;
-  if (schedType === 'daily')           { _afUnit = 'day';          _afInterval = 1; }
-  else if (schedType === 'weekly')     { _afUnit = 'week';         _afInterval = alarm?.schedule?.interval || 1; }
-  else if (schedType === 'biweekly')   { _afUnit = 'week';         _afInterval = 2; }
-  else if (schedType === 'monthly-date')    { _afUnit = 'month-date';  _afInterval = 1; }
-  else if (schedType === 'monthly-weekday') { _afUnit = 'month-weekday'; _afInterval = 1; }
-  else if (schedType === 'yearly')     { _afUnit = 'year';         _afInterval = 1; }
-  else if (schedType === 'once')       { _afUnit = 'once';         _afInterval = 1; }
-  const _afOnceDate = alarm?.schedule?.date || new Date().toISOString().slice(0,10);
-  const _afBiRef   = alarm?.schedule?.biweeklyRef || new Date().toISOString().slice(0,10);
-
-  document.getElementById('alarm-modal-body').innerHTML = `
-    <div class="form-group">
-      <div class="form-label">アラーム名</div>
-      <input class="form-input" id="af-name" placeholder="例: 朝のミーティング" value="${esc(alarm?.name||'')}">
-    </div>
-    <div class="form-group">
-      <div class="form-label">繰り返し</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input class="form-input" type="number" id="af-interval" min="1" max="99" value="${_afInterval}" style="width:65px;text-align:center${_afUnit==='once'?';display:none':''}" oninput="onAlarmTypeChange()">
-        <select class="form-select" id="af-unit" onchange="onAlarmTypeChange()">
-          <option value="day"           ${_afUnit==='day'?'selected':''}>日ごと</option>
-          <option value="week"          ${_afUnit==='week'?'selected':''}>週ごと</option>
-          <option value="month-date"    ${_afUnit==='month-date'?'selected':''}>ヶ月ごと（日付）</option>
-          <option value="month-weekday" ${_afUnit==='month-weekday'?'selected':''}>ヶ月ごと（曜日）</option>
-          <option value="year"          ${_afUnit==='year'?'selected':''}>年ごと</option>
-          <option value="once"          ${_afUnit==='once'?'selected':''}>一度だけ</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group" id="af-days-group"${_afUnit!=='week'?' style="display:none"':''}>
-      <div class="form-label">曜日</div>
-      <div class="day-picker">${ALARM_DAYS.map((d,i)=>`
-        <button type="button" class="day-btn${_alarmFormDays.includes(i)?' selected':''}"
-          onclick="toggleAlarmDay(${i},this)">${d}</button>`).join('')}</div>
-    </div>
-    <div class="form-group" id="af-monthday-group"${_afUnit!=='month-date'?' style="display:none"':''}>
-      <div class="form-label">毎月何日</div>
-      <input class="form-input" type="number" id="af-monthday" min="1" max="31" value="${alarm?.schedule?.monthDay||1}" style="width:90px">
-    </div>
-    <div class="form-group" id="af-monthweekday-group"${_afUnit!=='month-weekday'?' style="display:none"':''}>
-      <div class="form-label">第何週・曜日</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <select class="form-select" id="af-weekday-n" style="width:100px">
-          ${[1,2,3,4,5].map(n=>`<option value="${n}" ${alarm?.schedule?.weekdayN===n?'selected':''}>第${n}</option>`).join('')}
-          <option value="-1" ${alarm?.schedule?.weekdayN===-1?'selected':''}>最終</option>
-        </select>
-        <div class="day-picker">${ALARM_DAYS.map((d,i)=>`
-          <button type="button" class="day-btn${alarm?.schedule?.weekday===i?' selected':''}"
-            onclick="selectMonthWeekday(${i},this)">${d}</button>`).join('')}</div>
-      </div>
-    </div>
-    <div class="form-group" id="af-yearly-group"${_afUnit!=='year'?' style="display:none"':''}>
-      <div class="form-label">毎年何月何日</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <select class="form-select" id="af-yearly-month" style="width:90px">
-          ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${alarm?.schedule?.month===i+1?'selected':''}>${i+1}月</option>`).join('')}
-        </select>
-        <input class="form-input" type="number" id="af-yearly-day" min="1" max="31" value="${alarm?.schedule?.day||1}" style="width:70px">
-        <span style="color:var(--text-muted);font-size:13px">日</span>
-      </div>
-    </div>
-    <div class="form-group" id="af-once-group"${_afUnit!=='once'?' style="display:none"':''}>
-      <div class="form-label">日付</div>
-      <button type="button" class="date-picker-btn" onclick="document.getElementById('af-once-date').showPicker?.()">
-        📅 <span id="af-once-disp">${_afOnceDate}</span>
-        <input type="date" id="af-once-date" value="${_afOnceDate}" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0" onchange="document.getElementById('af-once-disp').textContent=this.value">
-      </button>
-    </div>
-    <input type="hidden" id="af-biweekly-ref" value="${_afBiRef}">
-    <div class="form-group">
-      <div class="form-label">時刻</div>
-      <input class="form-input" type="time" id="af-time" value="${alarm?.schedule?.time||'09:00'}">
-    </div>
-    <div class="form-group">
-      <div class="form-label">アクション（時間になったら）</div>
-      <select class="form-select" id="af-action-type" onchange="onAlarmActionTypeChange()">
-        <option value="none" ${actionType==='none'?'selected':''}>通知のみ</option>
-        <option value="set"  ${actionType==='set'?'selected':''}>セットを起動</option>
-        <option value="url"  ${actionType==='url'?'selected':''}>URLを開く</option>
-      </select>
-    </div>
-    <div class="form-group" id="af-set-group" style="${actionType!=='set'?'display:none':''}">
-      <div class="form-label">起動するセット</div>
-      <select class="form-select" id="af-set-target">${sets.length?setOpts:'<option value="">（セットがありません）</option>'}</select>
-    </div>
-    <div class="form-group" id="af-url-group" style="${actionType!=='url'?'display:none':''}">
-      <div class="form-label">URL</div>
-      <input class="form-input" id="af-url" placeholder="https://..." value="${esc(alarm?.action?.url||'')}">
-    </div>`;
-
-  document.getElementById('alarm-modal-footer').innerHTML = `
-    ${id?`<button class="btn-danger" data-alarm-action="delete" data-id="${id}"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>削除</button>`:''}
-    <button class="btn-secondary" data-alarm-action="back-to-list">← 戻る</button>
-    <button class="btn-primary" data-alarm-action="save">保存</button>`;
-
-  onAlarmTypeChange();
-}
-
-let _alarmMonthWeekday = 1; // 毎月第N曜日用の選択中の曜日
-
-function onAlarmTypeChange() {
-  const unit = document.getElementById('af-unit')?.value;
-  if (!unit) return;
-  // interval入力は「一度だけ」のとき非表示
-  unit === 'once' ? hideEl('af-interval') : showEl('af-interval', '');
-  ['af-days-group','af-monthday-group','af-monthweekday-group','af-yearly-group','af-once-group'].forEach(hideEl);
-  if (unit === 'week')          showEl('af-days-group', '');
-  if (unit === 'month-date')    showEl('af-monthday-group', '');
-  if (unit === 'month-weekday') showEl('af-monthweekday-group', '');
-  if (unit === 'year')          showEl('af-yearly-group', '');
-  if (unit === 'once')          showEl('af-once-group', '');
-}
-
-function selectMonthWeekday(idx, btn) {
-  document.querySelectorAll('#af-monthweekday-group .day-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  _alarmMonthWeekday = idx;
-}
-
-function onAlarmActionTypeChange() {
-  const type = document.getElementById('af-action-type').value;
-  type === 'set' ? showEl('af-set-group', '') : hideEl('af-set-group');
-  type === 'url' ? showEl('af-url-group', '') : hideEl('af-url-group');
-}
-
-function toggleAlarmDay(idx, btn) {
-  if (_alarmFormDays.includes(idx)) {
-    _alarmFormDays = _alarmFormDays.filter(d => d !== idx);
-    btn.classList.remove('selected');
-  } else {
-    _alarmFormDays.push(idx);
-    btn.classList.add('selected');
-  }
-}
-
-// ── セットフォーム用アラーム関数 ──
 function onSetAlarmToggle(enabled) {
   enabled ? showEl('f-alarm-settings', '') : hideEl('f-alarm-settings');
   if (enabled) onSetAlarmTypeChange();
@@ -7303,62 +6997,10 @@ function toggleSetAlarmDay(idx, btn) {
   btn.classList.toggle('selected');
 }
 
-let _setAlarmMWDay = 1;
 function selectSetAlarmMWDay(idx, btn) {
   document.querySelectorAll('#f-alarm-mw-days .day-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   _setAlarmMWDay = idx;
-}
-
-function saveAlarm() {
-  const name = document.getElementById('af-name').value.trim();
-  if (!name) { toast('アラーム名を入力してください', '⚠️'); return; }
-  const unit = document.getElementById('af-unit').value;
-  const intervalN = parseInt(document.getElementById('af-interval')?.value) || 1;
-  const time = document.getElementById('af-time').value;
-  if (!time) { toast('時刻を入力してください', '⚠️'); return; }
-
-  let schedule;
-  if (unit === 'once') {
-    const date = document.getElementById('af-once-date').value;
-    if (!date) { toast('日付を選択してください', '⚠️'); return; }
-    schedule = { type: 'once', time, date };
-  } else if (unit === 'day') {
-    schedule = { type: 'daily', time };
-  } else if (unit === 'week') {
-    if (_alarmFormDays.length === 0) { toast('曜日を選択してください', '⚠️'); return; }
-    if (intervalN === 2) {
-      schedule = { type: 'biweekly', time, days: [..._alarmFormDays], biweeklyRef: document.getElementById('af-biweekly-ref').value };
-    } else {
-      schedule = { type: 'weekly', time, days: [..._alarmFormDays] };
-      if (intervalN > 2) schedule.interval = intervalN;
-    }
-  } else if (unit === 'month-date') {
-    schedule = { type: 'monthly-date', time, monthDay: parseInt(document.getElementById('af-monthday').value) || 1 };
-  } else if (unit === 'month-weekday') {
-    schedule = { type: 'monthly-weekday', time, weekdayN: parseInt(document.getElementById('af-weekday-n').value), weekday: _alarmMonthWeekday };
-  } else if (unit === 'year') {
-    schedule = { type: 'yearly', time, month: parseInt(document.getElementById('af-yearly-month').value), day: parseInt(document.getElementById('af-yearly-day').value) || 1 };
-  } else {
-    schedule = { type: 'weekly', time, days: [..._alarmFormDays] };
-  }
-
-  const actionType = document.getElementById('af-action-type').value;
-  const action = { type: actionType };
-  if (actionType === 'set') action.targetId = document.getElementById('af-set-target').value;
-  else if (actionType === 'url') action.url = document.getElementById('af-url').value.trim();
-
-  if (!Array.isArray(db.alarms)) db.alarms = [];
-
-  if (_alarmFormId) {
-    const a = db.alarms.find(a => a.id === _alarmFormId);
-    if (a) { a.name = name; a.schedule = schedule; a.action = action; a.lastFired = null; }
-  } else {
-    db.alarms.push({ id: 'alarm_' + genId(), name, schedule, action, enabled: true, lastFired: null });
-  }
-
-  save(); updateAlarmBadge(); renderAlarmList();
-  toast(_alarmFormId ? 'アラームを更新しました' : 'アラームを追加しました', '🔔');
 }
 
 // ═══════════════════════════════════════════
@@ -7375,10 +7017,6 @@ document.addEventListener('click', e => {
   if (!e.target.closest('.ctx-menu')) hideCtx();
   const addBtn = e.target.closest('.type-add-btn');
   if (addBtn) { e.stopPropagation(); openModal(addBtn.dataset.modalType); return; }
-  const sidebarItem = e.target.closest('.sidebar-item[data-filter]');
-  if (sidebarItem) { setFilter(sidebarItem.dataset.filter); return; }
-  const subItem = e.target.closest('.sidebar-subitem[data-tsf]');
-  if (subItem) { setTaskSubFilter(subItem.dataset.tsf); return; }
   const appAction = e.target.closest('[data-app-action]');
   if (appAction) {
     switch (appAction.dataset.appAction) {
@@ -7398,9 +7036,17 @@ document.addEventListener('click', e => {
       case 'open-modal':               openModal(); break;
       case 'delete-selected':          deleteSelected(); break;
       case 'set-set-sub-filter':       setSetSubFilter(appAction.dataset.ssf); break;
+      case 'remove-filter-tag':        removeFilterTag(appAction.dataset.tag); break;
+      case 'remove-tag':               removeTag(appAction.dataset.tag); break;
+      case 'delete-tutorial-items':    deleteTutorialItems(appAction.dataset.cat); break;
+      case 'start-cat-rename':         startCatRename(appAction, appAction.dataset.cat); break;
     }
     return;
   }
+  const sidebarItem = e.target.closest('.sidebar-item[data-filter]');
+  if (sidebarItem) { setFilter(sidebarItem.dataset.filter); return; }
+  const subItem = e.target.closest('.sidebar-subitem[data-tsf]');
+  if (subItem) { setTaskSubFilter(subItem.dataset.tsf); return; }
   const cardAction = e.target.closest('[data-card-action]');
   if (cardAction) {
     e.stopPropagation();
@@ -7491,21 +7137,6 @@ document.getElementById('sqp-body').addEventListener('click', _sqpHandleAction);
 document.getElementById('sqp-footer').addEventListener('click', _sqpHandleAction);
 document.getElementById('set-quick-panel').querySelector('.modal').addEventListener('click', _sqpHandleAction);
 
-// alarm-modal は .modal 内のためdocument委譲が届かない → 直接ハンドラで処理
-document.getElementById('alarm-modal').querySelector('.modal').addEventListener('click', e => {
-  const btn = e.target.closest('[data-alarm-action]');
-  if (!btn) return;
-  const id = btn.dataset.id;
-  switch (btn.dataset.alarmAction) {
-    case 'close':           closeAlarmModal(); break;
-    case 'open-form':       openAlarmForm(null); break;
-    case 'edit':            openAlarmForm(id); break;
-    case 'delete':          deleteAlarm(id); break;
-    case 'toggle-selected': toggleSelectedAlarms(btn.dataset.enabled === 'true'); break;
-    case 'back-to-list':    renderAlarmList(); break;
-    case 'save':            saveAlarm(); break;
-  }
-});
 
 // settings-modal は .modal 内のためdocument委譲が届かない → 直接ハンドラで処理
 document.getElementById('settings-modal').querySelector('.modal').addEventListener('click', e => {

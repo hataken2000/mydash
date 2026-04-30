@@ -84,7 +84,7 @@ db（localStorage: 'mydash_v1'）→ load() → state → filteredItems() → re
 
 ## バージョン管理ルール
 
-**現在のバージョン: v1.14.42**
+**現在のバージョン: v1.14.46**
 
 形式: `vMAJOR.MINOR.PATCH`
 
