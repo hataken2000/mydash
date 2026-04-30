@@ -1466,7 +1466,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.51</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.52</div>
   </div>
 </aside>
 
@@ -1933,6 +1933,9 @@ body.hide-server .launch-btn { display: none !important; }
       <kbd style="font-size:11px;color:var(--text-muted);background:var(--border);border-radius:4px;padding:2px 6px">Esc</kbd>
     </div>
     <div id="qs-results" style="max-height:360px;overflow-y:auto;padding:6px"></div>
+    <div style="padding:5px 14px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted)">
+      「設定」「タスク追加」などと入力するとコマンドも検索できます
+    </div>
   </div>
 </div>
 
@@ -7102,6 +7105,8 @@ document.addEventListener('click', e => {
     }
     return;
   }
+  const qsCmd = e.target.closest('[data-qs-cmd]');
+  if (qsCmd) { qsRunCommand(qsCmd.dataset.qsCmd); return; }
   const sidebarItem = e.target.closest('.sidebar-item[data-filter]');
   if (sidebarItem) { setFilter(sidebarItem.dataset.filter); return; }
   const subItem = e.target.closest('.sidebar-subitem[data-tsf]');
@@ -7317,6 +7322,19 @@ document.getElementById('alarm-popup-overlay').addEventListener('click', e => {
 // ═══════════════════════════════════════════
 // Quick Search (⌘K)
 // ═══════════════════════════════════════════
+const QS_COMMANDS = [
+  { id: 'new-task',      label: '新規タスク追加',       icon: 'var(--icon-task)',     keys: ['task','タスク','追加'],        fn: () => { closeQuickSearch(); openModal('task'); } },
+  { id: 'new-memo',      label: '新規メモ追加',          icon: 'var(--icon-memo)',     keys: ['memo','メモ'],                 fn: () => { closeQuickSearch(); openModal('memo'); } },
+  { id: 'new-bookmark',  label: '新規ブックマーク追加',  icon: 'var(--icon-bookmark)', keys: ['bookmark','ブックマーク'],     fn: () => { closeQuickSearch(); openModal('bookmark'); } },
+  { id: 'new-tool',      label: '新規ツール/アプリ追加', icon: 'var(--icon-tool)',     keys: ['tool','ツール','アプリ'],      fn: () => { closeQuickSearch(); openModal('tool'); } },
+  { id: 'settings',      label: '設定を開く',            icon: 'var(--icon-settings)', keys: ['設定','setting'],              fn: () => { closeQuickSearch(); openSettingsModal(); } },
+  { id: 'today',         label: '今日ビューを開く',      icon: 'var(--icon-calendar)', keys: ['今日','today'],                fn: () => { closeQuickSearch(); setMainTab('today'); } },
+  { id: 'view-grid',     label: 'グリッド表示に切り替え',icon: 'var(--icon-grid)',     keys: ['グリッド','grid'],             fn: () => { closeQuickSearch(); setView('grid'); } },
+  { id: 'view-list',     label: 'リスト表示に切り替え',  icon: 'var(--icon-list)',     keys: ['リスト','list'],               fn: () => { closeQuickSearch(); setView('list'); } },
+  { id: 'starred',       label: 'お気に入りを表示',      icon: 'var(--icon-star)',     keys: ['星','お気に入り','star','starred'], fn: () => { closeQuickSearch(); setFilter('starred'); } },
+  { id: 'all',           label: 'すべて表示',            icon: 'var(--icon-all)',      keys: ['全て','すべて','all'],         fn: () => { closeQuickSearch(); setFilter('all'); } },
+];
+
 let _qsActiveIdx = -1;
 
 function openQuickSearch() {
@@ -7336,11 +7354,19 @@ function onQsInput() {
   const q = document.getElementById('qs-input').value.trim().toLowerCase();
   const results = document.getElementById('qs-results');
   _qsActiveIdx = -1;
-  const items = q
-    ? db.items.filter(i => i.title.toLowerCase().includes(q) || (i.desc||'').toLowerCase().includes(q)).slice(0,12)
-    : db.items.slice(0,12);
-  if (items.length === 0) { results.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px">見つかりません</div>'; return; }
-  results.innerHTML = items.map((item, idx) => {
+
+  const itemHits = q
+    ? db.items.filter(i => i.title.toLowerCase().includes(q) || (i.desc||'').toLowerCase().includes(q)).slice(0, 8)
+    : db.items.slice(0, 8);
+  const cmdHits = q
+    ? QS_COMMANDS.filter(c => c.label.includes(q) || c.keys.some(k => k.includes(q)))
+    : [];
+
+  if (itemHits.length === 0 && cmdHits.length === 0) {
+    results.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px">見つかりません</div>';
+    return;
+  }
+  const itemsHtml = itemHits.map(item => {
     const typeDef = TYPE_DEF[item.type] || {};
     return `<div class="qs-item" data-id="${item.id}" data-panel-action="qs-select">
       <div class="qs-item-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
@@ -7348,14 +7374,38 @@ function onQsInput() {
       <span class="qs-item-type">${typeDef.label||item.type}</span>
     </div>`;
   }).join('');
+  const cmdsHtml = cmdHits.map(c =>
+    `<div class="qs-item" data-qs-cmd="${c.id}">
+      <div class="qs-item-icon" style="background:rgba(124,131,253,0.15)"><span class="app-icon" style="-webkit-mask-image:${c.icon};mask-image:${c.icon};width:14px;height:14px;background-color:var(--accent)"></span></div>
+      <span class="qs-item-title">${esc(c.label)}</span>
+      <span class="qs-item-type" style="color:var(--accent)">コマンド</span>
+    </div>`
+  ).join('');
+  const sep = itemHits.length > 0 && cmdHits.length > 0
+    ? '<div style="padding:4px 12px;font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:0.8px;text-transform:uppercase">コマンド</div>'
+    : '';
+  results.innerHTML = itemsHtml + sep + cmdsHtml;
 }
 
 function onQsKeydown(e) {
   const items = document.querySelectorAll('#qs-results .qs-item');
   if (e.key === 'ArrowDown') { e.preventDefault(); _qsActiveIdx = Math.min(_qsActiveIdx+1, items.length-1); items.forEach((el,i) => el.classList.toggle('qs-active', i===_qsActiveIdx)); }
   else if (e.key === 'ArrowUp') { e.preventDefault(); _qsActiveIdx = Math.max(_qsActiveIdx-1, 0); items.forEach((el,i) => el.classList.toggle('qs-active', i===_qsActiveIdx)); }
-  else if (e.key === 'Enter') { if (_qsActiveIdx >= 0 && items[_qsActiveIdx]) { const id = items[_qsActiveIdx].dataset.id; qsSelectItem(id); } }
+  else if (e.key === 'Enter') {
+    if (_qsActiveIdx >= 0 && items[_qsActiveIdx]) {
+      const el = items[_qsActiveIdx];
+      if (el.dataset.qsCmd) { qsRunCommand(el.dataset.qsCmd); } else { qsSelectItem(el.dataset.id); }
+    } else if (items.length === 1) {
+      const el = items[0];
+      if (el.dataset.qsCmd) { qsRunCommand(el.dataset.qsCmd); } else { qsSelectItem(el.dataset.id); }
+    }
+  }
   else if (e.key === 'Escape') { closeQuickSearch(); }
+}
+
+function qsRunCommand(cmdId) {
+  const cmd = QS_COMMANDS.find(c => c.id === cmdId);
+  if (cmd) cmd.fn();
 }
 
 function qsSelectItem(id) {
