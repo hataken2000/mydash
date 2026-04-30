@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.45</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.46</div>
   </div>
 </aside>
 
@@ -2914,7 +2914,12 @@ function gridCard(item) {
   let expandBody = '';
   if (expanded && hasExpand) {
     if (item.type === 'memo') {
-      expandBody = `<div class="card-expand-body" data-card-action="start-memo-edit" data-id="${item.id}" style="cursor:text" title="クリックして編集">${renderMemo(item.desc)}</div>`;
+      expandBody = state.editingMemoId === item.id
+        ? `<div class="card-expand-body" onclick="event.stopPropagation()">
+            <textarea id="memo-inline-${item.id}" style="width:100%;min-height:120px;background:var(--bg);border:1px solid var(--accent);border-radius:var(--radius-sm);color:var(--text);padding:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none" onblur="saveMemoInline('${item.id}')" onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();saveMemoInline('${item.id}')}"></textarea>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:3px">⌘+Enter またはフォーカスを外すと保存</div>
+          </div>`
+        : `<div class="card-expand-body" data-card-action="start-memo-edit" data-id="${item.id}" style="cursor:text" title="クリックして編集">${renderMemo(item.desc)}</div>`;
     } else if (item.type === 'set') {
       const setItems = (item.setItems || [])
         .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
