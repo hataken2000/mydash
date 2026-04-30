@@ -1146,6 +1146,9 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
   background: none; border: none; padding: 2px 0; font-family: inherit;
 }
 .memo-toggle:hover { text-decoration: underline; }
+.memo-cb { display: inline-flex; align-items: baseline; gap: 5px; cursor: pointer; user-select: none; padding: 1px 0; border-radius: 3px; }
+.memo-cb:hover { background: var(--border); }
+.memo-cb img { display: none; }
 .memo-img {
   max-height: 80px; max-width: 140px; border-radius: 4px;
   vertical-align: middle; cursor: pointer; margin: 2px 2px 2px 0;
@@ -1463,7 +1466,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.50</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.51</div>
   </div>
 </aside>
 
@@ -2385,6 +2388,15 @@ function renderMemo(text) {
   s = s.replace(/^# (.+)$/gm,   '<h1>$1</h1>');
   // --- 区切り線
   s = s.replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:6px 0">');
+  // - [ ] / - [x] チェックボックス（通常リストより前に処理）
+  let _cbIdx = 0;
+  s = s.replace(/^[-*] \[([ xX])\] (.*)$/gm, (_, checked, content) => {
+    const done = checked !== ' ';
+    const idx = _cbIdx++;
+    const icon = done ? '&#9745;' : '&#9744;';
+    const textStyle = done ? 'text-decoration:line-through;color:var(--text-muted)' : '';
+    return `<span class="memo-cb${done?' checked':''}" data-card-action="toggle-memo-cb" data-cb-idx="${idx}" style="cursor:pointer;display:inline-flex;align-items:baseline;gap:5px;user-select:none"><span style="font-size:1.1em;line-height:1;flex-shrink:0">${icon}</span><span style="${textStyle}">${content}</span></span>`;
+  });
   // - / * リスト
   s = s.replace(/^[-*] (.+)$/gm, '• $1');
   // 〒郵便番号 + 住所 → 地図埋め込み（自動）
@@ -4184,6 +4196,30 @@ function startMemoEdit(id) {
   }, 0);
 }
 
+function toggleMemoCheckbox(itemId, cbIdx) {
+  const item = db.items.find(i => i.id === itemId);
+  if (!item || !item.desc) return;
+  let count = 0;
+  item.desc = item.desc.replace(/^([-*] \[)([ xX])(\] .*)$/gm, (_, pre, ch, suf) => {
+    if (count++ === cbIdx) return pre + (ch === ' ' ? 'x' : ' ') + suf;
+    return pre + ch + suf;
+  });
+  item.updatedAt = new Date().toISOString();
+  save();
+  // カード内のメモ表示を部分更新（start-memo-edit のdata-idで特定）
+  document.querySelectorAll(`[data-card-action="start-memo-edit"][data-id="${itemId}"]`).forEach(el => {
+    el.innerHTML = renderMemo(item.desc);
+  });
+  // QEプレビューが開いていたら更新
+  const qePanel = document.getElementById('quick-edit-popup');
+  if (qePanel?.dataset.itemId === itemId) {
+    const prev = document.getElementById('qe-desc-preview');
+    if (prev?.style.display !== 'none') prev.innerHTML = renderMemo(item.desc);
+    const ta = document.getElementById('qe-desc');
+    if (ta) ta.value = item.desc;
+  }
+}
+
 function saveMemoInline(id) {
   if (state.editingMemoId !== id) return;
   const ta = document.getElementById(`memo-inline-${id}`);
@@ -4616,6 +4652,10 @@ function showQuickEdit(id) {
     const mec = e.target.closest('[data-card-action]');
     if (!mec) { _qeShowEdit(id); return; }
     e.stopPropagation();
+    if (mec.dataset.cardAction === 'toggle-memo-cb') {
+      toggleMemoCheckbox(id, Number(mec.dataset.cbIdx));
+      return;
+    }
     const mecId = mec.dataset.id;
     const mecAction = mec.dataset.cardAction;
     closeQuickEdit(id);
@@ -7083,6 +7123,11 @@ document.addEventListener('click', e => {
       case 'show-slack-qp':   showSlackQuickPanel(id); break;
       case 'show-quick-edit': showQuickEdit(id); break;
       case 'start-memo-edit': startMemoEdit(id); break;
+      case 'toggle-memo-cb': {
+        const cardEl = e.target.closest('[data-card-id]');
+        if (cardEl) toggleMemoCheckbox(cardEl.dataset.cardId, Number(cardAction.dataset.cbIdx));
+        break;
+      }
     }
     return;
   }
