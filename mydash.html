@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.44</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.45</div>
   </div>
 </aside>
 
@@ -2914,7 +2914,7 @@ function gridCard(item) {
   let expandBody = '';
   if (expanded && hasExpand) {
     if (item.type === 'memo') {
-      expandBody = `<div class="card-expand-body">${renderMemo(item.desc)}</div>`;
+      expandBody = `<div class="card-expand-body" data-card-action="start-memo-edit" data-id="${item.id}" style="cursor:text" title="クリックして編集">${renderMemo(item.desc)}</div>`;
     } else if (item.type === 'set') {
       const setItems = (item.setItems || [])
         .map(si => db.items.find(i => i.id === si.itemId)).filter(Boolean);
@@ -4610,6 +4610,7 @@ function showQuickEdit(id) {
     e.stopPropagation(); // インラインonclick(_qeShowEdit)の発火を防ぐ
     const mecId = mec.dataset.id;
     const mecAction = mec.dataset.cardAction;
+    closeQuickEdit(id);
     setTimeout(() => {
       switch (mecAction) {
         case 'show-quick-edit': showQuickEdit(mecId); break;
