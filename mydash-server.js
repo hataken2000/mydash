@@ -11,7 +11,7 @@ const path = require('path');
 const { exec, execFile } = require('child_process');
 
 const STATIC_DIR = path.dirname(__filename);
-const STATIC_FILES = { 'mydash.html': 'text/html', 'widget.html': 'text/html' };
+const STATIC_FILES = { 'mydash.html': 'text/html', 'widget.html': 'text/html', 'manual.html': 'text/html' };
 
 const PORT = 3737;
 const HOST = '0.0.0.0';

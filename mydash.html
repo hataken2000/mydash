@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.48</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.49</div>
   </div>
 </aside>
 
@@ -5081,7 +5081,7 @@ function showSlackQuickPanel(id) {
 
   document.getElementById('sqkp-footer').innerHTML =
     `<button class="btn-secondary" data-modal-action="edit" data-id="${id}">詳細編集</button>
-     <button class="btn-primary" onclick="_execSlackQPSend()" style="background:var(--slack);display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);width:14px;height:14px;background-color:white"></span>送信</button>`;
+     <button class="btn-primary" data-modal-action="slack-qp-send" style="background:var(--slack);display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);width:14px;height:14px;background-color:white"></span>送信</button>`;
 
   showEl('slack-quick-panel');
 }
@@ -5090,10 +5090,10 @@ function _renderSlackQPBody(item) {
   const channels = db.slackChannels || [];
   const chListHtml = channels.length > 0
     ? channels.map((ch, i) =>
-        `<div class="slack-ch-item${ch.url === _sqkpSelectedUrl ? ' active' : ''}" onclick="_selectSlackQPChannel(${i})">
+        `<div class="slack-ch-item${ch.url === _sqkpSelectedUrl ? ' active' : ''}" data-modal-action="slack-qp-select" data-idx="${i}">
           <span class="ch-name"># ${esc(ch.name)}</span>
           <span class="ch-url">${esc(ch.url)}</span>
-          <button onmousedown="event.preventDefault()" onclick="event.stopPropagation();_deleteSlackQPChannel('${ch.id}')" style="flex-shrink:0;padding:1px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:11px;margin-left:4px">×</button>
+          <button onmousedown="event.preventDefault()" data-modal-action="slack-qp-delete-ch" data-id="${ch.id}" style="flex-shrink:0;padding:1px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:11px;margin-left:4px">×</button>
         </div>`
       ).join('')
     : `<div style="font-size:12px;color:var(--text-muted);padding:2px 0">まだチャンネルが登録されていません</div>`;
@@ -5108,7 +5108,7 @@ function _renderSlackQPBody(item) {
           <input type="text" id="sqkp-ch-url" placeholder="https://app.slack.com/..." style="flex:2;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:6px 8px;font-size:13px;font-family:inherit">
         </div>
         <div style="display:flex;gap:6px">
-          <button onclick="_addSlackQPChannel()" style="flex:1;padding:6px;border-radius:var(--radius-sm);border:1px solid var(--slack);background:rgba(74,185,95,0.1);color:var(--slack);cursor:pointer;font-size:12px;font-family:inherit">追加</button>
+          <button data-modal-action="slack-qp-add-ch" style="flex:1;padding:6px;border-radius:var(--radius-sm);border:1px solid var(--slack);background:rgba(74,185,95,0.1);color:var(--slack);cursor:pointer;font-size:12px;font-family:inherit">追加</button>
           <button data-modal-action="toggle-slack-ch" style="padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit">キャンセル</button>
         </div>
       </div>
@@ -5147,10 +5147,10 @@ function _renderEditSlackChUI() {
   const btnStyle = 'flex-shrink:0;padding:1px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:11px;margin-left:4px';
   const chListHtml = channels.length > 0
     ? channels.map((ch, i) =>
-        `<div class="slack-ch-item${ch.url === curUrl ? ' active' : ''}" onclick="_selectEditSlackCh('${esc(ch.url)}')">
+        `<div class="slack-ch-item${ch.url === curUrl ? ' active' : ''}" data-modal-action="slack-edit-select-ch" data-url="${esc(ch.url)}">
           <span class="ch-name"># ${esc(ch.name)}</span>
           <span class="ch-url">${esc(ch.url)}</span>
-          <button type="button" onmousedown="event.preventDefault()" onclick="event.stopPropagation();_deleteEditSlackCh('${ch.id}')" style="${btnStyle}">×</button>
+          <button type="button" onmousedown="event.preventDefault()" data-modal-action="slack-edit-delete-ch" data-id="${ch.id}" style="${btnStyle}">×</button>
         </div>`
       ).join('')
     : `<div style="font-size:12px;color:var(--text-muted);padding:2px 0">チャンネル未登録 — 下から追加してください</div>`;
@@ -5162,11 +5162,11 @@ function _renderEditSlackChUI() {
         <input type="text" id="f-slack-add-url" placeholder="https://app.slack.com/..." style="flex:2;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:6px 8px;font-size:13px;font-family:inherit">
       </div>
       <div style="display:flex;gap:6px">
-        <button type="button" onclick="_addSlackChFromEdit()" style="flex:1;padding:6px;border-radius:var(--radius-sm);border:1px solid var(--slack);background:rgba(74,185,95,0.1);color:var(--slack);cursor:pointer;font-size:12px;font-family:inherit">追加</button>
-        <button type="button" onclick="_toggleEditSlackChForm()" style="padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit">キャンセル</button>
+        <button type="button" data-modal-action="slack-edit-add-ch" style="flex:1;padding:6px;border-radius:var(--radius-sm);border:1px solid var(--slack);background:rgba(74,185,95,0.1);color:var(--slack);cursor:pointer;font-size:12px;font-family:inherit">追加</button>
+        <button type="button" data-modal-action="slack-edit-toggle-form" style="padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit">キャンセル</button>
       </div>
     </div>
-    <button id="f-slack-add-toggle" type="button" onclick="_toggleEditSlackChForm()" style="margin-top:6px;width:100%;padding:5px;border-radius:var(--radius-sm);border:1px dashed var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px"><span style="font-size:14px;line-height:1">+</span>チャンネルを追加</button>`;
+    <button id="f-slack-add-toggle" type="button" data-modal-action="slack-edit-toggle-form" style="margin-top:6px;width:100%;padding:5px;border-radius:var(--radius-sm);border:1px dashed var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px"><span style="font-size:14px;line-height:1">+</span>チャンネルを追加</button>`;
   if (!curUrl && channels.length > 0) _selectEditSlackCh(channels[0].url);
 }
 
@@ -6066,7 +6066,7 @@ function renderCalStep1() {
         ${ng.map((s,i)=>`
           <div style="display:flex;align-items:center;gap:6px;font-size:12px;padding:4px 6px;background:var(--card-bg);border-radius:6px">
             <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s)}</span>
-            <button onclick="removeCalNg(${i})" title="NGリストから削除" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--text-muted);padding:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+            <button data-modal-action="remove-cal-ng" data-idx="${i}" title="NGリストから削除" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--text-muted);padding:0" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
           </div>`).join('')}
       </div>
     </div>` : '';
@@ -6093,13 +6093,13 @@ function renderCalStep1() {
       </div>
       <div style="font-size:11px;color:var(--text-muted);display:flex;align-items:center;justify-content:space-between">
         <span>最終同期: ${lastSyncStr}</span>
-        <button onclick="runCalSync(true)" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);padding:0" ${sync.url?'':'disabled'}>今すぐ同期</button>
+        <button data-modal-action="run-cal-sync" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);padding:0" ${sync.url?'':'disabled'}>今すぐ同期</button>
       </div>
     </div>
     ${ngHtml}`;
   document.getElementById('cal-import-footer').innerHTML=`
     <button class="btn-secondary" data-modal-action="close">キャンセル</button>
-    <button class="btn-primary" onclick="fetchCalendar()"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>取得して解析</button>`;
+    <button class="btn-primary" data-modal-action="fetch-calendar"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>取得して解析</button>`;
 }
 
 function addCalNg(summary) {
@@ -6231,8 +6231,10 @@ async function gistDownload() {
     if (!raw) throw new Error('データが見つかりません');
     const remote = JSON.parse(raw);
 
-    // リモートで完全上書き
+    // リモートで完全上書き（alarmMutedはデバイスローカルなので保持）
+    const prevMuted = db.settings?.alarmMuted;
     Object.assign(db, remote);
+    if (db.settings && prevMuted !== undefined) db.settings.alarmMuted = prevMuted;
     save();
     render();
     gistStatus(`✅ 読込完了（${new Date().toLocaleTimeString('ja-JP')}）`, false);
@@ -6292,9 +6294,11 @@ async function gistAutoDownload() {
     // ローカルにversionがない（古いデータ or 初回）はリモート優先
     // リモートが新しい場合も同様
     if (remoteVersion > localVersion || localVersion === 0) {
-      // リモートで完全上書き
+      // リモートで完全上書き（alarmMutedはデバイスローカルなので保持）
       const prevJson = JSON.stringify(db.items);
+      const prevMuted = db.settings?.alarmMuted;
       Object.assign(db, remote);
+      if (db.settings && prevMuted !== undefined) db.settings.alarmMuted = prevMuted;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
       rebuildIndex();
       if (JSON.stringify(db.items) !== prevJson) {
@@ -6810,8 +6814,8 @@ function renderCalStep2() {
   }
   document.getElementById('cal-import-body').innerHTML=`<div style="max-height:360px;overflow-y:auto;padding-right:3px">${html}</div>`;
   document.getElementById('cal-import-footer').innerHTML=`
-    <button class="btn-secondary" onclick="renderCalStep1()">← 戻る</button>
-    <button class="btn-primary" onclick="importCalendarEvents()" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px;background-color:white"></span>インポート</button>`;
+    <button class="btn-secondary" data-modal-action="cal-step1">← 戻る</button>
+    <button class="btn-primary" data-modal-action="cal-import-events" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px;background-color:white"></span>インポート</button>`;
 }
 
 function isBoilerplateDescription(desc) {
@@ -7183,6 +7187,19 @@ document.getElementById('settings-modal').querySelector('.modal').addEventListen
     if (btn.dataset.modalAction === 'open-date-picker')  { document.getElementById(btn.dataset.target).showPicker?.(); return; }
     if (btn.dataset.modalAction === 'delete-item')       { deleteItem(); return; }
     if (btn.dataset.modalAction === 'save-item')         { saveItem(); return; }
+    if (btn.dataset.modalAction === 'remove-cal-ng')       { removeCalNg(Number(btn.dataset.idx)); return; }
+    if (btn.dataset.modalAction === 'run-cal-sync')        { runCalSync(true); return; }
+    if (btn.dataset.modalAction === 'fetch-calendar')      { fetchCalendar(); return; }
+    if (btn.dataset.modalAction === 'cal-step1')           { renderCalStep1(); return; }
+    if (btn.dataset.modalAction === 'cal-import-events')   { importCalendarEvents(); return; }
+    if (btn.dataset.modalAction === 'slack-qp-send')       { _execSlackQPSend(); return; }
+    if (btn.dataset.modalAction === 'slack-qp-select')     { _selectSlackQPChannel(Number(btn.dataset.idx)); return; }
+    if (btn.dataset.modalAction === 'slack-qp-delete-ch')  { e.stopPropagation(); _deleteSlackQPChannel(btn.dataset.id); return; }
+    if (btn.dataset.modalAction === 'slack-qp-add-ch')     { _addSlackQPChannel(); return; }
+    if (btn.dataset.modalAction === 'slack-edit-select-ch'){ _selectEditSlackCh(btn.dataset.url); return; }
+    if (btn.dataset.modalAction === 'slack-edit-delete-ch'){ e.stopPropagation(); _deleteEditSlackCh(btn.dataset.id); return; }
+    if (btn.dataset.modalAction === 'slack-edit-add-ch')   { _addSlackChFromEdit(); return; }
+    if (btn.dataset.modalAction === 'slack-edit-toggle-form'){ _toggleEditSlackChForm(); return; }
   });
 });
 
