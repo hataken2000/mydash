@@ -1363,7 +1363,7 @@ body.hide-server .launch-btn { display: none !important; }
 <body>
 
 <!-- Sidebar -->
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div class="sidebar-overlay" id="sidebar-overlay" data-app-action="toggle-sidebar"></div>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" style="flex-shrink:0"><rect width="24" height="24" rx="4" fill="var(--accent)"/><path d="M14 3L7 13h5l-2 8 7-10h-5z" fill="white"/></svg>MyDash<a href="manual.html" target="_blank" class="help-btn" title="マニュアルを開く"><span class="app-icon" style="-webkit-mask-image:var(--icon-help-circle);mask-image:var(--icon-help-circle);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;"></span></a></div>
 
@@ -1372,107 +1372,107 @@ body.hide-server .launch-btn { display: none !important; }
     <div class="clock-date" id="clock-date">----年--月--日（-）</div>
     <div style="margin-top:8px">
       <div class="sidebar-item" style="padding:6px 8px;border-radius:8px;justify-content:center;gap:6px">
-        <button class="input-mode-btn" id="alarm-mute-btn" onclick="toggleAlarmMute()" title="アラームON/OFF（集中モード）" style="width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
-        <span style="font-size:12px;color:var(--text-muted);flex:1;cursor:pointer" onclick="goToAlarmFilter()">アラーム管理</span>
-        <span class="count-badge" id="cnt-alarm" style="cursor:pointer" onclick="goToAlarmFilter()">0</span>
+        <button class="input-mode-btn" id="alarm-mute-btn" data-app-action="toggle-alarm-mute" title="アラームON/OFF（集中モード）" style="width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
+        <span style="font-size:12px;color:var(--text-muted);flex:1;cursor:pointer" data-app-action="go-to-alarm-filter">アラーム管理</span>
+        <span class="count-badge" id="cnt-alarm" style="cursor:pointer" data-app-action="go-to-alarm-filter">0</span>
       </div>
-      <div class="sidebar-item server-feature" id="widget-btn" onclick="openWidget()" style="padding:6px 8px;border-radius:8px;justify-content:center;gap:6px;margin-top:4px">
+      <div class="sidebar-item server-feature" id="widget-btn" data-app-action="open-widget" style="padding:6px 8px;border-radius:8px;justify-content:center;gap:6px;margin-top:4px">
         <span id="widget-btn-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-widget);mask-image:var(--icon-widget);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></span>
         <span style="font-size:12px;color:var(--text-muted)" id="widget-btn-label">ウィジェット</span>
       </div>
     </div>
   </div>
 
-  <div class="sidebar-section collapsible" onclick="toggleSidebarSection('all')">すべて<svg class="section-chevron" id="arrow-all" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  <div class="sidebar-section collapsible" data-app-action="toggle-sidebar-section" data-section="all">すべて<svg class="section-chevron" id="arrow-all" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
   <div id="body-section-all">
-    <div class="sidebar-item active" data-filter="all" onclick="setFilter('all')">
+    <div class="sidebar-item active" data-filter="all">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-all);mask-image:var(--icon-all)"></span></span><span class="si-label">すべて</span>
       <span class="count-badge" id="cnt-all">0</span>
     </div>
-    <div class="sidebar-item" data-filter="starred" onclick="setFilter('starred')">
+    <div class="sidebar-item" data-filter="starred">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-star-filled);mask-image:var(--icon-star-filled)"></span></span><span class="si-label">お気に入り</span>
       <span class="count-badge" id="cnt-starred">0</span>
     </div>
   </div>
 
-  <div class="sidebar-section collapsible" onclick="toggleSidebarSection('type')">種類<svg class="section-chevron" id="arrow-type" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  <div class="sidebar-section collapsible" data-app-action="toggle-sidebar-section" data-section="type">種類<svg class="section-chevron" id="arrow-type" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
   <div id="body-section-type">
-    <div class="sidebar-item" data-filter="set" onclick="setFilter('set')">
+    <div class="sidebar-item" data-filter="set">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set)"></span></span><span class="si-label">セット</span>
       <button class="type-add-btn" data-modal-type="set" title="セット追加">＋</button>
       <span class="count-badge" id="cnt-set">0</span>
     </div>
     <div id="set-subfilter-section" style="display:none">
-      <div class="sidebar-subitem" data-ssf="alarm" onclick="setSetSubFilter('alarm')"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>アラームあり<span class="count-badge" id="cnt-ssf-alarm" style="margin-left:auto">0</span></div>
+      <div class="sidebar-subitem" data-ssf="alarm" data-app-action="set-set-sub-filter"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>アラームあり<span class="count-badge" id="cnt-ssf-alarm" style="margin-left:auto">0</span></div>
     </div>
-    <div class="sidebar-item" data-filter="bookmark" onclick="setFilter('bookmark')">
+    <div class="sidebar-item" data-filter="bookmark">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark)"></span></span><span class="si-label">ブックマーク</span>
       <button class="type-add-btn" data-modal-type="bookmark" title="ブックマーク追加">＋</button>
       <span class="count-badge" id="cnt-bookmark">0</span>
     </div>
-    <div class="sidebar-item" data-filter="tool" onclick="setFilter('tool')">
+    <div class="sidebar-item" data-filter="tool">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-tool);mask-image:var(--icon-tool)"></span></span><span class="si-label">ツール/アプリ</span>
       <button class="type-add-btn" data-modal-type="tool" title="ツール/アプリ追加">＋</button>
       <span class="count-badge" id="cnt-tool">0</span>
     </div>
-    <div class="sidebar-item" data-filter="task" onclick="setFilter('task')">
+    <div class="sidebar-item" data-filter="task">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task)"></span></span><span class="si-label">タスク</span>
       <button class="type-add-btn" data-modal-type="task" title="タスク追加">＋</button>
       <span class="count-badge" id="cnt-task">0</span>
     </div>
     <div id="task-subfilter-section" style="display:none">
-      <div class="sidebar-subitem" data-tsf="today"   onclick="setTaskSubFilter('today')"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>今日締切<span class="count-badge" id="cnt-tsf-today" style="margin-left:auto">0</span></div>
-      <div class="sidebar-subitem" data-tsf="overdue" onclick="setTaskSubFilter('overdue')"><span class="app-icon" style="-webkit-mask-image:var(--icon-alert-triangle);mask-image:var(--icon-alert-triangle);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>期限超過<span class="count-badge" id="cnt-tsf-overdue" style="margin-left:auto">0</span></div>
-      <div class="sidebar-subitem" data-tsf="doing"   onclick="setTaskSubFilter('doing')"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>進行中<span class="count-badge" id="cnt-tsf-doing" style="margin-left:auto">0</span></div>
+      <div class="sidebar-subitem" data-tsf="today"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>今日締切<span class="count-badge" id="cnt-tsf-today" style="margin-left:auto">0</span></div>
+      <div class="sidebar-subitem" data-tsf="overdue"><span class="app-icon" style="-webkit-mask-image:var(--icon-alert-triangle);mask-image:var(--icon-alert-triangle);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>期限超過<span class="count-badge" id="cnt-tsf-overdue" style="margin-left:auto">0</span></div>
+      <div class="sidebar-subitem" data-tsf="doing"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>進行中<span class="count-badge" id="cnt-tsf-doing" style="margin-left:auto">0</span></div>
     </div>
-    <div class="sidebar-item" data-filter="place" onclick="setFilter('place')">
+    <div class="sidebar-item" data-filter="place">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place)"></span></span><span class="si-label">場所</span>
       <button class="type-add-btn" data-modal-type="place" title="場所追加">＋</button>
       <span class="count-badge" id="cnt-place">0</span>
     </div>
-    <div class="sidebar-item" data-filter="memo" onclick="setFilter('memo')">
+    <div class="sidebar-item" data-filter="memo">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo)"></span></span><span class="si-label">メモ</span>
       <button class="type-add-btn" data-modal-type="memo" title="メモ追加">＋</button>
       <span class="count-badge" id="cnt-memo">0</span>
     </div>
-    <div class="sidebar-item" data-filter="other" onclick="setFilter('other')">
+    <div class="sidebar-item" data-filter="other">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-box);mask-image:var(--icon-box)"></span></span><span class="si-label">その他</span>
       <button class="type-add-btn" data-modal-type="other" title="その他追加">＋</button>
       <span class="count-badge" id="cnt-other">0</span>
     </div>
-    <div class="sidebar-item" data-filter="slack" onclick="setFilter('slack')">
+    <div class="sidebar-item" data-filter="slack">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack)"></span></span><span class="si-label">Slack送信</span>
       <button class="type-add-btn" data-modal-type="slack" title="Slack送信追加">＋</button>
       <span class="count-badge" id="cnt-slack">0</span>
     </div>
-    <div class="sidebar-item server-feature" data-filter="script" onclick="setFilter('script')">
+    <div class="sidebar-item server-feature" data-filter="script">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script)"></span></span><span class="si-label">スクリプト</span>
       <button class="type-add-btn" data-modal-type="script" title="スクリプト追加">＋</button>
       <span class="count-badge" id="cnt-script">0</span>
     </div>
-    <div class="sidebar-item server-feature" data-filter="window-session" onclick="setFilter('window-session')">
+    <div class="sidebar-item server-feature" data-filter="window-session">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor)"></span></span><span class="si-label">タブセット</span>
       <span class="count-badge" id="cnt-window-session">0</span>
     </div>
   </div>
 
-  <div class="sidebar-section collapsible" id="cat-section" style="display:none" onclick="toggleSidebarSection('cat')">カテゴリ<svg class="section-chevron" id="arrow-cat" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  <div class="sidebar-section collapsible" id="cat-section" style="display:none" data-app-action="toggle-sidebar-section" data-section="cat">カテゴリ<svg class="section-chevron" id="arrow-cat" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
   <div id="body-section-cat">
     <div id="cat-list"></div>
   </div>
 
   <div class="sidebar-footer">
-    <button class="io-btn" onclick="openSettingsModal()" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.46</div>
+    <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.47</div>
   </div>
 </aside>
 
 <!-- Dock Import Modal -->
-<div class="modal-overlay" id="dock-import-modal" style="display:none" onclick="if(event.target===this)closeDockImportModal()">
+<div class="modal-overlay" id="dock-import-modal" style="display:none">
   <div class="modal" style="max-width:420px">
     <div class="modal-header">
       <span class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);width:15px;height:15px;background-color:currentColor;vertical-align:middle;display:inline-block;margin-right:5px"></span>Dockインポート</span>
-      <button class="modal-close" onclick="closeDockImportModal()">✕</button>
+      <button class="modal-close" data-modal-action="close">✕</button>
     </div>
     <div class="modal-body" id="dock-import-body" style="min-height:80px"></div>
     <div class="modal-footer" id="dock-import-footer"></div>
@@ -1480,11 +1480,11 @@ body.hide-server .launch-btn { display: none !important; }
 </div>
 
 <!-- Settings Modal -->
-<div class="modal-overlay" id="settings-modal" style="display:none" onclick="if(event.target===this)closeSettingsModal()">
+<div class="modal-overlay" id="settings-modal" style="display:none">
   <div class="modal" style="max-width:400px">
     <div class="modal-header">
       <span class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:15px;height:15px;background-color:currentColor;vertical-align:middle;display:inline-block;margin-right:5px"></span>設定</span>
-      <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+      <button class="modal-close" data-settings-action="close">✕</button>
     </div>
     <div class="modal-body" style="gap:20px">
 
@@ -1503,14 +1503,14 @@ body.hide-server .launch-btn { display: none !important; }
       <div>
         <div class="settings-section-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px;margin-right:5px"></span>データ</div>
         <div class="settings-section-body">
-          <button class="io-btn" onclick="exportJSON()" style="display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-upload);mask-image:var(--icon-upload);width:13px;height:13px"></span>JSONエクスポート</button>
+          <button class="io-btn" data-settings-action="export-json" style="display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-upload);mask-image:var(--icon-upload);width:13px;height:13px"></span>JSONエクスポート</button>
           <label class="io-btn" style="cursor:pointer;display:flex;align-items:center;gap:5px;justify-content:center">
             <span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px"></span>JSONインポート
             <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
           </label>
 
-          <button class="io-btn server-feature" onclick="closeSettingsModal();openCalImportModal()" style="border-color:rgba(128,203,196,0.35);color:var(--set);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);width:13px;height:13px;background-color:var(--set)"></span>カレンダーインポート</button>
-          <button class="io-btn server-feature" onclick="closeSettingsModal();openDockImportModal()" style="border-color:rgba(129,199,132,0.35);color:var(--tool);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);width:13px;height:13px;background-color:var(--tool)"></span>Dockインポート</button>
+          <button class="io-btn server-feature" data-settings-action="cal-import" style="border-color:rgba(128,203,196,0.35);color:var(--set);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);width:13px;height:13px;background-color:var(--set)"></span>カレンダーインポート</button>
+          <button class="io-btn server-feature" data-settings-action="dock-import" style="border-color:rgba(129,199,132,0.35);color:var(--tool);display:flex;align-items:center;gap:5px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);width:13px;height:13px;background-color:var(--tool)"></span>Dockインポート</button>
         </div>
       </div>
 
@@ -1519,25 +1519,25 @@ body.hide-server .launch-btn { display: none !important; }
         <div class="settings-section-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-moon);mask-image:var(--icon-moon);width:13px;height:13px;margin-right:5px"></span>外観</div>
         <div class="settings-section-body">
           <div style="display:flex;gap:6px">
-            <button id="theme-dark-btn" onclick="setDarkMode(true)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-moon);mask-image:var(--icon-moon);width:13px;height:13px"></span>ダーク</button>
-            <button id="theme-light-btn" onclick="setDarkMode(false)" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-sun);mask-image:var(--icon-sun);width:13px;height:13px"></span>ライト</button>
-            <button id="theme-auto-btn" onclick="setDarkMode('auto')" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);width:13px;height:13px"></span>自動</button>
+            <button id="theme-dark-btn" data-settings-action="dark-mode" data-mode="dark" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-moon);mask-image:var(--icon-moon);width:13px;height:13px"></span>ダーク</button>
+            <button id="theme-light-btn" data-settings-action="dark-mode" data-mode="light" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-sun);mask-image:var(--icon-sun);width:13px;height:13px"></span>ライト</button>
+            <button id="theme-auto-btn" data-settings-action="dark-mode" data-mode="auto" style="flex:1;padding:6px 0;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-monitor);mask-image:var(--icon-monitor);width:13px;height:13px"></span>自動</button>
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:12px;color:var(--text-muted);flex-shrink:0">アクセント</span>
             <div style="display:flex;gap:5px;flex-wrap:wrap;flex:1">
-              <button onclick="setAccentColor('#00afcc')" title="#00afcc" style="width:22px;height:22px;border-radius:50%;background:#00afcc;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
-              <button onclick="setAccentColor('#7c83fd')" title="#7c83fd" style="width:22px;height:22px;border-radius:50%;background:#7c83fd;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
-              <button onclick="setAccentColor('#66bb6a')" title="#66bb6a" style="width:22px;height:22px;border-radius:50%;background:#66bb6a;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
-              <button onclick="setAccentColor('#ffb74d')" title="#ffb74d" style="width:22px;height:22px;border-radius:50%;background:#ffb74d;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
-              <button onclick="setAccentColor('#f48fb1')" title="#f48fb1" style="width:22px;height:22px;border-radius:50%;background:#f48fb1;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <button data-settings-action="accent-color" data-color="#00afcc" title="#00afcc" style="width:22px;height:22px;border-radius:50%;background:#00afcc;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <button data-settings-action="accent-color" data-color="#7c83fd" title="#7c83fd" style="width:22px;height:22px;border-radius:50%;background:#7c83fd;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <button data-settings-action="accent-color" data-color="#66bb6a" title="#66bb6a" style="width:22px;height:22px;border-radius:50%;background:#66bb6a;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <button data-settings-action="accent-color" data-color="#ffb74d" title="#ffb74d" style="width:22px;height:22px;border-radius:50%;background:#ffb74d;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
+              <button data-settings-action="accent-color" data-color="#f48fb1" title="#f48fb1" style="width:22px;height:22px;border-radius:50%;background:#f48fb1;border:2px solid transparent;cursor:pointer;padding:0" class="accent-preset"></button>
               <input type="color" id="accent-color-input" onchange="setAccentColor(this.value)" title="カスタムカラー" style="width:22px;height:22px;border-radius:50%;border:2px solid var(--border);cursor:pointer;padding:0;background:none">
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:12px;color:var(--text-muted);flex-shrink:0;min-width:80px">アイコン アクティブ</span>
             <input type="color" id="icon-active-input" onchange="setIconColor('active',this.value)" title="アクティブ色" style="width:22px;height:22px;border-radius:50%;border:2px solid var(--border);cursor:pointer;padding:0;background:none">
-            <button onclick="setIconColor('active',getComputedStyle(document.documentElement).getPropertyValue('--accent').trim())" style="font-size:11px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);padding:3px 7px;cursor:pointer;font-family:inherit">アクセント色にリセット</button>
+            <button data-settings-action="reset-icon-color" style="font-size:11px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);padding:3px 7px;cursor:pointer;font-family:inherit">アクセント色にリセット</button>
           </div>
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:12px;color:var(--text-muted);flex-shrink:0;min-width:80px">アイコン 非アクティブ</span>
@@ -1549,19 +1549,19 @@ body.hide-server .launch-btn { display: none !important; }
               <span style="font-size:11px;color:#66bb6a;width:14px;text-align:center;flex-shrink:0">低</span>
               <div class="pi-preview" id="pi-preview-low"></div>
               <input type="text" id="pi-low" placeholder="絵文字 または 画像URL" oninput="updatePiPreview('low')" onpaste="pastePiIcon(event,'low')" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:4px 7px;font-size:13px;font-family:inherit">
-              <button type="button" onclick="pastePiFromClipboard('low')" title="クリップボードの画像を貼り付け" style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;flex-shrink:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
+              <button type="button" data-settings-action="paste-pi" data-priority="low" title="クリップボードの画像を貼り付け" style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;flex-shrink:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
             </div>
             <div style="display:flex;align-items:center;gap:6px">
               <span style="font-size:11px;color:#ffb74d;width:14px;text-align:center;flex-shrink:0">中</span>
               <div class="pi-preview" id="pi-preview-medium"></div>
               <input type="text" id="pi-medium" placeholder="絵文字 または 画像URL" oninput="updatePiPreview('medium')" onpaste="pastePiIcon(event,'medium')" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:4px 7px;font-size:13px;font-family:inherit">
-              <button type="button" onclick="pastePiFromClipboard('medium')" title="クリップボードの画像を貼り付け" style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;flex-shrink:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
+              <button type="button" data-settings-action="paste-pi" data-priority="medium" title="クリップボードの画像を貼り付け" style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;flex-shrink:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
             </div>
             <div style="display:flex;align-items:center;gap:6px">
               <span style="font-size:11px;color:#ef5350;width:14px;text-align:center;flex-shrink:0">高</span>
               <div class="pi-preview" id="pi-preview-high"></div>
               <input type="text" id="pi-high" placeholder="絵文字 または 画像URL" oninput="updatePiPreview('high')" onpaste="pastePiIcon(event,'high')" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:4px 7px;font-size:13px;font-family:inherit">
-              <button type="button" onclick="pastePiFromClipboard('high')" title="クリップボードの画像を貼り付け" style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;flex-shrink:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
+              <button type="button" data-settings-action="paste-pi" data-priority="high" title="クリップボードの画像を貼り付け" style="padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card-bg);color:var(--text);cursor:pointer;flex-shrink:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
             </div>
           </div>
         </div>
@@ -1582,8 +1582,8 @@ body.hide-server .launch-btn { display: none !important; }
               style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:3px 6px;font-size:11px;font-family:monospace;min-width:0">
           </div>
           <div style="display:flex;gap:6px">
-            <button class="io-btn" style="flex:1;justify-content:center;display:flex;align-items:center;gap:5px" onclick="gistUpload()"><span class="app-icon" style="-webkit-mask-image:var(--icon-upload);mask-image:var(--icon-upload);width:13px;height:13px"></span>Gistに保存</button>
-            <button class="io-btn" style="flex:1;justify-content:center;display:flex;align-items:center;gap:5px" onclick="gistDownload()"><span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px"></span>Gistから読込</button>
+            <button class="io-btn" style="flex:1;justify-content:center;display:flex;align-items:center;gap:5px" data-settings-action="gist-upload"><span class="app-icon" style="-webkit-mask-image:var(--icon-upload);mask-image:var(--icon-upload);width:13px;height:13px"></span>Gistに保存</button>
+            <button class="io-btn" style="flex:1;justify-content:center;display:flex;align-items:center;gap:5px" data-settings-action="gist-download"><span class="app-icon" style="-webkit-mask-image:var(--icon-download);mask-image:var(--icon-download);width:13px;height:13px"></span>Gistから読込</button>
           </div>
           <div id="gist-status" style="font-size:11px;color:var(--text-muted);text-align:center;min-height:14px"></div>
         </div>
@@ -1620,20 +1620,20 @@ body.hide-server .launch-btn { display: none !important; }
 <main class="main">
   <!-- Toolbar -->
   <div class="toolbar">
-    <button class="hamburger-btn" onclick="toggleSidebar()" title="メニュー"><span class="app-icon" style="-webkit-mask-image:var(--icon-hamburger);mask-image:var(--icon-hamburger)"></span></button>
+    <button class="hamburger-btn" data-app-action="toggle-sidebar" title="メニュー"><span class="app-icon" style="-webkit-mask-image:var(--icon-hamburger);mask-image:var(--icon-hamburger)"></span></button>
     <div class="main-tabs">
-      <button class="main-tab" id="tab-today" onclick="setMainTab('today')" title="スケジュール"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);width:15px;height:15px;background-color:currentColor;display:block"></span></button>
-      <button class="main-tab active" id="tab-library" onclick="setMainTab('library')" title="ライブラリ"><span class="app-icon" style="-webkit-mask-image:var(--icon-library);mask-image:var(--icon-library);width:15px;height:15px;background-color:currentColor;display:block"></span></button>
+      <button class="main-tab" id="tab-today" data-app-action="set-main-tab" data-tab="today" title="スケジュール"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);width:15px;height:15px;background-color:currentColor;display:block"></span></button>
+      <button class="main-tab active" id="tab-library" data-app-action="set-main-tab" data-tab="library" title="ライブラリ"><span class="app-icon" style="-webkit-mask-image:var(--icon-library);mask-image:var(--icon-library);width:15px;height:15px;background-color:currentColor;display:block"></span></button>
     </div>
     <div class="input-mode-wrap">
-      <button class="input-mode-btn" id="input-mode-btn" onclick="cycleInputMode()" title="モード切り替え（検索 / メモ / タスク）"><span class="app-icon" style="-webkit-mask-image:var(--icon-search);mask-image:var(--icon-search);width:15px;height:15px"></span></button>
+      <button class="input-mode-btn" id="input-mode-btn" data-app-action="cycle-input-mode" title="モード切り替え（検索 / メモ / タスク）"><span class="app-icon" style="-webkit-mask-image:var(--icon-search);mask-image:var(--icon-search);width:15px;height:15px"></span></button>
       <div class="search-wrap">
         <input type="text" id="search-input" placeholder="検索…" oninput="onSearchInput(this)" onblur="hideTagDropdown()" onkeydown="onInputKeydown(event)">
-        <button id="search-clear" onclick="clearSearch()" title="検索をリセット" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:15px;padding:0;line-height:1">×</button>
+        <button id="search-clear" data-app-action="clear-search" title="検索をリセット" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:15px;padding:0;line-height:1">×</button>
       </div>
     </div>
-    <button class="add-btn" onclick="openModal()" title="新規追加 (⌘N)"><span class="app-icon" style="-webkit-mask-image:var(--icon-plus);mask-image:var(--icon-plus);width:14px;height:14px;background-color:white"></span><span class="add-text">追加</span></button>
-    <button class="view-btn" id="btn-select" onclick="toggleSelectMode()" title="選択モード"><span class="app-icon" style="-webkit-mask-image:var(--icon-select);mask-image:var(--icon-select)"></span></button>
+    <button class="add-btn" data-app-action="open-modal" title="新規追加 (⌘N)"><span class="app-icon" style="-webkit-mask-image:var(--icon-plus);mask-image:var(--icon-plus);width:14px;height:14px;background-color:white"></span><span class="add-text">追加</span></button>
+    <button class="view-btn" id="btn-select" data-app-action="toggle-select-mode" title="選択モード"><span class="app-icon" style="-webkit-mask-image:var(--icon-select);mask-image:var(--icon-select)"></span></button>
   </div>
   <div class="toolbar toolbar-row2">
     <select class="sort-select" id="sort-select" onchange="onSortChange()">
@@ -1646,10 +1646,10 @@ body.hide-server .launch-btn { display: none !important; }
       <option value="priority">優先度順</option>
       <option value="category">カテゴリ順</option>
     </select>
-    <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="グリッド表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-grid);mask-image:var(--icon-grid)"></span></button>
-    <button class="view-btn" id="btn-list" onclick="setView('list')" title="リスト表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-list);mask-image:var(--icon-list)"></span></button>
-    <button class="view-btn" id="btn-icon" onclick="setView('icon')" title="アイコンのみ表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-icon-view);mask-image:var(--icon-icon-view)"></span></button>
-    <button class="view-btn" id="btn-node" onclick="setView('node')" title="ノードマップ"><span class="app-icon" style="-webkit-mask-image:var(--icon-node);mask-image:var(--icon-node)"></span></button>
+    <button class="view-btn active" id="btn-grid" data-app-action="set-view" data-view="grid" title="グリッド表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-grid);mask-image:var(--icon-grid)"></span></button>
+    <button class="view-btn" id="btn-list" data-app-action="set-view" data-view="list" title="リスト表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-list);mask-image:var(--icon-list)"></span></button>
+    <button class="view-btn" id="btn-icon" data-app-action="set-view" data-view="icon" title="アイコンのみ表示"><span class="app-icon" style="-webkit-mask-image:var(--icon-icon-view);mask-image:var(--icon-icon-view)"></span></button>
+    <button class="view-btn" id="btn-node" data-app-action="set-view" data-view="node" title="ノードマップ"><span class="app-icon" style="-webkit-mask-image:var(--icon-node);mask-image:var(--icon-node)"></span></button>
   </div>
   <!-- Filter tag chips -->
   <div class="filter-tags-row" id="filter-tags-row" style="display:none"></div>
@@ -1657,12 +1657,12 @@ body.hide-server .launch-btn { display: none !important; }
   <div id="select-bar" style="display:none;align-items:center;gap:10px;padding:8px 20px;background:var(--card-bg);border-bottom:1px solid var(--border);flex-shrink:0">
     <input type="checkbox" id="select-all-check" onchange="toggleSelectAll(this.checked)" style="width:15px;height:15px;cursor:pointer;accent-color:var(--set)">
     <span id="select-count" style="font-size:13px;color:var(--text-muted)">0件選択</span>
-    <button id="select-show-btn" onclick="setSelectedVisibility(false)" disabled style="opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>表示にする</button>
-    <button id="select-hide-btn" onclick="setSelectedVisibility(true)" disabled style="opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px;opacity:0.4"></span>非表示にする</button>
-    <button id="select-alarm-on-btn" onclick="setSelectedAlarm(true)" disabled style="display:none;opacity:0.4;background:transparent;border:1px solid var(--set);border-radius:var(--radius-sm);color:var(--set);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>ON</button>
-    <button id="select-alarm-off-btn" onclick="setSelectedAlarm(false)" disabled style="display:none;opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px;opacity:0.5"></span>OFF</button>
-    <button id="select-del-btn" onclick="deleteSelected()" disabled style="opacity:0.4;background:transparent;border:1px solid var(--danger);border-radius:var(--radius-sm);color:var(--danger);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>削除</button>
-    <button onclick="toggleSelectMode()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:5px 8px"><span class="app-icon" style="-webkit-mask-image:var(--icon-close);mask-image:var(--icon-close);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>キャンセル</button>
+    <button id="select-show-btn" data-app-action="set-selected-visibility" data-hidden="false" disabled style="opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>表示にする</button>
+    <button id="select-hide-btn" data-app-action="set-selected-visibility" data-hidden="true" disabled style="opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px;opacity:0.4"></span>非表示にする</button>
+    <button id="select-alarm-on-btn" data-app-action="set-selected-alarm" data-enabled="true" disabled style="display:none;opacity:0.4;background:transparent;border:1px solid var(--set);border-radius:var(--radius-sm);color:var(--set);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>ON</button>
+    <button id="select-alarm-off-btn" data-app-action="set-selected-alarm" data-enabled="false" disabled style="display:none;opacity:0.4;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px;opacity:0.5"></span>OFF</button>
+    <button id="select-del-btn" data-app-action="delete-selected" disabled style="opacity:0.4;background:transparent;border:1px solid var(--danger);border-radius:var(--radius-sm);color:var(--danger);padding:5px 14px;cursor:pointer;font-size:12px"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>削除</button>
+    <button data-app-action="toggle-select-mode" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:5px 8px"><span class="app-icon" style="-webkit-mask-image:var(--icon-close);mask-image:var(--icon-close);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>キャンセル</button>
   </div>
   <!-- Content -->
   <div class="content" id="content"></div>
@@ -1676,38 +1676,38 @@ body.hide-server .launch-btn { display: none !important; }
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-title">新規追加</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" data-modal-action="close">✕</button>
     </div>
     <div class="modal-body">
       <!-- Type -->
       <div class="form-group">
         <div class="form-label">種類</div>
         <div class="type-selector">
-          <div class="type-option" data-type="set" onclick="selectType('set')">
+          <div class="type-option" data-type="set" data-modal-action="select-type">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set)"></span></span>セット
           </div>
-          <div class="type-option selected" data-type="bookmark" onclick="selectType('bookmark')">
+          <div class="type-option selected" data-type="bookmark" data-modal-action="select-type">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bookmark);mask-image:var(--icon-bookmark)"></span></span>ブックマーク
           </div>
-          <div class="type-option" data-type="tool" onclick="selectType('tool')">
+          <div class="type-option" data-type="tool" data-modal-action="select-type">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-tool);mask-image:var(--icon-tool)"></span></span>ツール/アプリ
           </div>
-          <div class="type-option" data-type="task" onclick="selectType('task')">
+          <div class="type-option" data-type="task" data-modal-action="select-type">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task)"></span></span>タスク
           </div>
-          <div class="type-option" data-type="memo" onclick="selectType('memo')">
+          <div class="type-option" data-type="memo" data-modal-action="select-type">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-memo);mask-image:var(--icon-memo)"></span></span>メモ
           </div>
-          <div class="type-option" data-type="other" onclick="selectType('other')">
+          <div class="type-option" data-type="other" data-modal-action="select-type">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-box);mask-image:var(--icon-box)"></span></span>その他
           </div>
-          <div class="type-option" data-type="slack" onclick="selectType('slack')">
+          <div class="type-option" data-type="slack" data-modal-action="select-type">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack)"></span></span>Slack送信
           </div>
-          <div class="type-option" data-type="place" onclick="selectType('place')">
+          <div class="type-option" data-type="place" data-modal-action="select-type">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place)"></span></span>場所
           </div>
-          <div class="type-option server-feature" data-type="script" onclick="selectType('script')">
+          <div class="type-option server-feature" data-type="script" data-modal-action="select-type">
             <span class="to-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-script);mask-image:var(--icon-script)"></span></span>スクリプト
           </div>
         </div>
@@ -1740,7 +1740,7 @@ body.hide-server .launch-btn { display: none !important; }
         <div class="form-label" style="margin-top:8px">GoogleマップURL</div>
         <input class="form-input" id="f-place-mapurl" placeholder="https://maps.google.com/..." style="margin-top:4px">
         <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-          <button type="button" onclick="getGeoLocation()" class="btn-secondary" style="font-size:12px;padding:5px 10px;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:13px;height:13px;background-color:currentColor"></span>現在地を取得</button>
+          <button type="button" data-modal-action="get-geo" class="btn-secondary" style="font-size:12px;padding:5px 10px;display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:13px;height:13px;background-color:currentColor"></span>現在地を取得</button>
           <span id="f-place-latlng" style="font-size:11px;color:var(--text-muted)"></span>
         </div>
       </div>
@@ -1748,13 +1748,13 @@ body.hide-server .launch-btn { display: none !important; }
       <div class="form-group" id="f-script-group" style="display:none">
         <div class="form-label" style="display:flex;align-items:center;justify-content:space-between">
           コマンドテンプレート
-          <button type="button" onclick="showScriptHelp()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:11px;padding:2px 6px;border-radius:4px;border:1px solid var(--border)" title="クロードへの相談プロンプトを表示">？ クロードに相談</button>
+          <button type="button" data-modal-action="show-script-help" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:11px;padding:2px 6px;border-radius:4px;border:1px solid var(--border)" title="クロードへの相談プロンプトを表示">？ クロードに相談</button>
         </div>
         <textarea class="form-textarea" id="f-script-command" placeholder="例: cd {DIR} && claude" style="min-height:80px;font-family:monospace"></textarea>
         <div class="icon-hint"><code>{VAR}</code> と書いた部分が実行前に入力できます &nbsp;|&nbsp; <code>;</code> 常に次へ &nbsp;|&nbsp; <code>&&</code> 成功時だけ次へ</div>
         <div class="form-label" style="margin-top:10px">パラメータ定義（任意）</div>
         <div id="f-script-params-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px"></div>
-        <button type="button" onclick="addScriptParam()" class="btn-secondary" style="font-size:12px;padding:5px 10px">＋ パラメータ追加</button>
+        <button type="button" data-modal-action="add-script-param" class="btn-secondary" style="font-size:12px;padding:5px 10px">＋ パラメータ追加</button>
         <div class="form-label" style="margin-top:10px">ターミナル</div>
         <select class="form-select" id="f-script-terminal">
           <option value="">全体設定に従う</option>
@@ -1780,7 +1780,7 @@ body.hide-server .launch-btn { display: none !important; }
           <div class="icon-inputs">
             <div style="display:flex;gap:5px">
               <input class="form-input" id="f-icon" placeholder="絵文字 または 画像URL" oninput="updateIconPreview()" onpaste="pasteIcon(event)" style="flex:1">
-              <button type="button" class="btn-secondary" onclick="pasteIconFromClipboard()" title="クリップボードの画像を貼り付け" style="padding:8px 10px;flex-shrink:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
+              <button type="button" class="btn-secondary" data-modal-action="paste-icon" title="クリップボードの画像を貼り付け" style="padding:8px 10px;flex-shrink:0"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span></button>
             </div>
             <div class="icon-hint">サポート：絵文字を入力、画像URL貼付け、画像コピーして⌘V、空はfavicon表示</div>
           </div>
@@ -1797,9 +1797,9 @@ body.hide-server .launch-btn { display: none !important; }
         <div class="form-group" id="f-status-group">
           <div class="form-label">ステータス</div>
           <div class="status-btn-group" id="status-btn-group">
-            <button type="button" class="status-btn active s-todo" data-status="todo" onclick="pickStatus('todo')" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);width:13px;height:13px"></span>未着手</button>
-            <button type="button" class="status-btn s-doing" data-status="doing" onclick="pickStatus('doing')" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);width:13px;height:13px"></span>進行中</button>
-            <button type="button" class="status-btn s-done" data-status="done" onclick="pickStatus('done')" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);width:13px;height:13px"></span>完了</button>
+            <button type="button" class="status-btn active s-todo" data-status="todo" data-modal-action="pick-status" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-clipboard);mask-image:var(--icon-clipboard);width:13px;height:13px"></span>未着手</button>
+            <button type="button" class="status-btn s-doing" data-status="doing" data-modal-action="pick-status" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);width:13px;height:13px"></span>進行中</button>
+            <button type="button" class="status-btn s-done" data-status="done" data-modal-action="pick-status" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);width:13px;height:13px"></span>完了</button>
           </div>
           <input type="hidden" id="f-status" value="todo">
         </div>
@@ -1847,13 +1847,13 @@ body.hide-server .launch-btn { display: none !important; }
             </div>
             <div id="f-alarm-days-group" style="display:none">
               <div class="day-picker">
-                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(0,this)">日</button>
-                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(1,this)">月</button>
-                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(2,this)">火</button>
-                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(3,this)">水</button>
-                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(4,this)">木</button>
-                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(5,this)">金</button>
-                <button type="button" class="day-btn" onclick="toggleSetAlarmDay(6,this)">土</button>
+                <button type="button" class="day-btn" data-modal-action="toggle-alarm-day" data-day="0">日</button>
+                <button type="button" class="day-btn" data-modal-action="toggle-alarm-day" data-day="1">月</button>
+                <button type="button" class="day-btn" data-modal-action="toggle-alarm-day" data-day="2">火</button>
+                <button type="button" class="day-btn" data-modal-action="toggle-alarm-day" data-day="3">水</button>
+                <button type="button" class="day-btn" data-modal-action="toggle-alarm-day" data-day="4">木</button>
+                <button type="button" class="day-btn" data-modal-action="toggle-alarm-day" data-day="5">金</button>
+                <button type="button" class="day-btn" data-modal-action="toggle-alarm-day" data-day="6">土</button>
               </div>
             </div>
             <div id="f-alarm-monthday-group" style="display:none">
@@ -1867,13 +1867,13 @@ body.hide-server .launch-btn { display: none !important; }
                   <option value="1">第1</option><option value="2">第2</option><option value="3">第3</option><option value="4">第4</option><option value="5">第5</option><option value="-1">最終</option>
                 </select>
                 <div class="day-picker" id="f-alarm-mw-days">
-                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(0,this)">日</button>
-                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(1,this)">月</button>
-                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(2,this)">火</button>
-                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(3,this)">水</button>
-                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(4,this)">木</button>
-                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(5,this)">金</button>
-                  <button type="button" class="day-btn" onclick="selectSetAlarmMWDay(6,this)">土</button>
+                  <button type="button" class="day-btn" data-modal-action="select-alarm-mwday" data-day="0">日</button>
+                  <button type="button" class="day-btn" data-modal-action="select-alarm-mwday" data-day="1">月</button>
+                  <button type="button" class="day-btn" data-modal-action="select-alarm-mwday" data-day="2">火</button>
+                  <button type="button" class="day-btn" data-modal-action="select-alarm-mwday" data-day="3">水</button>
+                  <button type="button" class="day-btn" data-modal-action="select-alarm-mwday" data-day="4">木</button>
+                  <button type="button" class="day-btn" data-modal-action="select-alarm-mwday" data-day="5">金</button>
+                  <button type="button" class="day-btn" data-modal-action="select-alarm-mwday" data-day="6">土</button>
                 </div>
               </div>
             </div>
@@ -1887,7 +1887,7 @@ body.hide-server .launch-btn { display: none !important; }
               </div>
             </div>
             <div id="f-alarm-once-group" style="display:none">
-              <button type="button" class="date-picker-btn" onclick="document.getElementById('f-alarm-once-date').showPicker?.()">
+              <button type="button" class="date-picker-btn" data-modal-action="open-date-picker" data-target="f-alarm-once-date">
                 📅 <span id="f-alarm-once-disp">日付を選択</span>
                 <input type="date" id="f-alarm-once-date" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0" onchange="document.getElementById('f-alarm-once-disp').textContent=this.value">
               </button>
@@ -1904,24 +1904,24 @@ body.hide-server .launch-btn { display: none !important; }
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-danger" id="btn-delete" style="display:none;align-items:center;gap:5px" onclick="deleteItem()"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);width:13px;height:13px;background-color:currentColor"></span>削除</button>
-      <button class="btn-secondary" onclick="closeModal()">キャンセル</button>
-      <button class="btn-primary" onclick="saveItem()">保存</button>
+      <button class="btn-danger" id="btn-delete" style="display:none;align-items:center;gap:5px" data-modal-action="delete-item"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);width:13px;height:13px;background-color:currentColor"></span>削除</button>
+      <button class="btn-secondary" data-modal-action="close">キャンセル</button>
+      <button class="btn-primary" data-modal-action="save-item">保存</button>
     </div>
   </div>
 </div>
 
 <!-- Context menu -->
 <div class="ctx-menu" id="ctx-menu" style="display:none">
-  <div class="ctx-item" onclick="ctxEdit()"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);width:14px;height:14px;background-color:var(--text-muted)"></span>編集</div>
-  <div class="ctx-item" onclick="ctxOpen()"><span class="app-icon" style="-webkit-mask-image:var(--icon-external);mask-image:var(--icon-external);width:14px;height:14px;background-color:var(--text-muted)"></span>開く</div>
-  <div class="ctx-item danger" onclick="ctxDelete()"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);width:14px;height:14px;background-color:var(--danger)"></span>削除</div>
+  <div class="ctx-item" data-ctx-action="edit"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);width:14px;height:14px;background-color:var(--text-muted)"></span>編集</div>
+  <div class="ctx-item" data-ctx-action="open"><span class="app-icon" style="-webkit-mask-image:var(--icon-external);mask-image:var(--icon-external);width:14px;height:14px;background-color:var(--text-muted)"></span>開く</div>
+  <div class="ctx-item danger" data-ctx-action="delete"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);width:14px;height:14px;background-color:var(--danger)"></span>削除</div>
 </div>
 
 <div id="toasts"></div>
 
 <!-- ⌘K クイック検索モーダル -->
-<div id="quick-search-modal" style="position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding-top:80px" onclick="if(event.target===this)closeQuickSearch()">
+<div id="quick-search-modal" style="position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding-top:80px">
   <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:14px;width:min(560px,92vw);box-shadow:0 24px 64px rgba(0,0,0,0.5);overflow:hidden">
     <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
       <span class="app-icon" style="-webkit-mask-image:var(--icon-search);mask-image:var(--icon-search);width:18px;height:18px;flex-shrink:0"></span>
@@ -1934,11 +1934,11 @@ body.hide-server .launch-btn { display: none !important; }
 </div>
 
 <!-- ショートカット一覧モーダル -->
-<div id="shortcuts-modal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center" onclick="if(event.target===this)closeShortcutsModal()">
+<div id="shortcuts-modal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center">
   <div style="background:var(--sidebar-bg);border:1px solid var(--border);border-radius:14px;width:min(480px,90vw);max-height:80vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
     <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
       <span style="font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);width:14px;height:14px"></span>ショートカット一覧</span>
-      <button onclick="closeShortcutsModal()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1">✕</button>
+      <button data-ctx-action="close-shortcuts" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1">✕</button>
     </div>
     <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;font-size:13px">
       <div style="font-weight:700;color:var(--text-muted);font-size:11px;letter-spacing:1px">グローバル</div>
@@ -1966,11 +1966,11 @@ body.hide-server .launch-btn { display: none !important; }
 </div>
 
 <!-- Calendar Import Modal -->
-<div class="modal-overlay" id="cal-import-modal" style="display:none" onclick="if(event.target===this)closeCalImportModal()">
+<div class="modal-overlay" id="cal-import-modal" style="display:none">
   <div class="modal" style="max-width:540px">
     <div class="modal-header">
       <div class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>Googleカレンダーインポート</div>
-      <button class="modal-close" onclick="closeCalImportModal()">✕</button>
+      <button class="modal-close" data-modal-action="close">✕</button>
     </div>
     <div class="modal-body" id="cal-import-body"></div>
     <div class="modal-footer" id="cal-import-footer"></div>
@@ -1980,23 +1980,23 @@ body.hide-server .launch-btn { display: none !important; }
 <!-- Alarm Notification Popup -->
 <div class="alarm-popup-overlay" id="alarm-popup-overlay" style="display:none">
   <div class="alarm-popup" style="position:relative">
-    <button class="modal-close" onclick="closeAlarmPopup()" style="position:absolute;top:10px;right:10px">✕</button>
+    <button class="modal-close" data-alarm-popup-action="close" style="position:absolute;top:10px;right:10px">✕</button>
     <div class="alarm-popup-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);width:42px;height:42px;background-color:var(--icon-active)"></span></div>
     <div class="alarm-popup-name" id="alarm-popup-name">アラーム</div>
     <div class="alarm-popup-time" id="alarm-popup-time"></div>
     <div class="alarm-popup-btns">
-      <button class="btn-primary" id="alarm-popup-execute" onclick="executeCurrentAlarm()" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>実行</button>
-      <button class="btn-secondary" onclick="snoozeAlarm()" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-alarm);mask-image:var(--icon-alarm);width:14px;height:14px"></span>5分後</button>
+      <button class="btn-primary" id="alarm-popup-execute" data-alarm-popup-action="execute" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>実行</button>
+      <button class="btn-secondary" data-alarm-popup-action="snooze" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-alarm);mask-image:var(--icon-alarm);width:14px;height:14px"></span>5分後</button>
     </div>
   </div>
 </div>
 
 <!-- Set Quick Panel -->
-<div class="modal-overlay" id="set-quick-panel" style="display:none" onclick="if(event.target===this)closeSetQuickPanel()">
+<div class="modal-overlay" id="set-quick-panel" style="display:none">
   <div class="modal" style="max-width:480px">
     <div class="modal-header">
       <div class="modal-title" id="sqp-title" style="display:flex;align-items:center;gap:8px"></div>
-      <button class="modal-close" onclick="closeSetQuickPanel()">✕</button>
+      <button class="modal-close" data-panel-action="sqp-close">✕</button>
     </div>
     <div class="modal-body" id="sqp-body"></div>
     <div class="modal-footer" id="sqp-footer"></div>
@@ -2004,11 +2004,11 @@ body.hide-server .launch-btn { display: none !important; }
 </div>
 
 <!-- Item Insert Modal -->
-<div class="modal-overlay" id="item-insert-modal" style="display:none;z-index:100000" onclick="if(event.target===this)closeItemInsertModal()">
+<div class="modal-overlay" id="item-insert-modal" style="display:none;z-index:100000">
   <div class="modal" style="max-width:420px">
     <div class="modal-header">
       <div class="modal-title" style="display:flex;align-items:center;gap:6px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block"></span>アイテムを挿入</div>
-      <button class="modal-close" onclick="closeItemInsertModal()">✕</button>
+      <button class="modal-close" data-modal-action="close">✕</button>
     </div>
     <div class="modal-body" style="padding:8px 16px 12px">
       <input type="text" id="iim-search" placeholder="アイテムを検索…" oninput="renderItemInsertList()"
@@ -2020,11 +2020,11 @@ body.hide-server .launch-btn { display: none !important; }
 </div>
 
 <!-- Place Quick Panel -->
-<div class="modal-overlay" id="place-quick-panel" style="display:none" onclick="if(event.target===this)closePlaceQuickPanel()">
+<div class="modal-overlay" id="place-quick-panel" style="display:none">
   <div class="modal" style="max-width:480px">
     <div class="modal-header">
       <div class="modal-title" id="pqp-title" style="display:flex;align-items:center;gap:8px"></div>
-      <button class="modal-close" onclick="closePlaceQuickPanel()">✕</button>
+      <button class="modal-close" data-modal-action="close">✕</button>
     </div>
     <div class="modal-body" id="pqp-body"></div>
     <div class="modal-footer" id="pqp-footer"></div>
@@ -2032,11 +2032,11 @@ body.hide-server .launch-btn { display: none !important; }
 </div>
 
 <!-- Slack Quick Panel -->
-<div class="modal-overlay" id="slack-quick-panel" style="display:none" onclick="if(event.target===this)closeSlackQuickPanel()">
+<div class="modal-overlay" id="slack-quick-panel" style="display:none">
   <div class="modal" style="max-width:480px">
     <div class="modal-header">
       <div class="modal-title" id="sqkp-title" style="display:flex;align-items:center;gap:8px"></div>
-      <button class="modal-close" onclick="closeSlackQuickPanel()">✕</button>
+      <button class="modal-close" data-modal-action="close">✕</button>
     </div>
     <div class="modal-body" id="sqkp-body"></div>
     <div class="modal-footer" id="sqkp-footer"></div>
@@ -2050,11 +2050,11 @@ body.hide-server .launch-btn { display: none !important; }
   <div class="modal" style="max-width:540px">
     <div class="modal-header">
       <div class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:15px;height:15px;vertical-align:middle;display:inline-block;margin-right:4px;"></span>アラーム管理</div>
-      <button class="modal-close" onclick="closeAlarmModal()">✕</button>
+      <button class="modal-close" data-alarm-action="close">✕</button>
     </div>
     <div class="modal-body" id="alarm-modal-body"></div>
     <div class="modal-footer" id="alarm-modal-footer">
-      <button class="btn-primary" onclick="openAlarmForm(null)">＋ 追加</button>
+      <button class="btn-primary" data-alarm-action="open-form">＋ 追加</button>
     </div>
   </div>
 </div>
@@ -3172,7 +3172,7 @@ function updateCatList() {
   if (!hasContent) hideEl('body-section-cat');
   applySidebarCollapsed();
   const uncatActive = state.filter === 'cat:' ? ' active' : '';
-  const uncatItem = uncatCount > 0 || state.filter === 'cat:' ? `<div class="sidebar-item${uncatActive}" data-filter="cat:" data-cat="" onclick="setFilter('cat:')"
+  const uncatItem = uncatCount > 0 || state.filter === 'cat:' ? `<div class="sidebar-item${uncatActive}" data-filter="cat:" data-cat=""
       ondragover="catDragOver(this,event)" ondragleave="catDragLeave(this)" ondrop="catDrop(this)">
       <span class="si-icon"><span class="cat-dot cat-dot-unset"></span></span><span class="si-label">未設定</span>
       <span class="count-badge">${uncatCount}</span>
@@ -3183,7 +3183,7 @@ function updateCatList() {
     const color = getCatColor(cat) || CAT_COLORS[idx % CAT_COLORS.length];
     const hasTutorial = db.items.some(i => i.category === cat && i._tutorial);
     const tutorialBtn = hasTutorial ? `<button class="cat-rename-btn" onclick="event.stopPropagation();deleteTutorialItems('${esc(cat)}')" title="チュートリアルを削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:var(--text-muted);width:13px;height:13px"></span></button>` : '';
-    return `<div class="sidebar-item${active}" data-filter="cat:${cat}" data-cat="${esc(cat)}" onclick="setFilter('cat:${cat}')"
+    return `<div class="sidebar-item${active}" data-filter="cat:${cat}" data-cat="${esc(cat)}"
       ondragover="catDragOver(this,event)" ondragleave="catDragLeave(this)" ondrop="catDrop(this)">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-folder);mask-image:var(--icon-folder);background-color:${color};width:13px;height:13px;display:inline-block"></span></span><span class="si-label">${esc(cat)}</span>
       <button class="cat-rename-btn" onclick="event.stopPropagation();startCatRename(this,'${esc(cat)}')" title="カテゴリ名を変更"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--text-muted);width:13px;height:13px"></span></button>
@@ -3514,13 +3514,13 @@ function _buildTlAllDayHtml(allDayTasks) {
 
 function _buildTodayNavHtml(todayStr, dateLabel, isToday) {
   return `<div class="today-nav">
-    <button class="today-nav-btn" onclick="moveTodayView(-1)" title="前の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-left);mask-image:var(--icon-chevron-left);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
-    <label class="today-nav-date" title="日付を選択" onclick="document.getElementById('today-date-input').showPicker?.()">
+    <button class="today-nav-btn" data-today-action="move-view" data-dir="-1" title="前の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-left);mask-image:var(--icon-chevron-left);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
+    <label class="today-nav-date" title="日付を選択" data-today-action="show-date-picker">
       ${dateLabel}${isToday ? '<span class="today-badge">今日</span>' : ''}
       <input type="date" value="${todayStr}" onchange="jumpTodayView(this.value)" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none" id="today-date-input">
     </label>
-    <button class="today-nav-btn" onclick="moveTodayView(1)" title="次の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-right);mask-image:var(--icon-chevron-right);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
-    ${!isToday ? `<button class="today-nav-today" onclick="resetTodayView()">今日に戻る</button>` : ''}
+    <button class="today-nav-btn" data-today-action="move-view" data-dir="1" title="次の日"><span class="app-icon" style="-webkit-mask-image:var(--icon-chevron-right);mask-image:var(--icon-chevron-right);background-color:currentColor;width:16px;height:16px;display:inline-block;vertical-align:middle"></span></button>
+    ${!isToday ? `<button class="today-nav-today" data-today-action="reset-view">今日に戻る</button>` : ''}
   </div>`;
 }
 
@@ -4553,8 +4553,8 @@ function showQuickEdit(id) {
   el.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box';
   document.body.style.overflow = 'hidden';
   el.innerHTML = `
-    <div onclick="event.stopPropagation()" style="background:${t.cardBg};border-radius:16px;padding:24px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5);max-height:90vh;overflow-y:auto;overscroll-behavior:contain;position:relative">
-      <button onclick="closeQuickEdit('${id}')" class="modal-close" style="position:absolute;top:12px;right:12px">✕</button>
+    <div id="qe-panel" onclick="event.stopPropagation()" style="background:${t.cardBg};border-radius:16px;padding:24px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5);max-height:90vh;overflow-y:auto;overscroll-behavior:contain;position:relative">
+      <button data-qe-action="close" class="modal-close" style="position:absolute;top:12px;right:12px">✕</button>
       <div style="font-size:11px;color:${t.textMuted};margin-bottom:7px;font-weight:600;letter-spacing:0.5px">タイトル</div>
       <input type="text" id="qe-title" onblur="_qeSave('${id}')"
         style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
@@ -4580,7 +4580,7 @@ function showQuickEdit(id) {
         const linkedSets = _setMembership.get(id);
         if (!linkedSets || linkedSets.length === 0) return '';
         const btns = linkedSets.map(s =>
-          `<button onclick="closeQuickEdit('${id}');showSetQuickPanel('${s.id}')"
+          `<button data-qe-action="back-to-sqp" data-sid="${s.id}"
             style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;
             border:1px solid rgba(38,198,218,0.3);background:rgba(38,198,218,0.1);
             color:var(--set);font-size:12px;font-weight:600;cursor:pointer">
@@ -4593,13 +4593,23 @@ function showQuickEdit(id) {
         </div>`;
       })()}
       <div style="display:flex;gap:10px;margin-top:16px">
-        <button onclick="closeQuickEdit('${id}');editItem('${id}')"
+        <button data-qe-action="edit"
           style="flex:1;padding:12px 16px;background:${t.linkBg};color:${t.linkColor};
           border:1px solid ${t.border};border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:currentColor;width:14px;height:14px"></span>詳細編集</button>
       </div>
     </div>`;
   el.addEventListener('click', () => closeQuickEdit(id));
   document.body.appendChild(el);
+  document.getElementById('qe-panel').addEventListener('click', e => {
+    const btn = e.target.closest('[data-qe-action]');
+    if (!btn) return;
+    e.stopPropagation();
+    switch (btn.dataset.qeAction) {
+      case 'close':       closeQuickEdit(id); break;
+      case 'edit':        closeQuickEdit(id); editItem(id); break;
+      case 'back-to-sqp': closeQuickEdit(id); showSetQuickPanel(btn.dataset.sid); break;
+    }
+  });
 
   // 値をセット（HTMLエスケープ問題を避けるためJSで代入）
   document.getElementById('qe-title').value = item.title || '';
@@ -5084,7 +5094,7 @@ function showSlackQuickPanel(id) {
   _renderSlackQPBody(item);
 
   document.getElementById('sqkp-footer').innerHTML =
-    `<button class="btn-secondary" onclick="closeSlackQuickPanel();editItem('${id}')">詳細編集</button>
+    `<button class="btn-secondary" data-modal-action="edit" data-id="${id}">詳細編集</button>
      <button class="btn-primary" onclick="_execSlackQPSend()" style="background:var(--slack);display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-slack);mask-image:var(--icon-slack);width:14px;height:14px;background-color:white"></span>送信</button>`;
 
   showEl('slack-quick-panel');
@@ -5113,10 +5123,10 @@ function _renderSlackQPBody(item) {
         </div>
         <div style="display:flex;gap:6px">
           <button onclick="_addSlackQPChannel()" style="flex:1;padding:6px;border-radius:var(--radius-sm);border:1px solid var(--slack);background:rgba(74,185,95,0.1);color:var(--slack);cursor:pointer;font-size:12px;font-family:inherit">追加</button>
-          <button onclick="_toggleSlackChForm()" style="padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit">キャンセル</button>
+          <button data-modal-action="toggle-slack-ch" style="padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit">キャンセル</button>
         </div>
       </div>
-      <button id="sqkp-ch-add-btn" onclick="_toggleSlackChForm()" style="margin-top:6px;width:100%;padding:5px;border-radius:var(--radius-sm);border:1px dashed var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px"><span style="font-size:14px;line-height:1">+</span>チャンネルを追加</button>
+      <button id="sqkp-ch-add-btn" data-modal-action="toggle-slack-ch" style="margin-top:6px;width:100%;padding:5px;border-radius:var(--radius-sm);border:1px dashed var(--border);background:transparent;color:var(--text-muted);cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px"><span style="font-size:14px;line-height:1">+</span>チャンネルを追加</button>
     </div>
     <div>
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px">メッセージ</div>
@@ -5306,13 +5316,13 @@ function showSetQuickPanel(id) {
   const itemsHtml = setItems.map(item => {
     const itemTc = typeColor(item);
     if (item.type === 'tool' && item.appName) {
-      return `<div class="sqp-item" onclick="closeSetQuickPanel();openWithServer('${esc(item.appName)}')">
+      return `<div class="sqp-item" data-panel-action="sqp-app" data-app-name="${esc(item.appName)}">
         <span class="sqp-icon">${iconHtml(item,'sm')}</span>
         <span class="sqp-title">${esc(item.title)}</span>
         <span class="sqp-type" style="color:${itemTc}">アプリ</span>
       </div>`;
     } else if (item.url) {
-      return `<a class="sqp-item" href="${esc(item.url)}" target="_blank" onclick="closeSetQuickPanel()">
+      return `<a class="sqp-item" href="${esc(item.url)}" target="_blank" data-panel-action="sqp-close">
         <span class="sqp-icon">${iconHtml(item,'sm')}</span>
         <span class="sqp-title">${esc(item.title)}</span>
         <span class="sqp-type" style="color:${itemTc}">${esc(item.type)}</span>
@@ -5348,9 +5358,9 @@ function showSetQuickPanel(id) {
 
   // フッター
   document.getElementById('sqp-footer').innerHTML =
-    `<button class="btn-secondary" onclick="closeSetQuickPanel();setFilter('set-member:${id}')" title="このセットに登録されているアイテムを絞り込む" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-all);mask-image:var(--icon-all);width:13px;height:13px"></span>アイテムを表示</button>
-     <button class="btn-secondary" onclick="closeSetQuickPanel();editItem('${id}')">詳細編集</button>
-     <button class="btn-primary" onclick="closeSetQuickPanel();launchSet('${id}')" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>▶ 起動</button>`;
+    `<button class="btn-secondary" data-panel-action="sqp-show-members" data-id="${id}" title="このセットに登録されているアイテムを絞り込む" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-all);mask-image:var(--icon-all);width:13px;height:13px"></span>アイテムを表示</button>
+     <button class="btn-secondary" data-panel-action="sqp-edit" data-id="${id}">詳細編集</button>
+     <button class="btn-primary" data-panel-action="sqp-launch" data-id="${id}" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>▶ 起動</button>`;
 
   showEl('set-quick-panel');
 }
@@ -5389,7 +5399,7 @@ function showPlaceQuickPanel(id) {
     : '';
 
   document.getElementById('pqp-footer').innerHTML =
-    `<button class="btn-secondary" onclick="closePlaceQuickPanel();editItem('${id}')">詳細編集</button>
+    `<button class="btn-secondary" data-modal-action="edit" data-id="${id}">詳細編集</button>
      ${copyBtn}${mapOpenBtn}${navBtn}`;
 
   showEl('place-quick-panel');
@@ -6101,7 +6111,7 @@ function renderCalStep1() {
     </div>
     ${ngHtml}`;
   document.getElementById('cal-import-footer').innerHTML=`
-    <button class="btn-secondary" onclick="closeCalImportModal()">キャンセル</button>
+    <button class="btn-secondary" data-modal-action="close">キャンセル</button>
     <button class="btn-primary" onclick="fetchCalendar()"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:13px;height:13px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>取得して解析</button>`;
 }
 
@@ -6363,7 +6373,7 @@ function renderDockImportList(apps) {
     <div style="max-height:320px;overflow-y:auto">${rows}</div>`;
 
   footer.innerHTML = `
-    <button class="io-btn" onclick="closeDockImportModal()" style="flex:1">キャンセル</button>
+    <button class="io-btn" data-modal-action="close" style="flex:1">キャンセル</button>
     <button class="io-btn" onclick="executeDockImport(${JSON.stringify(apps).replace(/"/g,'&quot;')})"
       style="flex:1;background:var(--accent);border-color:var(--accent);color:white;font-weight:700">インポート</button>`;
 }
@@ -6763,7 +6773,7 @@ function renderCalStep2() {
           ${meetBadge}${descBadge}
           <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${rruleDesc(ev.rrule,ev.dtStart)}</span>
         </label>
-        <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
+        <button data-modal-action="cal-ng" data-title="${esc(ev.summary)}" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
       </div>`;
     });
     html+='</div>';
@@ -6787,7 +6797,7 @@ function renderCalStep2() {
             ${descBadge}
             <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${ds}</span>
           </label>
-          <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
+          <button data-modal-action="cal-ng" data-title="${esc(ev.summary)}" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
         </div>`;
       });
       html+='</div>';
@@ -6805,7 +6815,7 @@ function renderCalStep2() {
             <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${esc(ev.summary)}</span>
             <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${ds}</span>
           </label>
-          <button onclick="addCalNg('${esc(ev.summary).replace(/'/g,"\\'")}')" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
+          <button data-modal-action="cal-ng" data-title="${esc(ev.summary)}" title="NGリストに追加（次回から非表示）" style="background:none;border:none;cursor:pointer;font-size:14px;padding:0 2px;opacity:0.5;flex-shrink:0" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">🚫</button>
         </div>`;
       });
       html+='</div>';
@@ -7020,8 +7030,8 @@ function renderAlarmList() {
           <input type="checkbox" ${a.enabled?'checked':''} onchange="toggleAlarmEnabled('${a.id}',this.checked)">
           <span class="alarm-toggle-slider"></span>
         </label>
-        <button class="action-btn" onclick="openAlarmForm('${a.id}')" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></button>
-        <button class="action-btn danger" onclick="deleteAlarm('${a.id}')" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></button>
+        <button class="action-btn" data-alarm-action="edit" data-id="${a.id}" title="編集"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit)"></span></button>
+        <button class="action-btn danger" data-alarm-action="delete" data-id="${a.id}" title="削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></button>
       </div>`).join('')}</div>`;
     }
     if (setAlarms.length) {
@@ -7047,8 +7057,8 @@ function renderAlarmList() {
   }
   footer.innerHTML = `
     <button class="btn-danger" id="alarm-del-sel-btn" onclick="deleteSelectedAlarms()" disabled style="opacity:0.4;margin-right:auto"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>選択削除</button>
-    <button class="btn-secondary" id="alarm-off-sel-btn" onclick="toggleSelectedAlarms(false)" disabled style="opacity:0.4"><span class="app-icon" style="-webkit-mask-image:var(--icon-pause);mask-image:var(--icon-pause);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>無効化</button>
-    <button class="btn-secondary" id="alarm-on-sel-btn" onclick="toggleSelectedAlarms(true)" disabled style="opacity:0.4"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>有効化</button>`;
+    <button class="btn-secondary" id="alarm-off-sel-btn" data-alarm-action="toggle-selected" data-enabled="false" disabled style="opacity:0.4"><span class="app-icon" style="-webkit-mask-image:var(--icon-pause);mask-image:var(--icon-pause);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>無効化</button>
+    <button class="btn-secondary" id="alarm-on-sel-btn" data-alarm-action="toggle-selected" data-enabled="true" disabled style="opacity:0.4"><span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>有効化</button>`;
 }
 
 function updateAlarmActionBtns() {
@@ -7227,9 +7237,9 @@ function openAlarmForm(id) {
     </div>`;
 
   document.getElementById('alarm-modal-footer').innerHTML = `
-    ${id?`<button class="btn-danger" onclick="deleteAlarm('${id}')"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>削除</button>`:''}
-    <button class="btn-secondary" onclick="renderAlarmList()">← 戻る</button>
-    <button class="btn-primary" onclick="saveAlarm()">保存</button>`;
+    ${id?`<button class="btn-danger" data-alarm-action="delete" data-id="${id}"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:currentColor;width:13px;height:13px;vertical-align:middle;margin-right:3px"></span>削除</button>`:''}
+    <button class="btn-secondary" data-alarm-action="back-to-list">← 戻る</button>
+    <button class="btn-primary" data-alarm-action="save">保存</button>`;
 
   onAlarmTypeChange();
 }
@@ -7365,6 +7375,32 @@ document.addEventListener('click', e => {
   if (!e.target.closest('.ctx-menu')) hideCtx();
   const addBtn = e.target.closest('.type-add-btn');
   if (addBtn) { e.stopPropagation(); openModal(addBtn.dataset.modalType); return; }
+  const sidebarItem = e.target.closest('.sidebar-item[data-filter]');
+  if (sidebarItem) { setFilter(sidebarItem.dataset.filter); return; }
+  const subItem = e.target.closest('.sidebar-subitem[data-tsf]');
+  if (subItem) { setTaskSubFilter(subItem.dataset.tsf); return; }
+  const appAction = e.target.closest('[data-app-action]');
+  if (appAction) {
+    switch (appAction.dataset.appAction) {
+      case 'toggle-sidebar':           toggleSidebar(); break;
+      case 'toggle-sidebar-section':   toggleSidebarSection(appAction.dataset.section); break;
+      case 'set-main-tab':             setMainTab(appAction.dataset.tab); break;
+      case 'set-view':                 setView(appAction.dataset.view); break;
+      case 'toggle-select-mode':       toggleSelectMode(); break;
+      case 'set-selected-visibility':  setSelectedVisibility(appAction.dataset.hidden === 'true'); break;
+      case 'set-selected-alarm':       setSelectedAlarm(appAction.dataset.enabled === 'true'); break;
+      case 'go-to-alarm-filter':       goToAlarmFilter(); break;
+      case 'toggle-alarm-mute':        toggleAlarmMute(); break;
+      case 'open-widget':              openWidget(); break;
+      case 'open-settings':            openSettingsModal(); break;
+      case 'cycle-input-mode':         cycleInputMode(); break;
+      case 'clear-search':             clearSearch(); break;
+      case 'open-modal':               openModal(); break;
+      case 'delete-selected':          deleteSelected(); break;
+      case 'set-set-sub-filter':       setSetSubFilter(appAction.dataset.ssf); break;
+    }
+    return;
+  }
   const cardAction = e.target.closest('[data-card-action]');
   if (cardAction) {
     e.stopPropagation();
@@ -7402,9 +7438,12 @@ document.addEventListener('click', e => {
     e.stopPropagation();
     const id = todayAction.dataset.id;
     switch (todayAction.dataset.todayAction) {
-      case 'tl-item':     scheduleTlItemClick(id); break;
-      case 'tl-hide':     toggleTodayItemHidden(id); break;
-      case 'allday-item': editItem(id); break;
+      case 'tl-item':        scheduleTlItemClick(id); break;
+      case 'tl-hide':        toggleTodayItemHidden(id); break;
+      case 'allday-item':    editItem(id); break;
+      case 'move-view':      moveTodayView(Number(todayAction.dataset.dir)); break;
+      case 'reset-view':     resetTodayView(); break;
+      case 'show-date-picker': document.getElementById('today-date-input').showPicker?.(); break;
     }
     return;
   }
@@ -7432,24 +7471,132 @@ document.querySelectorAll('.modal').forEach(el => {
   el.addEventListener('click', e => e.stopPropagation());
 });
 
-// sqp-body は .modal 内のためdocument委譲が届かない → 直接ハンドラで処理
-document.getElementById('sqp-body').addEventListener('click', e => {
+// sqp-body / sqp-footer は .modal 内のためdocument委譲が届かない → 直接ハンドラで処理
+function _sqpHandleAction(e) {
   const item = e.target.closest('[data-panel-action]');
   if (!item) return;
   e.stopPropagation();
   const id = item.dataset.id;
   switch (item.dataset.panelAction) {
-    case 'sqp-quick-edit':
-      closeSetQuickPanel();
-      setTimeout(() => showQuickEdit(id), 0);
-      break;
-    case 'sqp-launch-window':
-      closeSetQuickPanel();
-      launchWindowSessionById(id);
-      break;
+    case 'sqp-quick-edit':    closeSetQuickPanel(); setTimeout(() => showQuickEdit(id), 0); break;
+    case 'sqp-launch-window': closeSetQuickPanel(); launchWindowSessionById(id); break;
+    case 'sqp-app':           closeSetQuickPanel(); openWithServer(item.dataset.appName); break;
+    case 'sqp-close':         closeSetQuickPanel(); break;
+    case 'sqp-show-members':  closeSetQuickPanel(); setFilter(`set-member:${id}`); break;
+    case 'sqp-edit':          closeSetQuickPanel(); editItem(id); break;
+    case 'sqp-launch':        closeSetQuickPanel(); launchSet(id); break;
+  }
+}
+document.getElementById('sqp-body').addEventListener('click', _sqpHandleAction);
+document.getElementById('sqp-footer').addEventListener('click', _sqpHandleAction);
+document.getElementById('set-quick-panel').querySelector('.modal').addEventListener('click', _sqpHandleAction);
+
+// alarm-modal は .modal 内のためdocument委譲が届かない → 直接ハンドラで処理
+document.getElementById('alarm-modal').querySelector('.modal').addEventListener('click', e => {
+  const btn = e.target.closest('[data-alarm-action]');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  switch (btn.dataset.alarmAction) {
+    case 'close':           closeAlarmModal(); break;
+    case 'open-form':       openAlarmForm(null); break;
+    case 'edit':            openAlarmForm(id); break;
+    case 'delete':          deleteAlarm(id); break;
+    case 'toggle-selected': toggleSelectedAlarms(btn.dataset.enabled === 'true'); break;
+    case 'back-to-list':    renderAlarmList(); break;
+    case 'save':            saveAlarm(); break;
   }
 });
 
+// settings-modal は .modal 内のためdocument委譲が届かない → 直接ハンドラで処理
+document.getElementById('settings-modal').querySelector('.modal').addEventListener('click', e => {
+  const btn = e.target.closest('[data-settings-action]');
+  if (!btn) return;
+  switch (btn.dataset.settingsAction) {
+    case 'close':        closeSettingsModal(); break;
+    case 'cal-import':   closeSettingsModal(); openCalImportModal(); break;
+    case 'dock-import':  closeSettingsModal(); openDockImportModal(); break;
+    case 'dark-mode':    setDarkMode(btn.dataset.mode === 'dark' ? true : btn.dataset.mode === 'light' ? false : 'auto'); break;
+    case 'accent-color': setAccentColor(btn.dataset.color); break;
+    case 'paste-pi':     pastePiFromClipboard(btn.dataset.priority); break;
+    case 'export-json':      exportJSON(); break;
+    case 'gist-upload':      gistUpload(); break;
+    case 'gist-download':    gistDownload(); break;
+    case 'reset-icon-color': setIconColor('active', getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()); break;
+  }
+});
+
+// 各モーダルの data-modal-action 委譲
+[
+  ['modal',            closeModal,            null],
+  ['dock-import-modal',closeDockImportModal,  null],
+  ['cal-import-modal', closeCalImportModal,   null],
+  ['place-quick-panel',closePlaceQuickPanel,  null],
+  ['slack-quick-panel',closeSlackQuickPanel,  null],
+].forEach(([id, closeFn, footerId]) => {
+  const root = document.getElementById(id).querySelector('.modal') || document.getElementById(id);
+  root.addEventListener('click', e => {
+    const btn = e.target.closest('[data-modal-action]');
+    if (!btn) return;
+    if (btn.dataset.modalAction === 'close')           { closeFn(); return; }
+    if (btn.dataset.modalAction === 'edit')            { closeFn(); editItem(btn.dataset.id); return; }
+    if (btn.dataset.modalAction === 'pick-status')     { pickStatus(btn.dataset.status); return; }
+    if (btn.dataset.modalAction === 'toggle-slack-ch')   { _toggleSlackChForm(); return; }
+    if (btn.dataset.modalAction === 'cal-ng')            { addCalNg(btn.dataset.title); return; }
+    if (btn.dataset.modalAction === 'toggle-alarm-day')  { toggleSetAlarmDay(Number(btn.dataset.day), btn); return; }
+    if (btn.dataset.modalAction === 'select-alarm-mwday'){ selectSetAlarmMWDay(Number(btn.dataset.day), btn); return; }
+    if (btn.dataset.modalAction === 'select-type')       { selectType(btn.dataset.type); return; }
+    if (btn.dataset.modalAction === 'get-geo')           { getGeoLocation(); return; }
+    if (btn.dataset.modalAction === 'show-script-help')  { showScriptHelp(); return; }
+    if (btn.dataset.modalAction === 'add-script-param')  { addScriptParam(); return; }
+    if (btn.dataset.modalAction === 'paste-icon')        { pasteIconFromClipboard(); return; }
+    if (btn.dataset.modalAction === 'open-date-picker')  { document.getElementById(btn.dataset.target).showPicker?.(); return; }
+    if (btn.dataset.modalAction === 'delete-item')       { deleteItem(); return; }
+    if (btn.dataset.modalAction === 'save-item')         { saveItem(); return; }
+  });
+});
+
+[
+  ['dock-import-modal',  () => closeDockImportModal()],
+  ['settings-modal',     () => closeSettingsModal()],
+  ['quick-search-modal', () => closeQuickSearch()],
+  ['shortcuts-modal',    () => closeShortcutsModal()],
+  ['cal-import-modal',   () => closeCalImportModal()],
+  ['set-quick-panel',    () => closeSetQuickPanel()],
+  ['item-insert-modal',  () => closeItemInsertModal()],
+  ['place-quick-panel',  () => closePlaceQuickPanel()],
+  ['slack-quick-panel',  () => closeSlackQuickPanel()],
+].forEach(([id, closeFn]) => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeFn();
+  });
+});
+
+document.getElementById('ctx-menu').addEventListener('click', e => {
+  const btn = e.target.closest('[data-ctx-action]');
+  if (!btn) return;
+  switch (btn.dataset.ctxAction) {
+    case 'edit':             ctxEdit(); break;
+    case 'open':             ctxOpen(); break;
+    case 'delete':           ctxDelete(); break;
+    case 'close-shortcuts':  closeShortcutsModal(); break;
+  }
+});
+
+document.getElementById('shortcuts-modal').addEventListener('click', e => {
+  const btn = e.target.closest('[data-ctx-action]');
+  if (!btn) return;
+  if (btn.dataset.ctxAction === 'close-shortcuts') closeShortcutsModal();
+});
+
+document.getElementById('alarm-popup-overlay').addEventListener('click', e => {
+  const btn = e.target.closest('[data-alarm-popup-action]');
+  if (!btn) return;
+  switch (btn.dataset.alarmPopupAction) {
+    case 'close':   closeAlarmPopup(); break;
+    case 'execute': executeCurrentAlarm(); break;
+    case 'snooze':  snoozeAlarm(); break;
+  }
+});
 
 // ═══════════════════════════════════════════
 // Quick Search (⌘K)
