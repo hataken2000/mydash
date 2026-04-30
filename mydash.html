@@ -1463,7 +1463,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.49</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.50</div>
   </div>
 </aside>
 
@@ -1672,7 +1672,7 @@ body.hide-server .launch-btn { display: none !important; }
 <div class="tag-dropdown" id="tag-dropdown" style="display:none"></div>
 
 <!-- Modal -->
-<div class="modal-overlay" id="modal" style="display:none" onclick="overlayClick(event)">
+<div class="modal-overlay" id="modal" style="display:none">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-title">新規追加</div>
@@ -2768,7 +2768,7 @@ function renderNodeView() {
       const selStrokeW = isSelected ? 1 : 0.75;
       const selDash = item.hidden ? ' stroke-dasharray="4,3"' : '';
       const iconUrl = nvIconDataUrl(iconVar, tc);
-      islandsSvg += `<g data-id="${item.id}" onclick="nodeItemClick('${item.id}')" oncontextmenu="showCtx(event,'${item.id}')" style="cursor:pointer" class="nv-item"${hiddenAttr}>`;
+      islandsSvg += `<g data-id="${item.id}" oncontextmenu="showCtx(event,'${item.id}')" style="cursor:pointer" class="nv-item"${hiddenAttr}>`;
       islandsSvg += `<rect x="${nx}" y="${ny}" width="${ITEM_W}" height="${ITEM_H}" rx="5" fill="${isSelected ? 'var(--accent)' : 'var(--card-bg)'}" fill-opacity="${isSelected ? 0.18 : 1}" stroke="${selStroke}" stroke-width="${selStrokeW}"${selDash} data-tc="${tc}" class="nv-rect"/>`;
       if (iconUrl) {
         islandsSvg += `<image href="${iconUrl}" xlink:href="${iconUrl}" x="${nx+5}" y="${ny+7}" width="14" height="14"/>`;
@@ -2826,6 +2826,10 @@ function initNodeViewPan() {
     if (e.button !== 0) return;
     if (e.target.closest('.nv-item')) return;
     drag = true; sx = e.clientX - tx; sy = e.clientY - ty; wrap.style.cursor = 'grabbing';
+  });
+  wrap.addEventListener('click', e => {
+    const nvItem = e.target.closest('.nv-item');
+    if (nvItem) nodeItemClick(nvItem.dataset.id);
   });
   wrap.addEventListener('contextmenu', e => {
     const nvItem = e.target.closest('.nv-item');
@@ -3681,10 +3685,9 @@ document.getElementById('modal') && document.addEventListener('mousedown', e => 
   const overlay = document.getElementById('modal');
   _mousedownOnOverlay = overlay.style.display !== 'none' && e.target === overlay;
 });
-
-function overlayClick(e) {
+document.getElementById('modal')?.addEventListener('click', e => {
   if (e.target.id === 'modal' && _mousedownOnOverlay) closeModal();
-}
+});
 
 function _confirmClose() {
   if (!db.settings.confirmOnClose) return true;
@@ -4470,9 +4473,10 @@ function showShortcutUrlPanel(title, items) {
       <div style="margin-bottom:10px"><span class="app-icon" style="-webkit-mask-image:var(--icon-set);mask-image:var(--icon-set);width:28px;height:28px"></span></div>
       ${title ? `<div style="font-size:18px;font-weight:700;color:${t.text};margin-bottom:16px">${esc(title)}</div>` : ''}
       <div style="max-height:55vh;overflow-y:auto">${linkItems}</div>
-      <button onclick="document.getElementById('shortcut-popup').remove()" style="margin-top:16px;width:100%;padding:13px;background:${t.btnBg};color:${t.textMuted};border:1px solid ${t.btnBorder};border-radius:10px;font-size:15px;cursor:pointer">閉じる</button>
+      <button class="shortcut-popup-close" style="margin-top:16px;width:100%;padding:13px;background:${t.btnBg};color:${t.textMuted};border:1px solid ${t.btnBorder};border-radius:10px;font-size:15px;cursor:pointer">閉じる</button>
     </div>`;
   document.body.appendChild(el);
+  el.querySelector('.shortcut-popup-close').addEventListener('click', () => el.remove());
 }
 
 function showShortcutPopup(type, title, body) {
@@ -4486,9 +4490,10 @@ function showShortcutPopup(type, title, body) {
       <div style="font-size:30px;margin-bottom:12px">${icon}</div>
       <div style="font-size:19px;font-weight:700;color:${t.text};margin-bottom:${body ? '14' : '0'}px">${esc(title)}</div>
       ${body ? `<div style="font-size:14px;color:${t.textMuted};white-space:pre-wrap;line-height:1.8;max-height:60vh;overflow-y:auto">${esc(body)}</div>` : ''}
-      <button onclick="document.getElementById('shortcut-popup').remove()" style="margin-top:22px;width:100%;padding:13px;background:${t.accent};color:white;border:none;border-radius:10px;font-size:16px;cursor:pointer;font-weight:600">閉じる</button>
+      <button class="shortcut-popup-close" style="margin-top:22px;width:100%;padding:13px;background:${t.accent};color:white;border:none;border-radius:10px;font-size:16px;cursor:pointer;font-weight:600">閉じる</button>
     </div>`;
   document.body.appendChild(el);
+  el.querySelector('.shortcut-popup-close').addEventListener('click', () => el.remove());
 }
 
 // ═══════════════════════════════════════════
@@ -4514,7 +4519,7 @@ function showQuickEdit(id) {
     const cur = item.status || 'todo';
     const btns = ['todo','doing','done'].map(s => {
       const active = s === cur;
-      return `<button id="qe-s-${s}" onclick="qeSetStatus('${id}','${s}')"
+      return `<button id="qe-s-${s}" data-qe-action="set-status" data-status="${s}"
         style="flex:1;padding:9px 4px;border-radius:8px;border:2px solid ${active?clrs[s]:t.border};
         background:${active?clrs[s]+'33':'transparent'};color:${active?clrs[s]:t.textMuted};
         font-size:13px;cursor:pointer;font-weight:${active?'700':'400'}">${lbls[s]}</button>`;
@@ -4550,10 +4555,10 @@ function showQuickEdit(id) {
       ${dueHtml}
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
         <div style="font-size:11px;color:${t.textMuted};font-weight:600;letter-spacing:0.5px">内容</div>
-        <button onmousedown="event.preventDefault()" onclick="openItemInsertModal('${id}')" style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:3px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);width:11px;height:11px"></span>挿入</button>
+        <button onmousedown="event.preventDefault()" data-qe-action="insert-item" style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:3px"><span class="app-icon" style="-webkit-mask-image:var(--icon-link);mask-image:var(--icon-link);width:11px;height:11px"></span>挿入</button>
       </div>
       <div id="qe-desc-preview" class="memo-body"
-        onclick="if(!event.target.closest('[data-card-action]'))_qeShowEdit('${id}')" title="クリックして編集"
+        title="クリックして編集"
         style="min-height:80px;max-height:220px;overflow-y:auto;padding:9px 12px;border-radius:8px;border:1px solid ${t.border};
         background:${t.btnBg};cursor:text;line-height:1.7;font-size:14px;color:${t.text}"></div>
       <textarea id="qe-desc"
@@ -4594,6 +4599,8 @@ function showQuickEdit(id) {
       case 'close':       closeQuickEdit(id); break;
       case 'edit':        closeQuickEdit(id); editItem(id); break;
       case 'back-to-sqp': closeQuickEdit(id); showSetQuickPanel(btn.dataset.sid); break;
+      case 'set-status':  qeSetStatus(id, btn.dataset.status); break;
+      case 'insert-item': openItemInsertModal(id); break;
     }
   });
 
@@ -4607,8 +4614,8 @@ function showQuickEdit(id) {
   }
   document.getElementById('qe-desc-preview').addEventListener('click', e => {
     const mec = e.target.closest('[data-card-action]');
-    if (!mec) return;
-    e.stopPropagation(); // インラインonclick(_qeShowEdit)の発火を防ぐ
+    if (!mec) { _qeShowEdit(id); return; }
+    e.stopPropagation();
     const mecId = mec.dataset.id;
     const mecAction = mec.dataset.cardAction;
     closeQuickEdit(id);
@@ -5375,13 +5382,13 @@ function showPlaceQuickPanel(id) {
     ? `${item.lat},${item.lng}`
     : item.address ? encodeURIComponent(item.address) : '';
   const navBtn = navDest
-    ? `<button class="btn-primary" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${navDest}','_blank')" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:14px;height:14px;background-color:white"></span>ナビ</button>`
+    ? `<button class="btn-primary" data-modal-action="nav-place" data-dest="${navDest}" style="display:flex;align-items:center;gap:5px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:14px;height:14px;background-color:white"></span>ナビ</button>`
     : '';
   const mapOpenBtn = item.mapUrl
-    ? `<button class="btn-secondary" onclick="window.open('${esc(item.mapUrl)}','_blank')" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:13px;height:13px"></span>マップで開く</button>`
+    ? `<button class="btn-secondary" data-modal-action="open-map" data-url="${esc(item.mapUrl)}" style="display:flex;align-items:center;gap:4px"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place);width:13px;height:13px"></span>マップで開く</button>`
     : '';
   const copyBtn = item.address
-    ? `<button class="btn-secondary" onclick="navigator.clipboard.writeText('${esc(item.address)}').then(()=>toast('住所をコピーしました','📋'))" style="display:flex;align-items:center;gap:4px">住所コピー</button>`
+    ? `<button class="btn-secondary" data-modal-action="copy-address" data-addr="${esc(item.address)}" style="display:flex;align-items:center;gap:4px">住所コピー</button>`
     : '';
 
   document.getElementById('pqp-footer').innerHTML =
@@ -5471,7 +5478,7 @@ function _showScriptParamPanel(item) {
     <div style="font-size:11px;color:var(--text-muted);background:var(--bg3);padding:8px 10px;border-radius:6px;font-family:monospace;margin-bottom:14px">${esc(item.scriptCommand || '')}</div>
     ${rows}
     <div style="display:flex;gap:8px;margin-top:4px">
-      <button onclick="document.getElementById('${panelId}').remove()" class="btn-secondary" style="flex:1">キャンセル</button>
+      <button data-panel-action="cancel-script" class="btn-secondary" style="flex:1">キャンセル</button>
       <button data-panel-action="run-script" data-id="${item.id}" class="btn-primary" style="flex:1">▶ 実行</button>
     </div>
   </div>`;
@@ -5510,7 +5517,7 @@ function renderScriptParamsList() {
         </div>
         ${p.type === 'select' ? `<textarea class="form-textarea" placeholder="選択肢（1行1つ）" style="font-size:11px;min-height:54px" oninput="state.scriptParams[${i}].options=this.value.split('\\n').filter(Boolean)">${esc((p.options||[]).join('\n'))}</textarea>` : ''}
       </div>
-      <button type="button" onclick="state.scriptParams.splice(${i},1);renderScriptParamsList()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:2px">✕</button>
+      <button type="button" data-modal-action="remove-script-param" data-idx="${i}" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px;padding:2px">✕</button>
     </div>
   `).join('');
 }
@@ -5551,11 +5558,17 @@ function showScriptHelp() {
     </div>
     <textarea id="script-help-text" style="width:100%;min-height:200px;font-size:11.5px;font-family:monospace;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--text);resize:vertical;box-sizing:border-box" readonly>${prompt}</textarea>
     <div style="display:flex;gap:8px;margin-top:10px">
-      <button onclick="document.getElementById('${helpId}').remove()" class="btn-secondary" style="flex:1">閉じる</button>
-      <button onclick="navigator.clipboard.writeText(document.getElementById('script-help-text').value).then(()=>toast('コピーしました','📋'))" class="btn-primary" style="flex:1">📋 コピー</button>
+      <button data-script-help-action="close" class="btn-secondary" style="flex:1">閉じる</button>
+      <button data-script-help-action="copy" class="btn-primary" style="flex:1">📋 コピー</button>
     </div>
   </div>`;
   panel.style.display = 'flex';
+  panel.onclick = e => {
+    const btn = e.target.closest('[data-script-help-action]');
+    if (!btn) return;
+    if (btn.dataset.scriptHelpAction === 'close') panel.remove();
+    if (btn.dataset.scriptHelpAction === 'copy')  navigator.clipboard.writeText(document.getElementById('script-help-text').value).then(() => toast('コピーしました', '📋'));
+  };
 }
 
 // ═══════════════════════════════════════════
@@ -5583,7 +5596,7 @@ function renderItemInsertList() {
     const tc = typeColor(item);
     const label = esc(TYPE_DEF[item.type]?.label || item.type);
     const sub = item.address || item.url || (item.desc||'').replace(/\n/g,' ').slice(0,40) || '';
-    return `<div class="memo-embed-card" onclick="insertItemEmbed('${item.id}')">
+    return `<div class="memo-embed-card" data-modal-action="insert-embed" data-id="${item.id}">
       <span class="mec-icon" style="color:${tc}">${iconHtml(item,'sm')}</span>
       <div style="flex:1;min-width:0">
         <div class="mec-title">${esc(item.title)}</div>
@@ -6338,7 +6351,9 @@ function closeDockImportModal() {
   hideEl('dock-import-modal');
 }
 
+let _dockApps = null;
 function renderDockImportList(apps) {
+  _dockApps = apps;
   const body = document.getElementById('dock-import-body');
   const footer = document.getElementById('dock-import-footer');
   const existingNames = new Set(db.items.map(i => (i.appName || i.title || '').toLowerCase()));
@@ -6365,7 +6380,7 @@ function renderDockImportList(apps) {
 
   footer.innerHTML = `
     <button class="io-btn" data-modal-action="close" style="flex:1">キャンセル</button>
-    <button class="io-btn" onclick="executeDockImport(${JSON.stringify(apps).replace(/"/g,'&quot;')})"
+    <button class="io-btn" data-modal-action="execute-dock-import"
       style="flex:1;background:var(--accent);border-color:var(--accent);color:white;font-weight:700">インポート</button>`;
 }
 
@@ -7079,6 +7094,7 @@ document.addEventListener('click', e => {
       case 'sqp-quick-edit':    closeSetQuickPanel(); showQuickEdit(id); break;
       case 'sqp-launch-window': closeSetQuickPanel(); launchWindowSessionById(id); break;
       case 'run-script':        _runScriptFromPanel(id); break;
+      case 'cancel-script':     document.getElementById('script-param-panel')?.remove(); break;
       case 'qs-select':         qsSelectItem(id); break;
     }
     return;
@@ -7167,6 +7183,7 @@ document.getElementById('settings-modal').querySelector('.modal').addEventListen
   ['cal-import-modal', closeCalImportModal,   null],
   ['place-quick-panel',closePlaceQuickPanel,  null],
   ['slack-quick-panel',closeSlackQuickPanel,  null],
+  ['item-insert-modal', closeItemInsertModal, null],
 ].forEach(([id, closeFn, footerId]) => {
   const root = document.getElementById(id).querySelector('.modal') || document.getElementById(id);
   root.addEventListener('click', e => {
@@ -7182,11 +7199,17 @@ document.getElementById('settings-modal').querySelector('.modal').addEventListen
     if (btn.dataset.modalAction === 'select-type')       { selectType(btn.dataset.type); return; }
     if (btn.dataset.modalAction === 'get-geo')           { getGeoLocation(); return; }
     if (btn.dataset.modalAction === 'show-script-help')  { showScriptHelp(); return; }
-    if (btn.dataset.modalAction === 'add-script-param')  { addScriptParam(); return; }
+    if (btn.dataset.modalAction === 'insert-embed')        { insertItemEmbed(btn.dataset.id); return; }
+    if (btn.dataset.modalAction === 'execute-dock-import') { executeDockImport(_dockApps); return; }
+    if (btn.dataset.modalAction === 'add-script-param')      { addScriptParam(); return; }
+    if (btn.dataset.modalAction === 'remove-script-param')   { state.scriptParams.splice(Number(btn.dataset.idx),1); renderScriptParamsList(); return; }
     if (btn.dataset.modalAction === 'paste-icon')        { pasteIconFromClipboard(); return; }
     if (btn.dataset.modalAction === 'open-date-picker')  { document.getElementById(btn.dataset.target).showPicker?.(); return; }
     if (btn.dataset.modalAction === 'delete-item')       { deleteItem(); return; }
     if (btn.dataset.modalAction === 'save-item')         { saveItem(); return; }
+    if (btn.dataset.modalAction === 'nav-place')           { window.open(`https://www.google.com/maps/dir/?api=1&destination=${btn.dataset.dest}`, '_blank'); return; }
+    if (btn.dataset.modalAction === 'open-map')            { window.open(btn.dataset.url, '_blank'); return; }
+    if (btn.dataset.modalAction === 'copy-address')        { navigator.clipboard.writeText(btn.dataset.addr).then(() => toast('住所をコピーしました', '📋')); return; }
     if (btn.dataset.modalAction === 'remove-cal-ng')       { removeCalNg(Number(btn.dataset.idx)); return; }
     if (btn.dataset.modalAction === 'run-cal-sync')        { runCalSync(true); return; }
     if (btn.dataset.modalAction === 'fetch-calendar')      { fetchCalendar(); return; }
