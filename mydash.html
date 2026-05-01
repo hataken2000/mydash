@@ -1424,10 +1424,9 @@ body.hide-server .launch-btn { display: none !important; }
       <span class="count-badge" id="cnt-task">0</span>
     </div>
     <div id="task-subfilter-section" style="display:none">
-      <div class="sidebar-subitem" data-tsf="today"><span class="app-icon" style="-webkit-mask-image:var(--icon-calendar);mask-image:var(--icon-calendar);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>今日締切<span class="count-badge" id="cnt-tsf-today" style="margin-left:auto">0</span></div>
-      <div class="sidebar-subitem" data-tsf="overdue"><span class="app-icon" style="-webkit-mask-image:var(--icon-alert-triangle);mask-image:var(--icon-alert-triangle);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>期限超過<span class="count-badge" id="cnt-tsf-overdue" style="margin-left:auto">0</span></div>
       <div class="sidebar-subitem" data-tsf="doing"><span class="app-icon" style="-webkit-mask-image:var(--icon-lightning);mask-image:var(--icon-lightning);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>進行中<span class="count-badge" id="cnt-tsf-doing" style="margin-left:auto">0</span></div>
-      <div class="sidebar-subitem" data-tsf="undone"><span class="app-icon" style="-webkit-mask-image:var(--icon-eye);mask-image:var(--icon-eye);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>完了を隠す<span class="count-badge" id="cnt-tsf-undone" style="margin-left:auto">0</span></div>
+      <div class="sidebar-subitem" data-tsf="todo"><span class="app-icon" style="-webkit-mask-image:var(--icon-task);mask-image:var(--icon-task);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>未着手<span class="count-badge" id="cnt-tsf-todo" style="margin-left:auto">0</span></div>
+      <div class="sidebar-subitem" data-tsf="done"><span class="app-icon" style="-webkit-mask-image:var(--icon-select);mask-image:var(--icon-select);background-color:currentColor;width:12px;height:12px;vertical-align:middle;display:inline-block;margin-right:3px;"></span>完了<span class="count-badge" id="cnt-tsf-done" style="margin-left:auto">0</span></div>
     </div>
     <div class="sidebar-item" data-filter="place">
       <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-place);mask-image:var(--icon-place)"></span></span><span class="si-label">場所</span>
@@ -1467,7 +1466,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.53</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.54</div>
   </div>
 </aside>
 
@@ -2586,10 +2585,9 @@ function filteredItems() {
   if (state.filter === 'task' && state.taskSubFilter !== 'all') {
     const todayStr = new Date().toISOString().slice(0, 10);
     items = items.filter(item => {
-      if (state.taskSubFilter === 'today')   return item.dueDate === todayStr && (item.status || 'todo') !== 'done';
-      if (state.taskSubFilter === 'overdue') return item.dueDate && item.dueDate < todayStr && (item.status || 'todo') !== 'done';
-      if (state.taskSubFilter === 'doing')   return (item.status || 'todo') === 'doing';
-      if (state.taskSubFilter === 'undone')  return (item.status || 'todo') !== 'done';
+      if (state.taskSubFilter === 'doing') return (item.status || 'todo') === 'doing';
+      if (state.taskSubFilter === 'todo')  return (item.status || 'todo') === 'todo';
+      if (state.taskSubFilter === 'done')  return (item.status || 'todo') === 'done';
       return true;
     });
   }
@@ -3132,14 +3130,12 @@ function updateCounts() {
   // タスクサブフィルターのカウント
   const todayStr = new Date().toISOString().slice(0, 10);
   const tasks = db.items.filter(i => i.type === 'task');
-  const el_today   = document.getElementById('cnt-tsf-today');
-  const el_overdue = document.getElementById('cnt-tsf-overdue');
-  const el_doing   = document.getElementById('cnt-tsf-doing');
-  const el_undone  = document.getElementById('cnt-tsf-undone');
-  if (el_today)   el_today.textContent   = tasks.filter(i => i.dueDate === todayStr && (i.status||'todo') !== 'done').length;
-  if (el_overdue) el_overdue.textContent = tasks.filter(i => i.dueDate && i.dueDate < todayStr && (i.status||'todo') !== 'done').length;
-  if (el_doing)   el_doing.textContent   = tasks.filter(i => (i.status||'todo') === 'doing').length;
-  if (el_undone)  el_undone.textContent  = tasks.filter(i => (i.status||'todo') !== 'done').length;
+  const el_doing = document.getElementById('cnt-tsf-doing');
+  const el_todo  = document.getElementById('cnt-tsf-todo');
+  const el_done  = document.getElementById('cnt-tsf-done');
+  if (el_doing) el_doing.textContent = tasks.filter(i => (i.status||'todo') === 'doing').length;
+  if (el_todo)  el_todo.textContent  = tasks.filter(i => (i.status||'todo') === 'todo').length;
+  if (el_done)  el_done.textContent  = tasks.filter(i => (i.status||'todo') === 'done').length;
 
   // セットサブフィルターのカウント
   const el_alarm = document.getElementById('cnt-ssf-alarm');
