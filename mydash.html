@@ -296,6 +296,8 @@ body {
 .qs-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; cursor:pointer; }
 .qs-item:hover, .qs-item.qs-active { background:rgba(124,131,253,0.12); }
 .qs-item-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.qs-item-icon img { width:16px; height:16px; object-fit:contain; border-radius:3px; }
+.qs-item-icon .app-icon { width:16px; height:16px; }
 .qs-item-title { font-size:13.5px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .qs-item-type { font-size:11px; color:var(--text-muted); flex-shrink:0; }
 kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; padding:2px 7px; font-size:12px; font-family:inherit; white-space:nowrap; }
@@ -1320,7 +1322,9 @@ body.hide-server .launch-btn { display: none !important; }
 .sqp-item .sqp-icon { flex-shrink: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 .sqp-item .sqp-icon img { width: 20px; height: 20px; object-fit: contain; border-radius: 3px; }
 .tl-event-block img, .today-allday-card img { width: 20px; height: 20px; object-fit: contain; border-radius: 3px; flex-shrink: 0; }
-#sqp-title img { width: 20px; height: 20px; object-fit: contain; border-radius: 4px; }
+#sqp-title img, #sqkp-title img { width: 20px; height: 20px; object-fit: contain; border-radius: 4px; }
+#sqp-title .app-icon, #sqkp-title .app-icon { width: 16px; height: 16px; }
+.sqp-item .sqp-icon .app-icon { width: 16px; height: 16px; }
 .sqp-item .sqp-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sqp-item .sqp-type { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
 .sqp-alarm { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; margin-top: 4px; }
@@ -1466,7 +1470,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.54</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.55</div>
   </div>
 </aside>
 
@@ -7376,7 +7380,7 @@ function onQsInput() {
   }).join('');
   const cmdsHtml = cmdHits.map(c =>
     `<div class="qs-item" data-qs-cmd="${c.id}">
-      <div class="qs-item-icon" style="background:rgba(124,131,253,0.15)"><span class="app-icon" style="-webkit-mask-image:${c.icon};mask-image:${c.icon};width:14px;height:14px;background-color:var(--accent)"></span></div>
+      <div class="qs-item-icon" style="background:rgba(124,131,253,0.15)"><span class="app-icon" style="-webkit-mask-image:${c.icon};mask-image:${c.icon};background-color:var(--accent)"></span></div>
       <span class="qs-item-title">${esc(c.label)}</span>
       <span class="qs-item-type" style="color:var(--accent)">コマンド</span>
     </div>`

@@ -99,6 +99,14 @@ const KEY = 'mydash_v1';
 const DAYS = ['日','月','火','水','木','金','土'];
 const bc = new BroadcastChannel('mydash-widget');
 
+let taskSort = localStorage.getItem('mydash_widget_task_sort') || 'asc';
+
+function toggleTaskSort() {
+  taskSort = taskSort === 'asc' ? 'desc' : 'asc';
+  localStorage.setItem('mydash_widget_task_sort', taskSort);
+  loadAndRender();
+}
+
 const SVG_SET = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></svg>`;
 const SVG_TASK = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>`;
 
@@ -148,11 +156,10 @@ function render(db) {
   const sets = getTodayAlarmSets(db);
   const tasks = (db.items || [])
     .filter(i => i.type === 'task' && i.dueDate && (i.status || 'todo') !== 'done')
-    .sort((a, b) => {
-      const aOver = a.dueDate < todayStr, bOver = b.dueDate < todayStr;
-      if (aOver !== bOver) return aOver ? 1 : -1;
-      return a.dueDate.localeCompare(b.dueDate);
-    });
+    .sort((a, b) => taskSort === 'asc'
+      ? a.dueDate.localeCompare(b.dueDate)
+      : b.dueDate.localeCompare(a.dueDate)
+    );
 
   let html = '';
 
@@ -162,7 +169,8 @@ function render(db) {
   }
 
   if (tasks.length) {
-    html += `<div class="section-label"><span class="w-svg" style="color:var(--muted);width:11px;height:11px">${SVG_TASK}</span>タスク</div>`;
+    const sortLabel = taskSort === 'asc' ? '↑ 日付' : '↓ 日付';
+    html += `<div class="section-label"><span class="w-svg" style="color:var(--muted);width:11px;height:11px">${SVG_TASK}</span>タスク<button style="margin-left:auto;padding:2px 6px;font-size:10px" onclick="toggleTaskSort()">${sortLabel}</button></div>`;
     html += tasks.map(t => taskRow(t, todayStr)).join('');
   }
 
