@@ -143,30 +143,23 @@ function getTodayAlarmSets(db) {
 function render(db) {
   const todayStr = new Date().toISOString().slice(0, 10);
   const sets = getTodayAlarmSets(db);
-  const undone = (db.items || []).filter(i => i.type === 'task' && (i.status || 'todo') !== 'done');
-  const overdue = undone.filter(i => i.dueDate && i.dueDate < todayStr);
-  const today   = undone.filter(i => i.dueDate === todayStr);
-  const done    = (db.items || []).filter(i => i.type === 'task' && i.status === 'done' && i.dueDate === todayStr);
+  const tasks = (db.items || [])
+    .filter(i => i.type === 'task' && i.dueDate && (i.status || 'todo') !== 'done')
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 
   let html = '';
 
-  // セット一覧
   if (sets.length) {
     html += `<div class="section-label"><span class="w-svg" style="color:var(--muted);width:11px;height:11px">${SVG_SET}</span>今日のセット</div>`;
     html += sets.map(s => setRow(s)).join('');
   }
 
-  // タスク
-  if (overdue.length || today.length || done.length) {
+  if (tasks.length) {
     html += `<div class="section-label"><span class="w-svg" style="color:var(--muted);width:11px;height:11px">${SVG_TASK}</span>タスク</div>`;
-    overdue.forEach(t => { html += taskRow(t, true); });
-    today.forEach(t => { html += taskRow(t, false); });
-    done.forEach(t => { html += taskRow(t, false); });
+    html += tasks.map(t => taskRow(t, todayStr)).join('');
   }
 
-  if (!html) {
-    html = '<div class="empty">今日の予定はありません 🎉</div>';
-  }
+  if (!html) html = '<div class="empty">今日の予定はありません 🎉</div>';
 
   document.getElementById('content').innerHTML = html;
 }
@@ -186,14 +179,14 @@ function setRow(item) {
   </div>`;
 }
 
-function taskRow(t) {
-  const done = t.status === 'done';
-  const isOverdue = !done && t.dueDate && t.dueDate < new Date().toISOString().slice(0,10);
-  const sub = done ? '完了' : isOverdue ? '期限超過' : '今日締切';
-  return `<div class="w-item${done ? ' task-done' : ''}${isOverdue ? ' task-overdue' : ''}" onclick="openQuickEdit('${esc(t.id)}')">
+function taskRow(t, todayStr) {
+  const isOverdue = t.dueDate < todayStr;
+  const d = new Date(t.dueDate + 'T00:00:00');
+  const dateStr = (d.getMonth() + 1) + '/' + d.getDate();
+  return `<div class="w-item${isOverdue ? ' task-overdue' : ''}" onclick="openQuickEdit('${esc(t.id)}')">
     <span class="w-icon">${itemIcon(t, SVG_TASK)}</span>
     <span class="w-title">${escHtml(t.title)}</span>
-    <span class="w-sub">${sub}</span>
+    <span class="w-sub">${dateStr}</span>
   </div>`;
 }
 
