@@ -9,6 +9,9 @@
   --text: #e8eaf6; --muted: #8b90aa; --accent: #00afcc;
   --set: #7c6af7; --task: #f59e42;
   --danger: #ef5350; --success: #66bb6a;
+  --icon-priority-high:   url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cmVjdCB4PSIyIiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxMiIgcng9IjEuNSIvPjxyZWN0IHg9IjIiIHk9IjE4IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiByeD0iMS41Ii8+PHJlY3QgeD0iMTAuNSIgeT0iMyIgd2lkdGg9IjMiIGhlaWdodD0iMTIiIHJ4PSIxLjUiLz48cmVjdCB4PSIxMC41IiB5PSIxOCIgd2lkdGg9IjMiIGhlaWdodD0iMyIgcng9IjEuNSIvPjxyZWN0IHg9IjE5IiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxMiIgcng9IjEuNSIvPjxyZWN0IHg9IjE5IiB5PSIxOCIgd2lkdGg9IjMiIGhlaWdodD0iMyIgcng9IjEuNSIvPjwvc3ZnPg==');
+  --icon-priority-medium: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cmVjdCB4PSI1IiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxMiIgcng9IjEuNSIvPjxyZWN0IHg9IjUiIHk9IjE4IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiByeD0iMS41Ii8+PHJlY3QgeD0iMTYiIHk9IjMiIHdpZHRoPSIzIiBoZWlnaHQ9IjEyIiByeD0iMS41Ii8+PHJlY3QgeD0iMTYiIHk9IjE4IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiByeD0iMS41Ii8+PC9zdmc+');
+  --icon-priority-low:    url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cmVjdCB4PSIxMC41IiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxMiIgcng9IjEuNSIvPjxyZWN0IHg9IjEwLjUiIHk9IjE4IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiByeD0iMS41Ii8+PC9zdmc+');
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -145,7 +148,11 @@ function render(db) {
   const sets = getTodayAlarmSets(db);
   const tasks = (db.items || [])
     .filter(i => i.type === 'task' && i.dueDate && (i.status || 'todo') !== 'done')
-    .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    .sort((a, b) => {
+      const aOver = a.dueDate < todayStr, bOver = b.dueDate < todayStr;
+      if (aOver !== bOver) return aOver ? 1 : -1;
+      return a.dueDate.localeCompare(b.dueDate);
+    });
 
   let html = '';
 
@@ -179,13 +186,22 @@ function setRow(item) {
   </div>`;
 }
 
+const PRIORITY_COLOR = { high: '#ef5350', medium: '#f59e42', low: '#66bb6a' };
+
+function priorityIcon(priority) {
+  if (!priority || priority === 'medium') return '';
+  const color = PRIORITY_COLOR[priority] || 'var(--muted)';
+  return `<span style="-webkit-mask-image:var(--icon-priority-${priority});mask-image:var(--icon-priority-${priority});background-color:${color};width:12px;height:12px;display:inline-block;flex-shrink:0;vertical-align:middle"></span>`;
+}
+
 function taskRow(t, todayStr) {
   const isOverdue = t.dueDate < todayStr;
   const d = new Date(t.dueDate + 'T00:00:00');
   const dateStr = (d.getMonth() + 1) + '/' + d.getDate();
+  const pri = priorityIcon(t.priority);
   return `<div class="w-item${isOverdue ? ' task-overdue' : ''}" onclick="openQuickEdit('${esc(t.id)}')">
     <span class="w-icon">${itemIcon(t, SVG_TASK)}</span>
-    <span class="w-title">${escHtml(t.title)}</span>
+    <span class="w-title" style="display:flex;align-items:center;gap:4px">${pri}${escHtml(t.title)}</span>
     <span class="w-sub">${dateStr}</span>
   </div>`;
 }
