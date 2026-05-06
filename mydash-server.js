@@ -11,7 +11,7 @@ const path = require('path');
 const { exec, execFile } = require('child_process');
 
 const STATIC_DIR = path.dirname(__filename);
-const STATIC_FILES = { 'mydash.html': 'text/html', 'widget.html': 'text/html', 'manual.html': 'text/html' };
+const STATIC_FILES = { 'mydash.html': 'text/html', 'widget.html': 'text/html', 'manual.html': 'text/html', 'icons.css': 'text/css' };
 
 const PORT = 3737;
 const HOST = '0.0.0.0';
@@ -403,7 +403,7 @@ end tell`;
   }
 
   // 静的ファイル配信（mydash.html / widget.html / icons/*.svg）
-  const MIME_TYPES = { '.html': 'text/html', '.svg': 'image/svg+xml' };
+  const MIME_TYPES = { '.html': 'text/html', '.svg': 'image/svg+xml', '.css': 'text/css' };
   const reqFile = parsed.pathname === '/' ? 'mydash.html' : parsed.pathname.slice(1);
   const ext = path.extname(reqFile);
   const isAllowed = STATIC_FILES[reqFile] || (reqFile.startsWith('icons/') && ext === '.svg');

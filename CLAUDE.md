@@ -8,7 +8,7 @@
 
 ```
 ~/Desktop/mydash/
-├── mydash.html          # メインアプリ（約4900行）★主な編集対象
+├── mydash.html          # メインアプリ（約7600行）★主な編集対象
 ├── manual.html          # マニュアル（?ボタン）
 ├── widget.html          # ウィジェット（時計＋今日のタスク）
 ├── index.html           # GitHub Pages リダイレクト
@@ -84,7 +84,7 @@ db（localStorage: 'mydash_v1'）→ load() → state → filteredItems() → re
 
 ## バージョン管理ルール
 
-**現在のバージョン: v1.14.46**
+**現在のバージョン: v1.14.55**
 
 形式: `vMAJOR.MINOR.PATCH`
 
@@ -116,6 +116,11 @@ db（localStorage: 'mydash_v1'）→ load() → state → filteredItems() → re
 ### ✅ 完了（v1.14.x）
 - [x] **設定ダイアログSVG化** — セクションタイトル・ボタンは全部 `app-icon` SVGに変換済み
 - [x] **優先度アイコンSVG化** — `--icon-priority-low/medium/high` でbase64 SVG定義済み・`app-icon` クラスで表示
+- [x] **インラインonclick完全撤廃** — 214件→0件、`data-*-action` 委譲パターンに統一（v1.14.50）
+- [x] **メモ内チェックリスト** — `- [ ]` / `- [x]` をクリックで切り替え（v1.14.51）
+- [x] **⌘K コマンド実行** — `QS_COMMANDS` で10コマンド定義、検索結果にアイテムと混在表示（v1.14.52）
+- [x] **タスクサブフィルター再設計** — 進行中 / 未着手 / 完了 の3つに整理（v1.14.53）
+- [x] **ウィジェット改善** — 期日表示・超過赤・優先度アイコン・ソートトグル（v1.14.54〜55）
 
 ### その他（未着手）
 - [ ] Windows対応（mydash-server.js のスクリプト部分）

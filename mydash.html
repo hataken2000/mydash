@@ -37,63 +37,8 @@
   document.getElementById('apple-touch-icon-link').href = c.toDataURL('image/png');
 })();
 </script>
+<link rel="stylesheet" href="icons.css">
 <style>
-/* SVG icons as data URIs for file:// compatibility */
-:root {
-  --icon-alarm: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEzIiByPSI4IiAvPgogIDxwYXRoIGQ9Ik0xMiA5djRsMiAyIiAvPgogIDxwYXRoIGQ9Ik01IDMgMiA2IiAvPgogIDxwYXRoIGQ9Im0yMiA2LTMtMyIgLz4KICA8cGF0aCBkPSJNNi4zOCAxOC43IDQgMjEiIC8+CiAgPHBhdGggZD0iTTE3LjY0IDE4LjY3IDIwIDIxIiAvPgo8L3N2Zz4=');
-  --icon-all: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTIuODMgMi4xOGEyIDIgMCAwIDAtMS42NiAwTDIuNiA2LjA4YTEgMSAwIDAgMCAwIDEuODNsOC41OCAzLjkxYTIgMiAwIDAgMCAxLjY2IDBsOC41OC0zLjlhMSAxIDAgMCAwIDAtMS44M3oiIC8+CiAgPHBhdGggZD0iTTIgMTJhMSAxIDAgMCAwIC41OC45MWw4LjYgMy45MWEyIDIgMCAwIDAgMS42NSAwbDguNTgtMy45QTEgMSAwIDAgMCAyMiAxMiIgLz4KICA8cGF0aCBkPSJNMiAxN2ExIDEgMCAwIDAgLjU4LjkxbDguNiAzLjkxYTIgMiAwIDAgMCAxLjY1IDBsOC41OC0zLjlBMSAxIDAgMCAwIDIyIDE3IiAvPgo8L3N2Zz4=');
-  --icon-bell: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAuMjY4IDIxYTIgMiAwIDAgMCAzLjQ2NCAwIiAvPgogIDxwYXRoIGQ9Ik0zLjI2MiAxNS4zMjZBMSAxIDAgMCAwIDQgMTdoMTZhMSAxIDAgMCAwIC43NC0xLjY3M0MxOS40MSAxMy45NTYgMTggMTIuNDk5IDE4IDhBNiA2IDAgMCAwIDYgOGMwIDQuNDk5LTEuNDExIDUuOTU2LTIuNzM4IDcuMzI2IiAvPgo8L3N2Zz4=');
-  --icon-bell-off: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAuMjY4IDIxYTIgMiAwIDAgMCAzLjQ2NCAwIiAvPgogIDxwYXRoIGQ9Ik0xNyAxN0g0YTEgMSAwIDAgMS0uNzQtMS42NzNDNC41OSAxMy45NTYgNiAxMi40OTkgNiA4YTYgNiAwIDAgMSAuMjU4LTEuNzQyIiAvPgogIDxwYXRoIGQ9Im0yIDIgMjAgMjAiIC8+CiAgPHBhdGggZD0iTTguNjY4IDMuMDFBNiA2IDAgMCAxIDE4IDhjMCAyLjY4Ny43NyA0LjY1MyAxLjcwNyA2LjA1IiAvPgo8L3N2Zz4=');
-  --icon-bookmark: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTcgM2EyIDIgMCAwIDEgMiAydjE1YTEgMSAwIDAgMS0xLjQ5Ni44NjhsLTQuNTEyLTIuNTc4YTIgMiAwIDAgMC0xLjk4NCAwbC00LjUxMiAyLjU3OEExIDEgMCAwIDEgNSAyMFY1YTIgMiAwIDAgMSAyLTJ6IiAvPgo8L3N2Zz4=');
-  --icon-box: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjEgOGEyIDIgMCAwIDAtMS0xLjczbC03LTRhMiAyIDAgMCAwLTIgMGwtNyA0QTIgMiAwIDAgMCAzIDh2OGEyIDIgMCAwIDAgMSAxLjczbDcgNGEyIDIgMCAwIDAgMiAwbDctNEEyIDIgMCAwIDAgMjEgMTZaIiAvPgogIDxwYXRoIGQ9Im0zLjMgNyA4LjcgNSA4LjctNSIgLz4KICA8cGF0aCBkPSJNMTIgMjJWMTIiIC8+Cjwvc3ZnPg==');
-  --icon-alert-triangle: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtMjEuNzMgMTgtOC0xNGEyIDIgMCAwIDAtMy40OCAwbC04IDE0QTIgMiAwIDAgMCA0IDIxaDE2YTIgMiAwIDAgMCAxLjczLTMiLz48cGF0aCBkPSJNMTIgOXY0Ii8+PHBhdGggZD0iTTEyIDE3aC4wMSIvPjwvc3ZnPg==');
-  --icon-calendar: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNOCAydjQiIC8+CiAgPHBhdGggZD0iTTE2IDJ2NCIgLz4KICA8cmVjdCB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHg9IjMiIHk9IjQiIHJ4PSIyIiAvPgogIDxwYXRoIGQ9Ik0zIDEwaDE4IiAvPgo8L3N2Zz4=');
-  --icon-chevron-down: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJtNiA5IDYgNiA2LTYiIC8+Cjwvc3ZnPg==');
-  --icon-chevron-left: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im0xNSAxOC02LTYgNi02Ii8+PC9zdmc+');
-  --icon-chevron-right: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im05IDE4IDYtNi02LTYiLz48L3N2Zz4=');
-  --icon-chevron-up: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJtMTggMTUtNi02LTYgNiIgLz4KPC9zdmc+');
-  --icon-clipboard: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI0IiB4PSI4IiB5PSIyIiByeD0iMSIgcnk9IjEiIC8+CiAgPHBhdGggZD0iTTE2IDRoMmEyIDIgMCAwIDEgMiAydjE0YTIgMiAwIDAgMS0yIDJINmEyIDIgMCAwIDEtMi0yVjZhMiAyIDAgMCAxIDItMmgyIiAvPgo8L3N2Zz4=');
-  --icon-close: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTggNiA2IDE4IiAvPgogIDxwYXRoIGQ9Im02IDYgMTIgMTIiIC8+Cjwvc3ZnPg==');
-  --icon-download: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTIgMTVWMyIgLz4KICA8cGF0aCBkPSJNMjEgMTV2NGEyIDIgMCAwIDEtMiAySDVhMiAyIDAgMCAxLTItMnYtNCIgLz4KICA8cGF0aCBkPSJtNyAxMCA1IDUgNS01IiAvPgo8L3N2Zz4=');
-  --icon-duplicate: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHg9IjgiIHk9IjgiIHJ4PSIyIiByeT0iMiIgLz4KICA8cGF0aCBkPSJNNCAxNmMtMS4xIDAtMi0uOS0yLTJWNGMwLTEuMS45LTIgMi0yaDEwYzEuMSAwIDIgLjkgMiAyIiAvPgo8L3N2Zz4=');
-  --icon-edit: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTMgMjFoOCIgLz4KICA8cGF0aCBkPSJtMTUgNSA0IDQiIC8+CiAgPHBhdGggZD0iTTIxLjE3NCA2LjgxMmExIDEgMCAwIDAtMy45ODYtMy45ODdMMy44NDIgMTYuMTc0YTIgMiAwIDAgMC0uNS44M2wtMS4zMjEgNC4zNTJhLjUuNSAwIDAgMCAuNjIzLjYyMmw0LjM1My0xLjMyYTIgMiAwIDAgMCAuODMtLjQ5N3oiIC8+Cjwvc3ZnPg==');
-  --icon-external: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTUgM2g2djYiIC8+CiAgPHBhdGggZD0iTTEwIDE0IDIxIDMiIC8+CiAgPHBhdGggZD0iTTE4IDEzdjZhMiAyIDAgMCAxLTIgMkg1YTIgMiAwIDAgMS0yLTJWOGEyIDIgMCAwIDEgMi0yaDYiIC8+Cjwvc3ZnPg==');
-  --icon-folder: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMCAyMGEyIDIgMCAwIDAgMi0yVjhhMiAyIDAgMCAwLTItMmgtNy45YTIgMiAwIDAgMS0xLjY5LS45TDkuNiAzLjlBMiAyIDAgMCAwIDcuOTMgM0g0YTIgMiAwIDAgMC0yIDJ2MTNhMiAyIDAgMCAwIDIgMloiLz48L3N2Zz4=');
-  --icon-eye: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMi4wNjIgMTIuMzQ4YTEgMSAwIDAgMSAwLS42OTYgMTAuNzUgMTAuNzUgMCAwIDEgMTkuODc2IDAgMSAxIDAgMCAxIDAgLjY5NiAxMC43NSAxMC43NSAwIDAgMS0xOS44NzYgMCIgLz4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIzIiAvPgo8L3N2Zz4=');
-  --icon-grid: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTIgM3YxOCIgLz4KICA8cGF0aCBkPSJNMyAxMmgxOCIgLz4KICA8cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiAvPgo8L3N2Zz4=');
-  --icon-hamburger: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNNCA1aDE2IiAvPgogIDxwYXRoIGQ9Ik00IDEyaDE2IiAvPgogIDxwYXRoIGQ9Ik00IDE5aDE2IiAvPgo8L3N2Zz4=');
-  --icon-help-circle: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgLz4KICA8cGF0aCBkPSJNOS4wOSA5YTMgMyAwIDAgMSA1LjgzIDFjMCAyLTMgMy0zIDMiIC8+CiAgPHBhdGggZD0iTTEyIDE3aC4wMSIgLz4KPC9zdmc+');
-  --icon-icon-view: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI3IiB4PSIzIiB5PSIzIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI3IiB4PSIxNCIgeT0iMyIgcng9IjEiIC8+CiAgPHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iNyIgeD0iMTQiIHk9IjE0IiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI3IiB4PSIzIiB5PSIxNCIgcng9IjEiIC8+Cjwvc3ZnPg==');
-  --icon-lightning: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNNCAxNGExIDEgMCAwIDEtLjc4LTEuNjNsOS45LTEwLjJhLjUuNSAwIDAgMSAuODYuNDZsLTEuOTIgNi4wMkExIDEgMCAwIDAgMTMgMTBoN2ExIDEgMCAwIDEgLjc4IDEuNjNsLTkuOSAxMC4yYS41LjUgMCAwIDEtLjg2LS40NmwxLjkyLTYuMDJBMSAxIDAgMCAwIDExIDE0eiIgLz4KPC9zdmc+');
-  --icon-link: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAgMTNhNSA1IDAgMCAwIDcuNTQuNTRsMy0zYTUgNSAwIDAgMC03LjA3LTcuMDdsLTEuNzIgMS43MSIgLz4KICA8cGF0aCBkPSJNMTQgMTFhNSA1IDAgMCAwLTcuNTQtLjU0bC0zIDNhNSA1IDAgMCAwIDcuMDcgNy4wN2wxLjcxLTEuNzEiIC8+Cjwvc3ZnPg==');
-  --icon-list: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMyA1aC4wMSIgLz4KICA8cGF0aCBkPSJNMyAxMmguMDEiIC8+CiAgPHBhdGggZD0iTTMgMTloLjAxIiAvPgogIDxwYXRoIGQ9Ik04IDVoMTMiIC8+CiAgPHBhdGggZD0iTTggMTJoMTMiIC8+CiAgPHBhdGggZD0iTTggMTloMTMiIC8+Cjwvc3ZnPg==');
-  --icon-lock: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iMTgiIGhlaWdodD0iMTEiIHg9IjMiIHk9IjExIiByeD0iMiIgcnk9IjIiIC8+CiAgPHBhdGggZD0iTTcgMTFWN2E1IDUgMCAwIDEgMTAgMHY0IiAvPgo8L3N2Zz4=');
-  --icon-memo: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNNiAyMmEyIDIgMCAwIDEtMi0yVjRhMiAyIDAgMCAxIDItMmg4YTIuNCAyLjQgMCAwIDEgMS43MDQuNzA2bDMuNTg4IDMuNTg4QTIuNCAyLjQgMCAwIDEgMjAgOHYxMmEyIDIgMCAwIDEtMiAyeiIgLz4KICA8cGF0aCBkPSJNMTQgMnY1YTEgMSAwIDAgMCAxIDFoNSIgLz4KICA8cGF0aCBkPSJNMTAgOUg4IiAvPgogIDxwYXRoIGQ9Ik0xNiAxM0g4IiAvPgogIDxwYXRoIGQ9Ik0xNiAxN0g4IiAvPgo8L3N2Zz4=');
-  --icon-monitor: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iMjAiIGhlaWdodD0iMTQiIHg9IjIiIHk9IjMiIHJ4PSIyIiAvPgogIDxsaW5lIHgxPSI4IiB4Mj0iMTYiIHkxPSIyMSIgeTI9IjIxIiAvPgogIDxsaW5lIHgxPSIxMiIgeDI9IjEyIiB5MT0iMTciIHkyPSIyMSIgLz4KPC9zdmc+');
-  --icon-moon: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjAuOTg1IDEyLjQ4NmE5IDkgMCAxIDEtOS40NzMtOS40NzJjLjQwNS0uMDIyLjYxNy40Ni40MDIuODAzYTYgNiAwIDAgMCA4LjI2OCA4LjI2OGMuMzQ0LS4yMTUuODI1LS4wMDQuODAzLjQwMSIgLz4KPC9zdmc+');
-  --icon-pause: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB4PSIxNCIgeT0iMyIgd2lkdGg9IjUiIGhlaWdodD0iMTgiIHJ4PSIxIiAvPgogIDxyZWN0IHg9IjUiIHk9IjMiIHdpZHRoPSI1IiBoZWlnaHQ9IjE4IiByeD0iMSIgLz4KPC9zdmc+');
-  --icon-phone: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iMTQiIGhlaWdodD0iMjAiIHg9IjUiIHk9IjIiIHJ4PSIyIiByeT0iMiIgLz4KICA8cGF0aCBkPSJNMTIgMThoLjAxIiAvPgo8L3N2Zz4=');
-  --icon-play-circle: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNOSA5LjAwM2ExIDEgMCAwIDEgMS41MTctLjg1OWw0Ljk5NyAyLjk5N2ExIDEgMCAwIDEgMCAxLjcxOGwtNC45OTcgMi45OTdBMSAxIDAgMCAxIDkgMTQuOTk2eiIgLz4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgLz4KPC9zdmc+');
-  --icon-plus: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNNSAxMmgxNCIgLz4KICA8cGF0aCBkPSJNMTIgNXYxNCIgLz4KPC9zdmc+');
-  --icon-priority-high: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cmVjdCB4PSIyIiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxMiIgcng9IjEuNSIvPjxyZWN0IHg9IjIiIHk9IjE4IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiByeD0iMS41Ii8+PHJlY3QgeD0iMTAuNSIgeT0iMyIgd2lkdGg9IjMiIGhlaWdodD0iMTIiIHJ4PSIxLjUiLz48cmVjdCB4PSIxMC41IiB5PSIxOCIgd2lkdGg9IjMiIGhlaWdodD0iMyIgcng9IjEuNSIvPjxyZWN0IHg9IjE5IiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxMiIgcng9IjEuNSIvPjxyZWN0IHg9IjE5IiB5PSIxOCIgd2lkdGg9IjMiIGhlaWdodD0iMyIgcng9IjEuNSIvPjwvc3ZnPg==');
-  --icon-priority-low: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cmVjdCB4PSIxMC41IiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxMiIgcng9IjEuNSIvPjxyZWN0IHg9IjEwLjUiIHk9IjE4IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiByeD0iMS41Ii8+PC9zdmc+');
-  --icon-priority-medium: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cmVjdCB4PSI1IiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxMiIgcng9IjEuNSIvPjxyZWN0IHg9IjUiIHk9IjE4IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiByeD0iMS41Ii8+PHJlY3QgeD0iMTYiIHk9IjMiIHdpZHRoPSIzIiBoZWlnaHQ9IjEyIiByeD0iMS41Ii8+PHJlY3QgeD0iMTYiIHk9IjE4IiB3aWR0aD0iMyIgaGVpZ2h0PSIzIiByeD0iMS41Ii8+PC9zdmc+');
-  --icon-search: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJtMjEgMjEtNC4zNC00LjM0IiAvPgogIDxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjgiIC8+Cjwvc3ZnPg==');
-  --icon-select: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNNC4wMzcgNC42ODhhLjQ5NS40OTUgMCAwIDEgLjY1MS0uNjUxbDE2IDYuNWEuNS41IDAgMCAxLS4wNjMuOTQ3bC02LjEyNCAxLjU4YTIgMiAwIDAgMC0xLjQzOCAxLjQzNWwtMS41NzkgNi4xMjZhLjUuNSAwIDAgMS0uOTQ3LjA2M3oiIC8+Cjwvc3ZnPg==');
-  --icon-set: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAgNUgzIiAvPgogIDxwYXRoIGQ9Ik0xMiAxOUgzIiAvPgogIDxwYXRoIGQ9Ik0xNCAzdjQiIC8+CiAgPHBhdGggZD0iTTE2IDE3djQiIC8+CiAgPHBhdGggZD0iTTIxIDEyaC05IiAvPgogIDxwYXRoIGQ9Ik0yMSAxOWgtNSIgLz4KICA8cGF0aCBkPSJNMjEgNWgtNyIgLz4KICA8cGF0aCBkPSJNOCAxMHY0IiAvPgogIDxwYXRoIGQ9Ik04IDEySDMiIC8+Cjwvc3ZnPg==');
-  --icon-settings: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNOS42NzEgNC4xMzZhMi4zNCAyLjM0IDAgMCAxIDQuNjU5IDAgMi4zNCAyLjM0IDAgMCAwIDMuMzE5IDEuOTE1IDIuMzQgMi4zNCAwIDAgMSAyLjMzIDQuMDMzIDIuMzQgMi4zNCAwIDAgMCAwIDMuODMxIDIuMzQgMi4zNCAwIDAgMS0yLjMzIDQuMDMzIDIuMzQgMi4zNCAwIDAgMC0zLjMxOSAxLjkxNSAyLjM0IDIuMzQgMCAwIDEtNC42NTkgMCAyLjM0IDIuMzQgMCAwIDAtMy4zMi0xLjkxNSAyLjM0IDIuMzQgMCAwIDEtMi4zMy00LjAzMyAyLjM0IDIuMzQgMCAwIDAgMC0zLjgzMUEyLjM0IDIuMzQgMCAwIDEgNi4zNSA2LjA1MWEyLjM0IDIuMzQgMCAwIDAgMy4zMTktMS45MTUiIC8+CiAgPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMyIgLz4KPC9zdmc+');
-  --icon-slack: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMjIgMTdhMiAyIDAgMCAxLTIgMkg2LjgyOGEyIDIgMCAwIDAtMS40MTQuNTg2bC0yLjIwMiAyLjIwMkEuNzEuNzEgMCAwIDEgMiAyMS4yODZWNWEyIDIgMCAwIDEgMi0yaDE2YTIgMiAwIDAgMSAyIDJ6IiAvPgo8L3N2Zz4=');
-  --icon-star: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTEuNTI1IDIuMjk1YS41My41MyAwIDAgMSAuOTUgMGwyLjMxIDQuNjc5YTIuMTIzIDIuMTIzIDAgMCAwIDEuNTk1IDEuMTZsNS4xNjYuNzU2YS41My41MyAwIDAgMSAuMjk0LjkwNGwtMy43MzYgMy42MzhhMi4xMjMgMi4xMjMgMCAwIDAtLjYxMSAxLjg3OGwuODgyIDUuMTRhLjUzLjUzIDAgMCAxLS43NzEuNTZsLTQuNjE4LTIuNDI4YTIuMTIyIDIuMTIyIDAgMCAwLTEuOTczIDBMNi4zOTYgMjEuMDFhLjUzLjUzIDAgMCAxLS43Ny0uNTZsLjg4MS01LjEzOWEyLjEyMiAyLjEyMiAwIDAgMC0uNjExLTEuODc5TDIuMTYgOS43OTVhLjUzLjUzIDAgMCAxIC4yOTQtLjkwNmw1LjE2NS0uNzU1YTIuMTIyIDIuMTIyIDAgMCAwIDEuNTk3LTEuMTZ6IiAvPgo8L3N2Zz4=');
-  --icon-star-filled: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0iY3VycmVudENvbG9yIgogIHN0cm9rZT0iY3VycmVudENvbG9yIgogIHN0cm9rZS13aWR0aD0iMiIKICBzdHJva2UtbGluZWNhcD0icm91bmQiCiAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKPgogIDxwYXRoIGQ9Ik0xMS41MjUgMi4yOTVhLjUzLjUzIDAgMCAxIC45NSAwbDIuMzEgNC42NzlhMi4xMjMgMi4xMjMgMCAwIDAgMS41OTUgMS4xNmw1LjE2Ni43NTZhLjUzLjUzIDAgMCAxIC4yOTQuOTA0bC0zLjczNiAzLjYzOGEyLjEyMyAyLjEyMyAwIDAgMC0uNjExIDEuODc4bC44ODIgNS4xNGEuNTMuNTMgMCAwIDEtLjc3MS41NmwtNC42MTgtMi40MjhhMi4xMjIgMi4xMjIgMCAwIDAtMS45NzMgMEw2LjM5NiAyMS4wMWEuNTMuNTMgMCAwIDEtLjc3LS41NmwuODgxLTUuMTM5YTIuMTIyIDIuMTIyIDAgMCAwLS42MTEtMS44NzlMMi4xNiA5Ljc5NWEuNTMuNTMgMCAwIDEgLjI5NC0uOTA2bDUuMTY1LS43NTVhMi4xMjIgMi4xMjIgMCAwIDAgMS41OTctMS4xNnoiIC8+Cjwvc3ZnPg==');
-  --icon-sun: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI0IiAvPgogIDxwYXRoIGQ9Ik0xMiAydjIiIC8+CiAgPHBhdGggZD0iTTEyIDIwdjIiIC8+CiAgPHBhdGggZD0ibTQuOTMgNC45MyAxLjQxIDEuNDEiIC8+CiAgPHBhdGggZD0ibTE3LjY2IDE3LjY2IDEuNDEgMS40MSIgLz4KICA8cGF0aCBkPSJNMiAxMmgyIiAvPgogIDxwYXRoIGQ9Ik0yMCAxMmgyIiAvPgogIDxwYXRoIGQ9Im02LjM0IDE3LjY2LTEuNDEgMS40MSIgLz4KICA8cGF0aCBkPSJtMTkuMDcgNC45My0xLjQxIDEuNDEiIC8+Cjwvc3ZnPg==');
-  --icon-task: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI0IiB4PSI4IiB5PSIyIiByeD0iMSIgcnk9IjEiIC8+CiAgPHBhdGggZD0iTTE2IDRoMmEyIDIgMCAwIDEgMiAydjE0YTIgMiAwIDAgMS0yIDJINmEyIDIgMCAwIDEtMi0yVjZhMiAyIDAgMCAxIDItMmgyIiAvPgogIDxwYXRoIGQ9Im05IDE0IDIgMiA0LTQiIC8+Cjwvc3ZnPg==');
-  --icon-tool: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTQuNyA2LjNhMSAxIDAgMCAwIDAgMS40bDEuNiAxLjZhMSAxIDAgMCAwIDEuNCAwbDMuMTA2LTMuMTA1Yy4zMi0uMzIyLjg2My0uMjIuOTgzLjIxOGE2IDYgMCAwIDEtOC4yNTkgNy4wNTdsLTcuOTEgNy45MWExIDEgMCAwIDEtMi45OTktM2w3LjkxLTcuOTFhNiA2IDAgMCAxIDcuMDU3LTguMjU5Yy40MzguMTIuNTQuNjYyLjIxOS45ODR6IiAvPgo8L3N2Zz4=');
-  --icon-trash: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTAgMTF2NiIgLz4KICA8cGF0aCBkPSJNMTQgMTF2NiIgLz4KICA8cGF0aCBkPSJNMTkgNnYxNGEyIDIgMCAwIDEtMiAySDdhMiAyIDAgMCAxLTItMlY2IiAvPgogIDxwYXRoIGQ9Ik0zIDZoMTgiIC8+CiAgPHBhdGggZD0iTTggNlY0YTIgMiAwIDAgMSAyLTJoNGEyIDIgMCAwIDEgMiAydjIiIC8+Cjwvc3ZnPg==');
-  --icon-upload: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJNMTIgM3YxMiIgLz4KICA8cGF0aCBkPSJtMTcgOC01LTUtNSA1IiAvPgogIDxwYXRoIGQ9Ik0yMSAxNXY0YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0ydi00IiAvPgo8L3N2Zz4=');
-  --icon-widget: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI5IiB4PSIzIiB5PSIzIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI1IiB4PSIxNCIgeT0iMyIgcng9IjEiIC8+CiAgPHJlY3Qgd2lkdGg9IjciIGhlaWdodD0iOSIgeD0iMTQiIHk9IjEyIiByeD0iMSIgLz4KICA8cmVjdCB3aWR0aD0iNyIgaGVpZ2h0PSI1IiB4PSIzIiB5PSIxNiIgcng9IjEiIC8+Cjwvc3ZnPg==');
-  --icon-node: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjE4IiBjeT0iNSIgcj0iMyIvPjxjaXJjbGUgY3g9IjYiIGN5PSIxMiIgcj0iMyIvPjxjaXJjbGUgY3g9IjE4IiBjeT0iMTkiIHI9IjMiLz48bGluZSB4MT0iOC41OSIgeTE9IjEzLjUxIiB4Mj0iMTUuNDIiIHkyPSIxNy40OSIvPjxsaW5lIHgxPSIxNS40MSIgeTE9IjYuNTEiIHgyPSI4LjU5IiB5Mj0iMTAuNDkiLz48L3N2Zz4=');
-  --icon-library: url('data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICB3aWR0aD0iMjQiCiAgaGVpZ2h0PSIyNCIKICB2aWV3Qm94PSIwIDAgMjQgMjQiCiAgZmlsbD0ibm9uZSIKICBzdHJva2U9ImN1cnJlbnRDb2xvciIKICBzdHJva2Utd2lkdGg9IjIiCiAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIHN0cm9rZS1saW5lam9pbj0icm91bmQiCj4KICA8cGF0aCBkPSJtMTYgNiA0IDE0IiAvPgogIDxwYXRoIGQ9Ik0xMiA2djE0IiAvPgogIDxwYXRoIGQ9Ik04IDh2MTIiIC8+CiAgPHBhdGggZD0iTTQgNHYxNiIgLz4KPC9zdmc+Cg==');
-}
 :root {
   --bg: #0f1117;
   --sidebar-bg: #1a1d27;
@@ -1470,7 +1415,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.55</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.56</div>
   </div>
 </aside>
 
@@ -5770,94 +5715,110 @@ function initClock() {
 // ═══════════════════════════════════════════
 // Alarm System
 // ═══════════════════════════════════════════
-const ALARM_DAYS = ['日','月','火','水','木','金','土'];
-let _currentAlarm = null;
+
+// モーダルUI用変数（アイテム編集ダイアログが参照するため IIFE 外に残す）
 let _alarmFormId = null;
 let _alarmFormDays = [];
-let _alarmCheckLock = false;
 let _setAlarmMWDay = 0;
-let _snoozeTimer = null;
 
-function getAlarms() { return db.alarms || []; }
+const {
+  getAlarms,
+  updateAlarmBadge,
+  alarmSchedDesc,
+  shouldFireAlarm,
+  toggleAlarmMute,
+  applyAlarmMuteUI,
+  startAlarmChecker,
+  showAlarmPopup,
+  closeAlarmPopup,
+  snoozeAlarm,
+  executeCurrentAlarm,
+} = (() => {
+  const ALARM_DAYS = ['日','月','火','水','木','金','土'];
+  let _currentAlarm = null;
+  let _alarmCheckLock = false;
+  let _snoozeTimer = null;
 
-function updateAlarmBadge() {
-  const el = document.getElementById('cnt-alarm');
-  if (!el) return;
-  const standaloneCount = getAlarms().filter(a => a.enabled).length;
-  const setAlarmCount = (db.items || []).filter(i => i.type === 'set' && i.alarm?.enabled).length;
-  el.textContent = standaloneCount + setAlarmCount;
-}
+  function getAlarms() { return db.alarms || []; }
 
-function alarmSchedDesc(alarm) {
-  const s = alarm.schedule;
-  const daysStr = (s.days || []).map(d => ALARM_DAYS[d]).join('・');
-  const t = s.time || '';
-  const off = db.settings?.alarmOffsetMin || 0;
-  const offStr = off === 0 ? '' : off > 0 ? ` (+${off}分)` : ` (${Math.abs(off)}分前)`;
-  switch (s.type) {
-    case 'daily':            return `毎日 ${t}${offStr}`;
-    case 'weekly':           { const intv = s.interval||1; return `${intv>1?intv+'週ごと':'毎週'} ${daysStr} ${t}${offStr}`; }
-    case 'biweekly':         return `隔週 ${daysStr} ${t}${offStr}`;
-    case 'monthly-date':     return `毎月${s.monthDay}日 ${t}${offStr}`;
-    case 'monthly-weekday':  return `毎月第${s.weekdayN==-1?'最終':s.weekdayN}${ALARM_DAYS[s.weekday]??'?'} ${t}${offStr}`;
-    case 'yearly':           return `毎年${s.month}月${s.day}日 ${t}${offStr}`;
-    case 'once':             return `${s.date} ${t}${offStr}`;
-    default:                 return t;
+  function updateAlarmBadge() {
+    const el = document.getElementById('cnt-alarm');
+    if (!el) return;
+    const standaloneCount = getAlarms().filter(a => a.enabled).length;
+    const setAlarmCount = (db.items || []).filter(i => i.type === 'set' && i.alarm?.enabled).length;
+    el.textContent = standaloneCount + setAlarmCount;
   }
-}
 
-function shouldFireAlarm(alarm, now) {
-  if (!alarm.enabled) return false;
-  const s = alarm.schedule;
-
-  // グローバルオフセット（±分）を適用した実際の発火時刻を計算
-  const offsetMin = db.settings.alarmOffsetMin || 0;
-  const [baseH, baseM] = (s.time || '00:00').split(':').map(Number);
-  const totalMin = ((baseH * 60 + baseM + offsetMin) % 1440 + 1440) % 1440;
-  const fireH = Math.floor(totalMin / 60);
-  const fireM = totalMin % 60;
-  const fireTime = `${String(fireH).padStart(2,'0')}:${String(fireM).padStart(2,'0')}`;
-
-  const hh = String(now.getHours()).padStart(2,'0');
-  const mm = String(now.getMinutes()).padStart(2,'0');
-  if (`${hh}:${mm}` !== fireTime) return false;
-
-  const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${s.time}`;
-  if (alarm.lastFired === todayKey) return false;
-
-  switch (s.type) {
-    case 'daily': return true;
-    case 'weekly': {
-      if (!(s.days||[]).includes(now.getDay())) return false;
-      const intv = s.interval || 1;
-      if (intv <= 1) return true;
-      const refMonday = new Date(2000, 0, 3);
-      const weeksDiff = Math.round((now - refMonday) / (7*24*60*60*1000));
-      return weeksDiff % intv === 0;
+  function alarmSchedDesc(alarm) {
+    const s = alarm.schedule;
+    const daysStr = (s.days || []).map(d => ALARM_DAYS[d]).join('・');
+    const t = s.time || '';
+    const off = db.settings?.alarmOffsetMin || 0;
+    const offStr = off === 0 ? '' : off > 0 ? ` (+${off}分)` : ` (${Math.abs(off)}分前)`;
+    switch (s.type) {
+      case 'daily':            return `毎日 ${t}${offStr}`;
+      case 'weekly':           { const intv = s.interval||1; return `${intv>1?intv+'週ごと':'毎週'} ${daysStr} ${t}${offStr}`; }
+      case 'biweekly':         return `隔週 ${daysStr} ${t}${offStr}`;
+      case 'monthly-date':     return `毎月${s.monthDay}日 ${t}${offStr}`;
+      case 'monthly-weekday':  return `毎月第${s.weekdayN==-1?'最終':s.weekdayN}${ALARM_DAYS[s.weekday]??'?'} ${t}${offStr}`;
+      case 'yearly':           return `毎年${s.month}月${s.day}日 ${t}${offStr}`;
+      case 'once':             return `${s.date} ${t}${offStr}`;
+      default:                 return t;
     }
-    case 'biweekly': {
-      if (!(s.days||[]).includes(now.getDay())) return false;
-      if (!s.biweeklyRef) return true;
-      const ref = new Date(s.biweeklyRef);
-      return Math.round((now - ref) / (7*24*60*60*1000)) % 2 === 0;
-    }
-    case 'monthly-date': return now.getDate() === (s.monthDay||1);
-    case 'monthly-weekday': {
-      if (now.getDay() !== s.weekday) return false;
-      if (s.weekdayN === -1) {
-        const next = new Date(now); next.setDate(next.getDate()+7);
-        return next.getMonth() !== now.getMonth();
+  }
+
+  function shouldFireAlarm(alarm, now) {
+    if (!alarm.enabled) return false;
+    const s = alarm.schedule;
+
+    // グローバルオフセット（±分）を適用した実際の発火時刻を計算
+    const offsetMin = db.settings.alarmOffsetMin || 0;
+    const [baseH, baseM] = (s.time || '00:00').split(':').map(Number);
+    const totalMin = ((baseH * 60 + baseM + offsetMin) % 1440 + 1440) % 1440;
+    const fireH = Math.floor(totalMin / 60);
+    const fireM = totalMin % 60;
+    const fireTime = `${String(fireH).padStart(2,'0')}:${String(fireM).padStart(2,'0')}`;
+
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    if (`${hh}:${mm}` !== fireTime) return false;
+
+    const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${s.time}`;
+    if (alarm.lastFired === todayKey) return false;
+
+    switch (s.type) {
+      case 'daily': return true;
+      case 'weekly': {
+        if (!(s.days||[]).includes(now.getDay())) return false;
+        const intv = s.interval || 1;
+        if (intv <= 1) return true;
+        const refMonday = new Date(2000, 0, 3);
+        const weeksDiff = Math.round((now - refMonday) / (7*24*60*60*1000));
+        return weeksDiff % intv === 0;
       }
-      return Math.ceil(now.getDate()/7) === s.weekdayN;
+      case 'biweekly': {
+        if (!(s.days||[]).includes(now.getDay())) return false;
+        if (!s.biweeklyRef) return true;
+        const ref = new Date(s.biweeklyRef);
+        return Math.round((now - ref) / (7*24*60*60*1000)) % 2 === 0;
+      }
+      case 'monthly-date': return now.getDate() === (s.monthDay||1);
+      case 'monthly-weekday': {
+        if (now.getDay() !== s.weekday) return false;
+        if (s.weekdayN === -1) {
+          const next = new Date(now); next.setDate(next.getDate()+7);
+          return next.getMonth() !== now.getMonth();
+        }
+        return Math.ceil(now.getDate()/7) === s.weekdayN;
+      }
+      case 'yearly': return now.getMonth()+1 === s.month && now.getDate() === s.day;
+      case 'once': {
+        const dateKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+        return dateKey === s.date;
+      }
+      default: return false;
     }
-    case 'yearly': return now.getMonth()+1 === s.month && now.getDate() === s.day;
-    case 'once': {
-      const dateKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-      return dateKey === s.date;
-    }
-    default: return false;
   }
-}
 
 // ═══════════════════════════════════════════
 // Widget
@@ -5881,114 +5842,129 @@ function openWidget() {
     });
 }
 
-function toggleAlarmMute() {
-  db.settings.alarmMuted = !db.settings.alarmMuted;
-  save();
-  applyAlarmMuteUI();
-  toast(db.settings.alarmMuted ? '集中モードON（アラーム無効）' : 'アラームONに戻しました', db.settings.alarmMuted ? '🔕' : '🔔');
-}
-
-function applyAlarmMuteUI() {
-  const btn = document.getElementById('alarm-mute-btn');
-  if (!btn) return;
-  const muted = db.settings.alarmMuted;
-  btn.innerHTML = muted ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-bell-off);mask-image:var(--icon-bell-off);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span>' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span>';
-  btn.style.background = muted ? 'rgba(239,83,80,0.15)' : '';
-  btn.style.borderColor = muted ? 'rgba(239,83,80,0.5)' : '';
-}
-
-function startAlarmChecker() {
-  setInterval(() => {
-    const now = new Date();
-    if (db.settings.alarmMuted) return;
-    if (now.getSeconds() > 8) return;
-    if (_alarmCheckLock) return;
-    _alarmCheckLock = true;
-    setTimeout(() => { _alarmCheckLock = false; }, 50000);
-
-    for (const alarm of getAlarms()) {
-      if (shouldFireAlarm(alarm, now)) {
-        const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${alarm.schedule.time}`;
-        alarm.lastFired = todayKey;
-        save();
-        showAlarmPopup(alarm);
-        break;
-      }
-    }
-    // セット内蔵アラームのチェック
-    for (const item of db.items.filter(i => i.type === 'set' && i.alarm?.enabled)) {
-      const synth = { ...item.alarm, name: item.title, action: { type: 'set', targetId: item.id } };
-      if (shouldFireAlarm(synth, now)) {
-        const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${item.alarm.schedule.time}`;
-        item.alarm.lastFired = todayKey;
-        save();
-        showAlarmPopup(synth);
-        break;
-      }
-    }
-  }, 4000);
-}
-
-function showAlarmPopup(alarm) {
-  _currentAlarm = alarm;
-  const a = alarm.action;
-
-  document.getElementById('alarm-popup-name').textContent = alarm.name;
-  const now = new Date();
-  document.getElementById('alarm-popup-time').textContent =
-    `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${ALARM_DAYS[now.getDay()]}） ${alarm.schedule.time}`;
-
-  const execBtn = document.getElementById('alarm-popup-execute');
-  if (a?.type === 'set' && a.targetId) {
-    execBtn.style.display = '';
-    execBtn.innerHTML = '<span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>開く';
-    execBtn.onclick = () => { closeAlarmPopup(); showSetQuickPanel(a.targetId); };
-  } else if (a?.type === 'url') {
-    execBtn.style.display = '';
-    execBtn.innerHTML = '🔗 開く';
-    execBtn.onclick = executeCurrentAlarm;
-  } else {
-    execBtn.style.display = 'none';
+  function toggleAlarmMute() {
+    db.settings.alarmMuted = !db.settings.alarmMuted;
+    save();
+    applyAlarmMuteUI();
+    toast(db.settings.alarmMuted ? '集中モードON（アラーム無効）' : 'アラームONに戻しました', db.settings.alarmMuted ? '🔕' : '🔔');
   }
-  showEl('alarm-popup-overlay');
 
-  // ビープ音
-  try {
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value = 880; osc.type = 'sine';
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
-  } catch(_) {}
-}
+  function applyAlarmMuteUI() {
+    const btn = document.getElementById('alarm-mute-btn');
+    if (!btn) return;
+    const muted = db.settings.alarmMuted;
+    btn.innerHTML = muted ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-bell-off);mask-image:var(--icon-bell-off);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span>' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span>';
+    btn.style.background = muted ? 'rgba(239,83,80,0.15)' : '';
+    btn.style.borderColor = muted ? 'rgba(239,83,80,0.5)' : '';
+  }
 
-function closeAlarmPopup() {
-  hideEl('alarm-popup-overlay');
-  _currentAlarm = null;
-}
+  function startAlarmChecker() {
+    setInterval(() => {
+      const now = new Date();
+      if (db.settings.alarmMuted) return;
+      if (now.getSeconds() > 8) return;
+      if (_alarmCheckLock) return;
+      _alarmCheckLock = true;
+      setTimeout(() => { _alarmCheckLock = false; }, 50000);
 
-function snoozeAlarm() {
-  const alarm = _currentAlarm;
-  closeAlarmPopup();
-  if (!alarm) return;
-  if (_snoozeTimer) clearTimeout(_snoozeTimer);
-  _snoozeTimer = setTimeout(() => {
-    _snoozeTimer = null;
-    showAlarmPopup(alarm);
-  }, 5 * 60 * 1000);
-  toast('⏰ 5分後に再通知します', '🔔');
-}
+      for (const alarm of getAlarms()) {
+        if (shouldFireAlarm(alarm, now)) {
+          const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${alarm.schedule.time}`;
+          alarm.lastFired = todayKey;
+          save();
+          showAlarmPopup(alarm);
+          break;
+        }
+      }
+      // セット内蔵アラームのチェック
+      for (const item of db.items.filter(i => i.type === 'set' && i.alarm?.enabled)) {
+        const synth = { ...item.alarm, name: item.title, action: { type: 'set', targetId: item.id } };
+        if (shouldFireAlarm(synth, now)) {
+          const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${item.alarm.schedule.time}`;
+          item.alarm.lastFired = todayKey;
+          save();
+          showAlarmPopup(synth);
+          break;
+        }
+      }
+    }, 4000);
+  }
 
-function executeCurrentAlarm() {
-  if (!_currentAlarm) return;
-  const a = _currentAlarm.action;
-  if (a?.type === 'set' && a.targetId) launchSet(a.targetId);
-  else if (a?.type === 'url' && a.url) window.open(a.url, '_blank');
-  closeAlarmPopup();
-}
+  function showAlarmPopup(alarm) {
+    _currentAlarm = alarm;
+    const a = alarm.action;
+
+    document.getElementById('alarm-popup-name').textContent = alarm.name;
+    const now = new Date();
+    document.getElementById('alarm-popup-time').textContent =
+      `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${ALARM_DAYS[now.getDay()]}） ${alarm.schedule.time}`;
+
+    const execBtn = document.getElementById('alarm-popup-execute');
+    if (a?.type === 'set' && a.targetId) {
+      execBtn.style.display = '';
+      execBtn.innerHTML = '<span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>開く';
+      execBtn.onclick = () => { closeAlarmPopup(); showSetQuickPanel(a.targetId); };
+    } else if (a?.type === 'url') {
+      execBtn.style.display = '';
+      execBtn.innerHTML = '🔗 開く';
+      execBtn.onclick = executeCurrentAlarm;
+    } else {
+      execBtn.style.display = 'none';
+    }
+    showEl('alarm-popup-overlay');
+
+    // ビープ音
+    try {
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880; osc.type = 'sine';
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
+    } catch(_) {}
+  }
+
+  function closeAlarmPopup() {
+    hideEl('alarm-popup-overlay');
+    _currentAlarm = null;
+  }
+
+  function snoozeAlarm() {
+    const alarm = _currentAlarm;
+    closeAlarmPopup();
+    if (!alarm) return;
+    if (_snoozeTimer) clearTimeout(_snoozeTimer);
+    _snoozeTimer = setTimeout(() => {
+      _snoozeTimer = null;
+      showAlarmPopup(alarm);
+    }, 5 * 60 * 1000);
+    toast('⏰ 5分後に再通知します', '🔔');
+  }
+
+  function executeCurrentAlarm() {
+    if (!_currentAlarm) return;
+    const a = _currentAlarm.action;
+    if (a?.type === 'set' && a.targetId) launchSet(a.targetId);
+    else if (a?.type === 'url' && a.url) window.open(a.url, '_blank');
+    closeAlarmPopup();
+  }
+
+  return {
+    getAlarms,
+    updateAlarmBadge,
+    alarmSchedDesc,
+    shouldFireAlarm,
+    toggleAlarmMute,
+    applyAlarmMuteUI,
+    startAlarmChecker,
+    showAlarmPopup,
+    closeAlarmPopup,
+    snoozeAlarm,
+    executeCurrentAlarm,
+  };
+})();
 
 // ═══════════════════════════════════════════
 // Google Calendar ICS Import
@@ -6304,78 +6280,86 @@ async function gistDownload() {
 }
 
 // ── Gist自動同期 ────────────────────────────────
-let _gistAutoSyncTimer = null;
-let _gistSyncing = false;
+const {
+  scheduleGistAutoSync,
+  gistAutoUpload,
+  gistAutoDownload,
+} = (() => {
+  let _gistAutoSyncTimer = null;
+  let _gistSyncing = false;
 
-function scheduleGistAutoSync() {
-  if (_gistSyncing) return;
-  const token = localStorage.getItem('mydash_github_token') || '';
-  const gistId = localStorage.getItem('mydash_gist_id') || '';
-  if (!token || !gistId) return;
-  clearTimeout(_gistAutoSyncTimer);
-  _gistAutoSyncTimer = setTimeout(gistAutoUpload, 2000);
-}
-
-async function gistAutoUpload() {
-  const token = localStorage.getItem('mydash_github_token') || '';
-  const gistId = localStorage.getItem('mydash_gist_id') || '';
-  if (!token || !gistId) return;
-  try {
-    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-      method: 'PATCH',
-      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ files: { 'mydash-data.json': { content: JSON.stringify(db) } } })
-    });
-    if (res.ok) localStorage.setItem('mydash_gist_last_sync', new Date().toISOString());
-  } catch(e) {
-    console.warn('[MyDash] Gist auto-upload failed:', e.message);
+  function scheduleGistAutoSync() {
+    if (_gistSyncing) return;
+    const token = localStorage.getItem('mydash_github_token') || '';
+    const gistId = localStorage.getItem('mydash_gist_id') || '';
+    if (!token || !gistId) return;
+    clearTimeout(_gistAutoSyncTimer);
+    _gistAutoSyncTimer = setTimeout(gistAutoUpload, 2000);
   }
-}
 
-async function gistAutoDownload() {
-  const token = localStorage.getItem('mydash_github_token') || '';
-  const gistId = localStorage.getItem('mydash_gist_id') || '';
-  if (!token || !gistId) return;
-  if (_gistSyncing) return;
-  _gistSyncing = true;
-  try {
-    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-      headers: { 'Authorization': `token ${token}` }
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    const raw = data.files['mydash-data.json']?.content;
-    if (!raw) return;
-    const remote = JSON.parse(raw);
-
-    const remoteVersion = remote.version || 0;
-    const localVersion = db.version || 0;
-
-    // ローカルにversionがない（古いデータ or 初回）はリモート優先
-    // リモートが新しい場合も同様
-    if (remoteVersion > localVersion || localVersion === 0) {
-      // リモートで完全上書き（alarmMutedはデバイスローカルなので保持）
-      const prevJson = JSON.stringify(db.items);
-      const prevMuted = db.settings?.alarmMuted;
-      Object.assign(db, remote);
-      if (db.settings && prevMuted !== undefined) db.settings.alarmMuted = prevMuted;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-      rebuildIndex();
-      if (JSON.stringify(db.items) !== prevJson) {
-        render();
-        toast('☁️ Gistから同期しました');
-      }
-    } else if (localVersion > remoteVersion) {
-      // ローカルが新しい → アップロード
-      await gistAutoUpload();
+  async function gistAutoUpload() {
+    const token = localStorage.getItem('mydash_github_token') || '';
+    const gistId = localStorage.getItem('mydash_gist_id') || '';
+    if (!token || !gistId) return;
+    try {
+      const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: { 'mydash-data.json': { content: JSON.stringify(db) } } })
+      });
+      if (res.ok) localStorage.setItem('mydash_gist_last_sync', new Date().toISOString());
+    } catch(e) {
+      console.warn('[MyDash] Gist auto-upload failed:', e.message);
     }
-    // 同バージョン（同一）なら何もしない
-  } catch(e) {
-    console.warn('[MyDash] Gist auto-download failed:', e.message);
-  } finally {
-    _gistSyncing = false;
   }
-}
+
+  async function gistAutoDownload() {
+    const token = localStorage.getItem('mydash_github_token') || '';
+    const gistId = localStorage.getItem('mydash_gist_id') || '';
+    if (!token || !gistId) return;
+    if (_gistSyncing) return;
+    _gistSyncing = true;
+    try {
+      const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const raw = data.files['mydash-data.json']?.content;
+      if (!raw) return;
+      const remote = JSON.parse(raw);
+
+      const remoteVersion = remote.version || 0;
+      const localVersion = db.version || 0;
+
+      // ローカルにversionがない（古いデータ or 初回）はリモート優先
+      // リモートが新しい場合も同様
+      if (remoteVersion > localVersion || localVersion === 0) {
+        // リモートで完全上書き（alarmMutedはデバイスローカルなので保持）
+        const prevJson = JSON.stringify(db.items);
+        const prevMuted = db.settings?.alarmMuted;
+        Object.assign(db, remote);
+        if (db.settings && prevMuted !== undefined) db.settings.alarmMuted = prevMuted;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        rebuildIndex();
+        if (JSON.stringify(db.items) !== prevJson) {
+          render();
+          toast('☁️ Gistから同期しました');
+        }
+      } else if (localVersion > remoteVersion) {
+        // ローカルが新しい → アップロード
+        await gistAutoUpload();
+      }
+      // 同バージョン（同一）なら何もしない
+    } catch(e) {
+      console.warn('[MyDash] Gist auto-download failed:', e.message);
+    } finally {
+      _gistSyncing = false;
+    }
+  }
+
+  return { scheduleGistAutoSync, gistAutoUpload, gistAutoDownload };
+})();
 
 // ── Dockインポート ──────────────────────────────
 async function openDockImportModal() {
