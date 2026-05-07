@@ -1415,7 +1415,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.56</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.57</div>
   </div>
 </aside>
 
@@ -4199,24 +4199,13 @@ function pickStatus(status) {
   });
 }
 
-function iconCardClick(event, id) {
-  if (state.selectMode) { if (!_selectTouchHandled) toggleItemSelect(id, !state.selectedIds.has(id), event.shiftKey); return; }
-  const item = db.items.find(i => i.id === id);
-  if (!item) return;
-  if (item.type === 'set') { showSetQuickPanel(id); return; }
-  if (item.type === 'place') { showPlaceQuickPanel(id); return; }
-  if (item.type === 'slack') { showSlackQuickPanel(id); return; }
-  if (item.type === 'script') { execScriptItem(item); return; }
-  if (item.type === 'memo' || item.type === 'task') { showQuickEdit(id); return; }
-  cardClick(event, id);
-}
 
 function iconCard(item) {
   const tc = typeColor(item);
   const selChkI = state.selectMode ? `<div style="position:absolute;top:2px;left:2px;z-index:3;pointer-events:none"><input type="checkbox" ${state.selectedIds.has(item.id)?'checked':''} style="width:14px;height:14px;accent-color:var(--set);pointer-events:none"></div>` : '';
   const titleSuffix = item.type === 'set' ? ' ▶ クリックでパネルを開く' : item.type === 'slack' ? ' ▶ Slackに送信' : '';
   return `<div class="icon-wrap${(item.appName || item.type === 'window-session') ? ' server-feature' : ''}${item.hidden?' item-hidden':''}">
-    <div class="icon-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}" data-card-id="${item.id}" data-card-type="icon"
+    <div class="icon-card${state.selectedIds.has(item.id)?' selected':''}" data-id="${item.id}" data-card-id="${item.id}"
         title="${esc(item.title)}${titleSuffix}" style="border-top:3px solid ${tc}">
       ${selChkI}
       <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
@@ -5716,36 +5705,38 @@ function initClock() {
 // Alarm System
 // ═══════════════════════════════════════════
 
-// モーダルUI用変数（アイテム編集ダイアログが参照するため IIFE 外に残す）
+// モーダルUI用変数（アイテム編集ダイアログが参照するため createAlarmModule 外に残す）
 let _alarmFormId = null;
 let _alarmFormDays = [];
 let _setAlarmMWDay = 0;
 
-const {
-  getAlarms,
-  updateAlarmBadge,
-  alarmSchedDesc,
-  shouldFireAlarm,
-  toggleAlarmMute,
-  applyAlarmMuteUI,
-  startAlarmChecker,
-  showAlarmPopup,
-  closeAlarmPopup,
-  snoozeAlarm,
-  executeCurrentAlarm,
-} = (() => {
+/**
+ * deps interface:
+ *   getAlarms()          → Alarm[]        db.alarms の参照
+ *   getItems()           → Item[]         db.items の参照
+ *   isAlarmMuted()       → boolean        db.settings.alarmMuted の参照
+ *   setAlarmMuted(v)     → void           db.settings.alarmMuted の書き込み
+ *   getAlarmOffset()     → number         db.settings.alarmOffsetMin の参照（分）
+ *   save()               → void           localStorageへの保存
+ *   toast(msg, icon?)    → void           通知トースト
+ *   showEl(id)           → void           getElementById + display:flex
+ *   hideEl(id)           → void           getElementById + display:none
+ *   launchSet(id)        → void           セットを一括起動
+ *   onOpenSet(targetId)  → void           アラームポップアップ→セットQuickPanelを開く
+ */
+function createAlarmModule(deps) {
   const ALARM_DAYS = ['日','月','火','水','木','金','土'];
   let _currentAlarm = null;
   let _alarmCheckLock = false;
   let _snoozeTimer = null;
 
-  function getAlarms() { return db.alarms || []; }
+  function getAlarms() { return deps.getAlarms(); }
 
   function updateAlarmBadge() {
     const el = document.getElementById('cnt-alarm');
     if (!el) return;
     const standaloneCount = getAlarms().filter(a => a.enabled).length;
-    const setAlarmCount = (db.items || []).filter(i => i.type === 'set' && i.alarm?.enabled).length;
+    const setAlarmCount = deps.getItems().filter(i => i.type === 'set' && i.alarm?.enabled).length;
     el.textContent = standaloneCount + setAlarmCount;
   }
 
@@ -5753,7 +5744,7 @@ const {
     const s = alarm.schedule;
     const daysStr = (s.days || []).map(d => ALARM_DAYS[d]).join('・');
     const t = s.time || '';
-    const off = db.settings?.alarmOffsetMin || 0;
+    const off = deps.getAlarmOffset();
     const offStr = off === 0 ? '' : off > 0 ? ` (+${off}分)` : ` (${Math.abs(off)}分前)`;
     switch (s.type) {
       case 'daily':            return `毎日 ${t}${offStr}`;
@@ -5772,7 +5763,7 @@ const {
     const s = alarm.schedule;
 
     // グローバルオフセット（±分）を適用した実際の発火時刻を計算
-    const offsetMin = db.settings.alarmOffsetMin || 0;
+    const offsetMin = deps.getAlarmOffset();
     const [baseH, baseM] = (s.time || '00:00').split(':').map(Number);
     const totalMin = ((baseH * 60 + baseM + offsetMin) % 1440 + 1440) % 1440;
     const fireH = Math.floor(totalMin / 60);
@@ -5820,6 +5811,131 @@ const {
     }
   }
 
+  function toggleAlarmMute() {
+    const newMuted = !deps.isAlarmMuted();
+    deps.setAlarmMuted(newMuted);
+    deps.save();
+    applyAlarmMuteUI();
+    deps.toast(newMuted ? '集中モードON（アラーム無効）' : 'アラームONに戻しました', newMuted ? '🔕' : '🔔');
+  }
+
+  function applyAlarmMuteUI() {
+    const btn = document.getElementById('alarm-mute-btn');
+    if (!btn) return;
+    const muted = deps.isAlarmMuted();
+    btn.innerHTML = muted ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-bell-off);mask-image:var(--icon-bell-off);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span>' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span>';
+    btn.style.background = muted ? 'rgba(239,83,80,0.15)' : '';
+    btn.style.borderColor = muted ? 'rgba(239,83,80,0.5)' : '';
+  }
+
+  function startAlarmChecker() {
+    setInterval(() => {
+      const now = new Date();
+      if (deps.isAlarmMuted()) return;
+      if (now.getSeconds() > 8) return;
+      if (_alarmCheckLock) return;
+      _alarmCheckLock = true;
+      setTimeout(() => { _alarmCheckLock = false; }, 50000);
+
+      for (const alarm of getAlarms()) {
+        if (shouldFireAlarm(alarm, now)) {
+          const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${alarm.schedule.time}`;
+          alarm.lastFired = todayKey;
+          deps.save();
+          showAlarmPopup(alarm);
+          break;
+        }
+      }
+      // セット内蔵アラームのチェック
+      for (const item of deps.getItems().filter(i => i.type === 'set' && i.alarm?.enabled)) {
+        const synth = { ...item.alarm, name: item.title, action: { type: 'set', targetId: item.id } };
+        if (shouldFireAlarm(synth, now)) {
+          const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${item.alarm.schedule.time}`;
+          item.alarm.lastFired = todayKey;
+          deps.save();
+          showAlarmPopup(synth);
+          break;
+        }
+      }
+    }, 4000);
+  }
+
+  function showAlarmPopup(alarm) {
+    _currentAlarm = alarm;
+    const a = alarm.action;
+
+    document.getElementById('alarm-popup-name').textContent = alarm.name;
+    const now = new Date();
+    document.getElementById('alarm-popup-time').textContent =
+      `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${ALARM_DAYS[now.getDay()]}） ${alarm.schedule.time}`;
+
+    const execBtn = document.getElementById('alarm-popup-execute');
+    if (a?.type === 'set' && a.targetId) {
+      execBtn.style.display = '';
+      execBtn.innerHTML = '<span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>開く';
+      execBtn.onclick = () => { closeAlarmPopup(); deps.onOpenSet(a.targetId); };
+    } else if (a?.type === 'url') {
+      execBtn.style.display = '';
+      execBtn.innerHTML = '🔗 開く';
+      execBtn.onclick = executeCurrentAlarm;
+    } else {
+      execBtn.style.display = 'none';
+    }
+    deps.showEl('alarm-popup-overlay');
+
+    // ビープ音
+    try {
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880; osc.type = 'sine';
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
+    } catch(_) {}
+  }
+
+  function closeAlarmPopup() {
+    deps.hideEl('alarm-popup-overlay');
+    _currentAlarm = null;
+  }
+
+  function snoozeAlarm() {
+    const alarm = _currentAlarm;
+    closeAlarmPopup();
+    if (!alarm) return;
+    if (_snoozeTimer) clearTimeout(_snoozeTimer);
+    _snoozeTimer = setTimeout(() => {
+      _snoozeTimer = null;
+      showAlarmPopup(alarm);
+    }, 5 * 60 * 1000);
+    deps.toast('⏰ 5分後に再通知します', '🔔');
+  }
+
+  function executeCurrentAlarm() {
+    if (!_currentAlarm) return;
+    const a = _currentAlarm.action;
+    if (a?.type === 'set' && a.targetId) deps.launchSet(a.targetId);
+    else if (a?.type === 'url' && a.url) window.open(a.url, '_blank');
+    closeAlarmPopup();
+  }
+
+  return {
+    getAlarms,
+    updateAlarmBadge,
+    alarmSchedDesc,
+    shouldFireAlarm,
+    toggleAlarmMute,
+    applyAlarmMuteUI,
+    startAlarmChecker,
+    showAlarmPopup,
+    closeAlarmPopup,
+    snoozeAlarm,
+    executeCurrentAlarm,
+  };
+}
+
 // ═══════════════════════════════════════════
 // Widget
 // ═══════════════════════════════════════════
@@ -5842,129 +5958,31 @@ function openWidget() {
     });
 }
 
-  function toggleAlarmMute() {
-    db.settings.alarmMuted = !db.settings.alarmMuted;
-    save();
-    applyAlarmMuteUI();
-    toast(db.settings.alarmMuted ? '集中モードON（アラーム無効）' : 'アラームONに戻しました', db.settings.alarmMuted ? '🔕' : '🔔');
-  }
-
-  function applyAlarmMuteUI() {
-    const btn = document.getElementById('alarm-mute-btn');
-    if (!btn) return;
-    const muted = db.settings.alarmMuted;
-    btn.innerHTML = muted ? '<span class="app-icon" style="-webkit-mask-image:var(--icon-bell-off);mask-image:var(--icon-bell-off);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span>' : '<span class="app-icon" style="-webkit-mask-image:var(--icon-bell);mask-image:var(--icon-bell);background-color:currentColor;width:14px;height:14px;vertical-align:middle;display:inline-block;"></span>';
-    btn.style.background = muted ? 'rgba(239,83,80,0.15)' : '';
-    btn.style.borderColor = muted ? 'rgba(239,83,80,0.5)' : '';
-  }
-
-  function startAlarmChecker() {
-    setInterval(() => {
-      const now = new Date();
-      if (db.settings.alarmMuted) return;
-      if (now.getSeconds() > 8) return;
-      if (_alarmCheckLock) return;
-      _alarmCheckLock = true;
-      setTimeout(() => { _alarmCheckLock = false; }, 50000);
-
-      for (const alarm of getAlarms()) {
-        if (shouldFireAlarm(alarm, now)) {
-          const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${alarm.schedule.time}`;
-          alarm.lastFired = todayKey;
-          save();
-          showAlarmPopup(alarm);
-          break;
-        }
-      }
-      // セット内蔵アラームのチェック
-      for (const item of db.items.filter(i => i.type === 'set' && i.alarm?.enabled)) {
-        const synth = { ...item.alarm, name: item.title, action: { type: 'set', targetId: item.id } };
-        if (shouldFireAlarm(synth, now)) {
-          const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${item.alarm.schedule.time}`;
-          item.alarm.lastFired = todayKey;
-          save();
-          showAlarmPopup(synth);
-          break;
-        }
-      }
-    }, 4000);
-  }
-
-  function showAlarmPopup(alarm) {
-    _currentAlarm = alarm;
-    const a = alarm.action;
-
-    document.getElementById('alarm-popup-name').textContent = alarm.name;
-    const now = new Date();
-    document.getElementById('alarm-popup-time').textContent =
-      `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${ALARM_DAYS[now.getDay()]}） ${alarm.schedule.time}`;
-
-    const execBtn = document.getElementById('alarm-popup-execute');
-    if (a?.type === 'set' && a.targetId) {
-      execBtn.style.display = '';
-      execBtn.innerHTML = '<span class="app-icon" style="-webkit-mask-image:var(--icon-play-circle);mask-image:var(--icon-play-circle);width:14px;height:14px;background-color:white"></span>開く';
-      execBtn.onclick = () => { closeAlarmPopup(); showSetQuickPanel(a.targetId); };
-    } else if (a?.type === 'url') {
-      execBtn.style.display = '';
-      execBtn.innerHTML = '🔗 開く';
-      execBtn.onclick = executeCurrentAlarm;
-    } else {
-      execBtn.style.display = 'none';
-    }
-    showEl('alarm-popup-overlay');
-
-    // ビープ音
-    try {
-      const ctx = new AudioContext();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880; osc.type = 'sine';
-      gain.gain.setValueAtTime(0.25, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
-    } catch(_) {}
-  }
-
-  function closeAlarmPopup() {
-    hideEl('alarm-popup-overlay');
-    _currentAlarm = null;
-  }
-
-  function snoozeAlarm() {
-    const alarm = _currentAlarm;
-    closeAlarmPopup();
-    if (!alarm) return;
-    if (_snoozeTimer) clearTimeout(_snoozeTimer);
-    _snoozeTimer = setTimeout(() => {
-      _snoozeTimer = null;
-      showAlarmPopup(alarm);
-    }, 5 * 60 * 1000);
-    toast('⏰ 5分後に再通知します', '🔔');
-  }
-
-  function executeCurrentAlarm() {
-    if (!_currentAlarm) return;
-    const a = _currentAlarm.action;
-    if (a?.type === 'set' && a.targetId) launchSet(a.targetId);
-    else if (a?.type === 'url' && a.url) window.open(a.url, '_blank');
-    closeAlarmPopup();
-  }
-
-  return {
-    getAlarms,
-    updateAlarmBadge,
-    alarmSchedDesc,
-    shouldFireAlarm,
-    toggleAlarmMute,
-    applyAlarmMuteUI,
-    startAlarmChecker,
-    showAlarmPopup,
-    closeAlarmPopup,
-    snoozeAlarm,
-    executeCurrentAlarm,
-  };
-})();
+const {
+  getAlarms,
+  updateAlarmBadge,
+  alarmSchedDesc,
+  shouldFireAlarm,
+  toggleAlarmMute,
+  applyAlarmMuteUI,
+  startAlarmChecker,
+  showAlarmPopup,
+  closeAlarmPopup,
+  snoozeAlarm,
+  executeCurrentAlarm,
+} = createAlarmModule({
+  getAlarms:      () => db.alarms || [],
+  getItems:       () => db.items || [],
+  isAlarmMuted:   () => !!db.settings.alarmMuted,
+  setAlarmMuted:  (v) => { db.settings.alarmMuted = v; },
+  getAlarmOffset: () => db.settings?.alarmOffsetMin || 0,
+  save,
+  toast,
+  showEl,
+  hideEl,
+  launchSet,
+  onOpenSet: (targetId) => showSetQuickPanel(targetId),
+});
 
 // ═══════════════════════════════════════════
 // Google Calendar ICS Import
@@ -6267,10 +6285,12 @@ async function gistDownload() {
     if (!raw) throw new Error('データが見つかりません');
     const remote = JSON.parse(raw);
 
-    // リモートで完全上書き（alarmMutedはデバイスローカルなので保持）
-    const prevMuted = db.settings?.alarmMuted;
+    // リモートで完全上書き（デバイスローカル設定は保持）
+    const PRESERVE_KEYS = ['alarmMuted', 'showServerFeatures'];
+    const prevSettings = {};
+    for (const k of PRESERVE_KEYS) { if (db.settings?.[k] !== undefined) prevSettings[k] = db.settings[k]; }
     Object.assign(db, remote);
-    if (db.settings && prevMuted !== undefined) db.settings.alarmMuted = prevMuted;
+    if (db.settings) { for (const k of PRESERVE_KEYS) { if (k in prevSettings) db.settings[k] = prevSettings[k]; } }
     save();
     render();
     gistStatus(`✅ 読込完了（${new Date().toLocaleTimeString('ja-JP')}）`, false);
@@ -6335,11 +6355,13 @@ const {
       // ローカルにversionがない（古いデータ or 初回）はリモート優先
       // リモートが新しい場合も同様
       if (remoteVersion > localVersion || localVersion === 0) {
-        // リモートで完全上書き（alarmMutedはデバイスローカルなので保持）
+        // リモートで完全上書き（デバイスローカル設定は保持）
         const prevJson = JSON.stringify(db.items);
-        const prevMuted = db.settings?.alarmMuted;
+        const PRESERVE_KEYS = ['alarmMuted', 'showServerFeatures'];
+        const prevSettings = {};
+        for (const k of PRESERVE_KEYS) { if (db.settings?.[k] !== undefined) prevSettings[k] = db.settings[k]; }
         Object.assign(db, remote);
-        if (db.settings && prevMuted !== undefined) db.settings.alarmMuted = prevMuted;
+        if (db.settings) { for (const k of PRESERVE_KEYS) { if (k in prevSettings) db.settings[k] = prevSettings[k]; } }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
         rebuildIndex();
         if (JSON.stringify(db.items) !== prevJson) {
@@ -7154,11 +7176,7 @@ document.addEventListener('click', e => {
   const cardEl = e.target.closest('[data-card-id]');
   if (cardEl && !e.target.closest('.card-expand-body')) {
     const id = cardEl.dataset.cardId;
-    if (cardEl.dataset.cardType === 'icon') {
-      iconCardClick(e, id);
-    } else {
-      cardClick(e, id);
-    }
+    cardClick(e, id);
   }
 });
 
