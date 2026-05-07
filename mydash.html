@@ -1413,9 +1413,14 @@ body.hide-server .launch-btn { display: none !important; }
     <div id="cat-list"></div>
   </div>
 
+  <div class="sidebar-section collapsible" id="tag-section" style="display:none" data-app-action="toggle-sidebar-section" data-section="tag">タグ<svg class="section-chevron" id="arrow-tag" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  <div id="body-section-tag">
+    <div id="tag-list"></div>
+  </div>
+
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.57</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.58</div>
   </div>
 </aside>
 
@@ -2580,6 +2585,7 @@ function render() {
   _setMembership = buildSetMembership();
   updateCounts();
   updateCatList();
+  updateTagList();
   updateSelectBar();
   updateTaskFilterRow();
   updateSetFilterRow();
@@ -3106,7 +3112,7 @@ function toggleSidebarSection(key) {
 
 function applySidebarCollapsed() {
   const c = db.settings.sidebarCollapsed || {};
-  ['all', 'type', 'cat'].forEach(key => {
+  ['all', 'type', 'cat', 'tag'].forEach(key => {
     const body = document.getElementById(`body-section-${key}`);
     const arrow = document.getElementById(`arrow-${key}`);
     if (!body) return;
@@ -3148,6 +3154,28 @@ function updateCatList() {
   // datalist
   const dl = document.getElementById('cat-datalist');
   if (dl) dl.innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
+}
+
+function updateTagList() {
+  const tagMap = new Map();
+  db.items.forEach(item => (item.tags || []).forEach(t => {
+    tagMap.set(t, (tagMap.get(t) || 0) + 1);
+  }));
+  const sec = document.getElementById('tag-section');
+  const list = document.getElementById('tag-list');
+  const hasTags = tagMap.size > 0;
+  sec.style.display = hasTags ? '' : 'none';
+  applySidebarCollapsed();
+  list.innerHTML = [...tagMap.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0], 'ja'))
+    .map(([tag, cnt]) => {
+      const active = state.filterTags.includes(tag) ? ' active' : '';
+      return `<div class="sidebar-item${active}" data-app-action="sidebar-filter-tag" data-tag="${esc(tag)}">
+        <span class="si-icon" style="font-size:11px;font-weight:700;color:var(--accent)">#</span>
+        <span class="si-label">${esc(tag)}</span>
+        <span class="count-badge">${cnt}</span>
+      </div>`;
+    }).join('');
 }
 
 function deleteTutorialItems(cat) {
@@ -7109,6 +7137,11 @@ document.addEventListener('click', e => {
       case 'delete-selected':          deleteSelected(); break;
       case 'set-set-sub-filter':       setSetSubFilter(appAction.dataset.ssf); break;
       case 'remove-filter-tag':        removeFilterTag(appAction.dataset.tag); break;
+      case 'sidebar-filter-tag': {
+        const t = appAction.dataset.tag;
+        if (state.filterTags.includes(t)) removeFilterTag(t); else { addFilterTag(t); render(); }
+        break;
+      }
       case 'remove-tag':               removeTag(appAction.dataset.tag); break;
       case 'delete-tutorial-items':    deleteTutorialItems(appAction.dataset.cat); break;
       case 'start-cat-rename':         startCatRename(appAction, appAction.dataset.cat); break;
