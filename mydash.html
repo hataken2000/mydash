@@ -906,6 +906,15 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .tag-remove { cursor: pointer; font-size: 14px; line-height: 1; }
 .tag-remove:hover { color: var(--danger); }
 
+/* Card tag chips */
+.card-tags { display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; }
+.card-tag {
+  background: rgba(124,131,253,0.1); color: var(--accent);
+  border-radius: 20px; padding: 1px 7px; font-size: 11px; cursor: pointer;
+  border: 1px solid rgba(124,131,253,0.25); transition: background 0.15s;
+}
+.card-tag:hover { background: rgba(124,131,253,0.22); }
+
 /* Buttons */
 .btn-primary {
   background: var(--accent); border: none; border-radius: var(--radius-sm);
@@ -1420,7 +1429,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.58</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.59</div>
   </div>
 </aside>
 
@@ -2931,6 +2940,7 @@ function gridCard(item) {
     </div>
     <div class="card-icon icon-bg-${item.type}">${iconHtml(item,'lg')}</div>
     <div class="card-title">${esc(item.title)}</div>
+    ${(item.tags||[]).length ? `<div class="card-tags">${(item.tags||[]).map(t=>`<span class="card-tag" data-app-action="sidebar-filter-tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join('')}</div>` : ''}
     ${footer}
     ${expandBody}
     ${setMemberBadge(item)}${setCountBadge(item)}${alarmIndicator(item)}${calSyncBadge(item)}
@@ -3041,7 +3051,8 @@ function _listCardDefault(item, tc, pri, cat) {
     <div class="list-icon icon-bg-${item.type}">${iconHtml(item,'sm')}</div>
     <div class="list-info">
       <div class="list-title">${esc(item.title)}</div>
-      <div class="list-desc">${item.type === 'place' ? esc(item.address || item.mapUrl || '') : esc(item.desc || item.url || (item.tags||[]).join(', ') || '')}</div>
+      <div class="list-desc">${item.type === 'place' ? esc(item.address || item.mapUrl || '') : esc(item.desc || item.url || '')}</div>
+      ${(item.tags||[]).length ? `<div class="card-tags" style="margin-top:2px">${(item.tags||[]).map(t=>`<span class="card-tag" data-app-action="sidebar-filter-tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join('')}</div>` : ''}
     </div>
     <div class="list-meta">
       ${pri} ${typeBadge(item)} ${dueBadge(item)} ${cat}
@@ -3173,6 +3184,8 @@ function updateTagList() {
       return `<div class="sidebar-item${active}" data-app-action="sidebar-filter-tag" data-tag="${esc(tag)}">
         <span class="si-icon" style="font-size:11px;font-weight:700;color:var(--accent)">#</span>
         <span class="si-label">${esc(tag)}</span>
+        <button class="cat-rename-btn" data-app-action="rename-tag" data-tag="${esc(tag)}" title="タグ名を変更"><span class="app-icon" style="-webkit-mask-image:var(--icon-edit);mask-image:var(--icon-edit);background-color:var(--text-muted);width:13px;height:13px"></span></button>
+        <button class="cat-rename-btn" data-app-action="delete-tag" data-tag="${esc(tag)}" title="このタグを全削除"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);background-color:var(--text-muted);width:13px;height:13px"></span></button>
         <span class="count-badge">${cnt}</span>
       </div>`;
     }).join('');
@@ -7140,6 +7153,28 @@ document.addEventListener('click', e => {
       case 'sidebar-filter-tag': {
         const t = appAction.dataset.tag;
         if (state.filterTags.includes(t)) removeFilterTag(t); else { addFilterTag(t); render(); }
+        break;
+      }
+      case 'rename-tag': {
+        const oldTag = appAction.dataset.tag;
+        const newTag = prompt(`タグ名を変更: "${oldTag}"`, oldTag)?.trim();
+        if (!newTag || newTag === oldTag) break;
+        db.items.forEach(item => {
+          if (!item.tags) return;
+          const idx = item.tags.indexOf(oldTag);
+          if (idx !== -1) item.tags[idx] = newTag;
+        });
+        const fi = state.filterTags.indexOf(oldTag);
+        if (fi !== -1) { state.filterTags[fi] = newTag; renderFilterTags(); }
+        save(); render();
+        break;
+      }
+      case 'delete-tag': {
+        const tag = appAction.dataset.tag;
+        if (!confirm(`タグ「${tag}」を全アイテムから削除しますか？`)) break;
+        db.items.forEach(item => { if (item.tags) item.tags = item.tags.filter(t => t !== tag); });
+        state.filterTags = state.filterTags.filter(t => t !== tag);
+        renderFilterTags(); updateSearchClear(); save(); render();
         break;
       }
       case 'remove-tag':               removeTag(appAction.dataset.tag); break;
