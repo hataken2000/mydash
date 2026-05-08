@@ -915,6 +915,30 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 }
 .card-tag:hover { background: rgba(124,131,253,0.22); }
 
+/* Trash Modal */
+.trash-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.trash-item:last-child { border-bottom: none; }
+.trash-item-info { flex: 1; min-width: 0; }
+.trash-item-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trash-item-meta { font-size: 11px; color: var(--text-muted); }
+.trash-item-expire { font-size: 11px; color: var(--danger); margin-top: 2px; }
+.trash-item-actions { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+.trash-restore-btn {
+  background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm);
+  padding: 3px 10px; font-size: 12px; cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+.trash-restore-btn:hover { opacity: 0.85; }
+.trash-purge-btn {
+  background: transparent; color: var(--danger); border: 1px solid var(--danger);
+  border-radius: var(--radius-sm); padding: 3px 8px; font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.trash-purge-btn:hover { background: rgba(255,80,80,0.08); }
+#trash-btn { margin-top: 4px; }
+#trash-btn .si-icon { color: var(--text-muted); }
+
 /* Buttons */
 .btn-primary {
   background: var(--accent); border: none; border-radius: var(--radius-sm);
@@ -1427,11 +1451,32 @@ body.hide-server .launch-btn { display: none !important; }
     <div id="tag-list"></div>
   </div>
 
+  <div class="sidebar-item" id="trash-btn" data-app-action="open-trash">
+    <span class="si-icon"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash)"></span></span>
+    <span class="si-label">ゴミ箱</span>
+    <span class="count-badge" id="cnt-trash" style="display:none">0</span>
+  </div>
+
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.59</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.60</div>
   </div>
 </aside>
+
+<!-- Trash Modal -->
+<div class="modal-overlay" id="trash-modal" style="display:none">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <span class="modal-title"><span class="app-icon" style="-webkit-mask-image:var(--icon-trash);mask-image:var(--icon-trash);width:15px;height:15px;background-color:currentColor;vertical-align:middle;display:inline-block;margin-right:5px"></span>ゴミ箱</span>
+      <button class="modal-close" data-app-action="close-trash">✕</button>
+    </div>
+    <div class="modal-body" id="trash-modal-body" style="max-height:400px;overflow-y:auto;padding:8px 16px"></div>
+    <div class="modal-footer" style="justify-content:space-between">
+      <button id="trash-empty-btn" data-app-action="empty-trash" style="background:transparent;color:var(--danger);border:1px solid var(--danger);border-radius:var(--radius-sm);padding:7px 16px;cursor:pointer;font-size:13px;font-family:inherit">ゴミ箱を空にする</button>
+      <span style="font-size:11px;color:var(--text-muted)" id="trash-expire-note">3日後に自動削除</span>
+    </div>
+  </div>
+</div>
 
 <!-- Dock Import Modal -->
 <div class="modal-overlay" id="dock-import-modal" style="display:none">
@@ -2166,6 +2211,7 @@ function load() {
     if (raw) db = JSON.parse(raw);
   } catch(_) {}
   if (!Array.isArray(db.items)) db.items = [];
+  if (!Array.isArray(db.trash)) db.trash = [];
   if (!Array.isArray(db.alarms)) db.alarms = [];
   if (!Array.isArray(db.calNgList)) db.calNgList = [];
   if (!db.calSync) db.calSync = { enabled: false, url: '', lastSync: null };
@@ -2186,6 +2232,9 @@ function load() {
   state.expandedCards = new Set(Array.isArray(db.expandedCards) ? db.expandedCards : []);
   // マイグレーション: calUid があるのに fromCalSync がないアイテムを修正
   db.items.forEach(item => { if (item.calUid && !item.fromCalSync) item.fromCalSync = true; });
+  // 3日以上経過したゴミ箱アイテムを自動削除
+  const TRASH_TTL = 3 * 24 * 60 * 60 * 1000;
+  db.trash = db.trash.filter(i => i.deletedAt && Date.now() - new Date(i.deletedAt).getTime() < TRASH_TTL);
 }
 
 function save() {
@@ -2595,6 +2644,7 @@ function render() {
   updateCounts();
   updateCatList();
   updateTagList();
+  updateTrashBadge();
   updateSelectBar();
   updateTaskFilterRow();
   updateSetFilterRow();
@@ -4374,11 +4424,15 @@ function setSelectedVisibility(hidden) {
 function deleteSelected() {
   const ids = [...state.selectedIds];
   if (!ids.length) return;
-  if (!confirm(`${ids.length}件を削除しますか？`)) return;
 
+  if (!Array.isArray(db.trash)) db.trash = [];
+  const now = new Date().toISOString();
+  const moved = db.items.filter(i => ids.includes(i.id)).map(i => ({ ...i, deletedAt: now }));
+  db.trash.push(...moved);
   db.items = db.items.filter(i => !ids.includes(i.id));
+  if (db.itemOrder) db.itemOrder = db.itemOrder.filter(i => !ids.includes(i));
   state.selectedIds.clear();
-  save(); render(); toast(`${ids.length}件削除しました`, '🗑️');
+  save(); render(); toast(`${moved.length}件をゴミ箱に移動しました`, '🗑️');
 }
 
 // ═══════════════════════════════════════════
@@ -4746,18 +4800,17 @@ function duplicateItem(id) {
 function confirmDelete(id) {
   const item = db.items.find(i => i.id === id);
   if (!item) return;
-  if (item.type === 'window-session') {
-    if (!confirm(`「${item.title}」を削除しますか？\nタブセットのデータも完全に削除されます。`)) return;
-  }
+  if (!Array.isArray(db.trash)) db.trash = [];
   const idx = db.items.findIndex(i => i.id === id);
   const orderIdx = db.itemOrder ? db.itemOrder.indexOf(id) : -1;
-  const savedItem = JSON.parse(JSON.stringify(item));
+  db.trash.push({ ...item, deletedAt: new Date().toISOString() });
   db.items = db.items.filter(i => i.id !== id);
   if (db.itemOrder) db.itemOrder = db.itemOrder.filter(i => i !== id);
   save(); render(); updateAlarmBadge();
-  toastUndo('削除しました', '🗑️', () => {
-    db.items.splice(Math.min(idx, db.items.length), 0, savedItem);
-    if (db.itemOrder && orderIdx >= 0) db.itemOrder.splice(Math.min(orderIdx, db.itemOrder.length), 0, savedItem.id);
+  toastUndo('ゴミ箱に移動しました', '🗑️', () => {
+    db.trash = db.trash.filter(i => !(i.id === id && i.deletedAt));
+    db.items.splice(Math.min(idx, db.items.length), 0, item);
+    if (db.itemOrder && orderIdx >= 0) db.itemOrder.splice(Math.min(orderIdx, db.itemOrder.length), 0, item.id);
     save(); render(); updateAlarmBadge();
     toast('元に戻しました', '↩️');
   });
@@ -4801,6 +4854,89 @@ function hideTagDropdown() {
 function selectTagDropdown(tag) {
   if (_dropdownOnSelect) _dropdownOnSelect(tag);
   hideTagDropdown();
+}
+
+// ═══════════════════════════════════════════
+// Trash
+// ═══════════════════════════════════════════
+const TYPE_LABELS = { bookmark:'ブックマーク', tool:'ツール/アプリ', task:'タスク', memo:'メモ', other:'その他', set:'セット', slack:'Slack送信', script:'スクリプト', 'window-session':'タブセット', place:'場所' };
+
+function updateTrashBadge() {
+  const cnt = (db.trash || []).length;
+  const badge = document.getElementById('cnt-trash');
+  if (!badge) return;
+  if (cnt > 0) { badge.textContent = cnt; badge.style.display = ''; }
+  else { badge.style.display = 'none'; }
+}
+
+function openTrashModal() {
+  renderTrashModal();
+  document.getElementById('trash-modal').style.display = 'flex';
+}
+
+function closeTrashModal() {
+  document.getElementById('trash-modal').style.display = 'none';
+}
+
+function renderTrashModal() {
+  const body = document.getElementById('trash-modal-body');
+  const emptyBtn = document.getElementById('trash-empty-btn');
+  const now = Date.now();
+  const TRASH_TTL = 3 * 24 * 60 * 60 * 1000;
+  const items = [...(db.trash || [])].sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
+  if (!items.length) {
+    body.innerHTML = '<div style="text-align:center;padding:32px 0;color:var(--text-muted)">ゴミ箱は空です</div>';
+    emptyBtn.style.display = 'none';
+    return;
+  }
+  emptyBtn.style.display = '';
+  body.innerHTML = items.map(item => {
+    const deletedMs = new Date(item.deletedAt).getTime();
+    const remaining = Math.ceil((deletedMs + TRASH_TTL - now) / (24 * 60 * 60 * 1000));
+    const typeLabel = TYPE_LABELS[item.type] || item.type;
+    return `<div class="trash-item">
+      <div class="trash-item-info">
+        <div class="trash-item-title">${esc(item.title || '（無題）')}</div>
+        <div class="trash-item-meta">${typeLabel}${item.category ? ' · ' + esc(item.category) : ''} · ${new Date(item.deletedAt).toLocaleDateString('ja-JP')}</div>
+        <div class="trash-item-expire">残り ${remaining} 日で自動削除</div>
+      </div>
+      <div class="trash-item-actions">
+        <button class="trash-restore-btn" data-app-action="restore-trash" data-id="${item.id}" data-deleted-at="${item.deletedAt}">復元</button>
+        <button class="trash-purge-btn" data-app-action="purge-trash" data-id="${item.id}" data-deleted-at="${item.deletedAt}">削除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function restoreFromTrash(id, deletedAt) {
+  const idx = db.trash.findIndex(i => i.id === id && i.deletedAt === deletedAt);
+  if (idx < 0) return;
+  const item = { ...db.trash[idx] };
+  delete item.deletedAt;
+  db.trash.splice(idx, 1);
+  db.items.unshift(item);
+  save(); render();
+  renderTrashModal();
+  toast('復元しました', '↩️');
+}
+
+function purgeFromTrash(id, deletedAt) {
+  if (!confirm('完全に削除します。元に戻せません。')) return;
+  db.trash = db.trash.filter(i => !(i.id === id && i.deletedAt === deletedAt));
+  save();
+  updateTrashBadge();
+  renderTrashModal();
+  toast('完全に削除しました', '🗑️');
+}
+
+function emptyTrash() {
+  if (!Array.isArray(db.trash) || !db.trash.length) return;
+  if (!confirm(`ゴミ箱内 ${db.trash.length} 件を完全に削除します。元に戻せません。`)) return;
+  db.trash = [];
+  save();
+  updateTrashBadge();
+  renderTrashModal();
+  toast('ゴミ箱を空にしました', '🗑️');
 }
 
 function updateSearchClear() {
@@ -7179,6 +7315,11 @@ document.addEventListener('click', e => {
       }
       case 'remove-tag':               removeTag(appAction.dataset.tag); break;
       case 'delete-tutorial-items':    deleteTutorialItems(appAction.dataset.cat); break;
+      case 'open-trash':               openTrashModal(); break;
+      case 'close-trash':              closeTrashModal(); break;
+      case 'restore-trash':            restoreFromTrash(appAction.dataset.id, appAction.dataset.deletedAt); break;
+      case 'purge-trash':              purgeFromTrash(appAction.dataset.id, appAction.dataset.deletedAt); break;
+      case 'empty-trash':              emptyTrash(); break;
       case 'start-cat-rename':         startCatRename(appAction, appAction.dataset.cat); break;
     }
     return;
@@ -7351,6 +7492,7 @@ document.getElementById('settings-modal').querySelector('.modal').addEventListen
 });
 
 [
+  ['trash-modal',        () => closeTrashModal()],
   ['dock-import-modal',  () => closeDockImportModal()],
   ['settings-modal',     () => closeSettingsModal()],
   ['quick-search-modal', () => closeQuickSearch()],
@@ -7364,6 +7506,18 @@ document.getElementById('settings-modal').querySelector('.modal').addEventListen
   document.getElementById(id).addEventListener('click', e => {
     if (e.target === e.currentTarget) closeFn();
   });
+});
+
+document.getElementById('trash-modal').querySelector('.modal').addEventListener('click', e => {
+  const btn = e.target.closest('[data-app-action]');
+  if (!btn) return;
+  e.stopPropagation();
+  switch (btn.dataset.appAction) {
+    case 'close-trash':   closeTrashModal(); break;
+    case 'restore-trash': restoreFromTrash(btn.dataset.id, btn.dataset.deletedAt); break;
+    case 'purge-trash':   purgeFromTrash(btn.dataset.id, btn.dataset.deletedAt); break;
+    case 'empty-trash':   emptyTrash(); break;
+  }
 });
 
 document.getElementById('ctx-menu').addEventListener('click', e => {
