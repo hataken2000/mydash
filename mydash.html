@@ -907,13 +907,12 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .tag-remove:hover { color: var(--danger); }
 
 /* Card tag chips */
-.card-tags { display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; }
+.card-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
 .card-tag {
-  background: rgba(124,131,253,0.1); color: var(--accent);
-  border-radius: 20px; padding: 1px 7px; font-size: 11px; cursor: pointer;
-  border: 1px solid rgba(124,131,253,0.25); transition: background 0.15s;
+  color: var(--accent); font-size: 11px; cursor: pointer; opacity: 0.7;
+  transition: opacity 0.12s;
 }
-.card-tag:hover { background: rgba(124,131,253,0.22); }
+.card-tag:hover { opacity: 1; }
 
 /* Trash Modal */
 .trash-item {
@@ -938,6 +937,9 @@ kbd.sc-key { background:var(--border); color:var(--text); border-radius:5px; pad
 .trash-purge-btn:hover { background: rgba(255,80,80,0.08); }
 #trash-btn { margin-top: 4px; }
 #trash-btn .si-icon { color: var(--text-muted); }
+#tag-list .sidebar-item { font-size: 12.5px; padding: 7px 20px; opacity: 0.8; }
+#tag-list .sidebar-item:hover { opacity: 1; }
+#tag-list .sidebar-item.active { opacity: 1; }
 
 /* Buttons */
 .btn-primary {
@@ -1459,7 +1461,7 @@ body.hide-server .launch-btn { display: none !important; }
 
   <div class="sidebar-footer">
     <button class="io-btn" data-app-action="open-settings" style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center"><span class="app-icon" style="-webkit-mask-image:var(--icon-settings);mask-image:var(--icon-settings);width:14px;height:14px"></span>設定</button>
-    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.60</div>
+    <div style="text-align:center;font-size:10px;color:var(--text-muted);opacity:0.5">v1.14.61</div>
   </div>
 </aside>
 
